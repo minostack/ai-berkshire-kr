@@ -2842,3 +2842,19 @@ H1 2026完整财报（2026-06-02发布）：
 | **8/11** | 美伊停火到期 | ICL ★★★★ | 🔴高 |
 | **8/12** | 关东电化Q1 FY2027财报（WF6垄断首季） | 4047.T ★★★★★ | 🔴高 |
 
+
+---
+
+## 更新：2026-06-12 23:00（本日末轮扫描）
+
+### 状态变化汇总
+
+| 公司 | 代码 | 变化 | 最新评级 |
+|------|------|------|---------|
+| **Centrus Energy** | **LEU** | **新增背景记录**：Centrus + Oklo联合企业（2026年3月9日宣布，[PRNewswire](https://www.prnewswire.com/news-releases/oklo-centrus-announce-planned-joint-venture-to-advance-nuclear-fuel-services-in-ohio-302708075.html)），在Ohio Piketon共建HALEU脱转换（deconversion）服务JV，与Centrus浓缩+Oklo 1.2GW电力校园同址。Centrus从"HALEU生产商"升级为"核燃料供应链中枢"。12:00专项扫描未记录该JV，本轮首次补入日志 | **★★★★★ 维持** |
+| **关东电化** | **4047.T** | **补充确认**：NF₃双垄断（已在master-map 3b + watchlist条目存档，今日20:00专项扫描遗漏），此处补记确认：①2号线2026年1月6日完全恢复；②Mitsui 3月退出已执行 → 关东电化当前为日本唯一NF₃供应商（两线全开）。与7/1 WF₆垄断叠加，实现双S级特气日本独占 | **★★★★★ 维持** |
+| **Almonty Industries** | **AII.TO** | **估值修正确认**：本轮扫描初期误用TTM收入计算PS（120-200x）；正确前向口径（Sangdong满产~$470M USD）下前向PS ~10-13x，与watchlist记录一致（★★★，6/2升级）。等6/9 Phase 2投票结果和Q2产量爬坡数据 | **★★★ 维持** |
+
+### 本轮无新瓶颈信号，无新标的通过估值检查
+
+---
