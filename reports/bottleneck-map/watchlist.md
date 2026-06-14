@@ -4406,3 +4406,45 @@ Nvidia直接入场采购HVLP4铜箔，2026年预估缺口1,500吨（futunn.com 2
 | 2026-08-18 | **T-65天** | Foosung Q2财报（WF6盈利转正验证） | Foosung ★★★ |
 | TBD 2026 H2 | 数月 | VECO $250M InP订单出货 | VECO ★★★★ |
 | TBD 2026 H2 | 数月 | LEU $9亿任务订单合同签署 | LEU ★★★★★ |
+
+---
+
+## 【2026-06-14 午后更新】新增IntelliEPI + 估值批量修正
+
+### 新增"持续跟踪"：IntelliEPI（4971.TWO）★★★
+
+**加入日期**：2026-06-14  
+**瓶颈环节**：InP外延晶圆代工（Layer 2/3）  
+**代码**：4971.TWO（台湾TPEX OTC）  
+**市值**：约$1.0B USD  
+**财务**：Q1 2026创纪录NT$332M，全年化NT$1.33B（$43M USD），亏损，PS约23x  
+**瓶颈逻辑**：InP外延晶圆是EML激光器不可或缺的原材料，供需缺口>70%，中国出口管制已实质影响  
+**制约**：亏损+PS约23x（黄-红灯），同时也是InP衬底短缺的受害者  
+**升级条件**：盈亏平衡并维持一个季度；或与Coherent/Lumentum签署长期合同公告  
+**信息来源**：[Digitimes 3/13](https://www.digitimes.com/news/a20260313PD206/intelliepi-revenue-2026-growth-2025.html)；[Digitimes 5/8](https://www.digitimes.com/news/a20260508PD220/demand-intelliepi-data-revenue-2026.html)
+
+### 估值批量修正（2026-06-14 午后）
+
+| 标的 | 代码 | 变化 |
+|------|------|------|
+| Almonty Industries | AII/ALM | ⚠️ 市值$5.4B，PS约75x红灯；$700M CB已关闭；等Phase 2+PS<30x |
+| FormFactor | FORM | ⚠️ 当前$122-136，高于$121入场目标；市值$10.15B超阈值；暂缓追高 |
+| ICL Group | ICL | ⚠️ 降级预警挂起（Hormuz未签）；$2.54B死海协议新增正面；$5.50-6.70买入区维持 |
+| IntelliEPI | 4971.TWO | 🆕 新增持续跟踪★★★；亏损+PS约23x |
+
+### 时间节点（2026-06-14 午后全量版）
+
+| 日期 | 距今 | 事件 | 标的 |
+|------|------|------|------|
+| **2026-06-14（今日）** | **T-0** | **Hormuz协议签署窗口（悬而未决）** | **ICL ★★★★★⚠️** |
+| 2026-06-18 | **T-4天** | LEU年会+NOL投票（例行通过）；关注管理层声明 | LEU ★★★★★ |
+| 2026-06-29 | **T-15天** | Almonty Russell 1000纳入（机械买入） | AII/ALM ★★★⚠️ |
+| 2026-06-30 | **T-16天** | DOE HALEU Option 1b截止（$110M/年） | **LEU ★★★★★** |
+| 2026-07-01 | **T-17天** | WF6双停产（25%全球产能）+ Nittobo 5:1拆股 | 4047.T / Foosung / 3110.T |
+| 2026-08-05 | **T-52天** | Nittobo中期财报（涨价后毛利验证） | 3110.T ★★★★ |
+| 2026-08-07 | **T-54天** | Co-Tech Q2财报（HVLP4+利润验证） | 8358.TWO ★★★ |
+| 2026-08-11 | **T-58天** | Hormuz 60天MOU到期（若未签正式协议） | ICL ★★★★★ |
+| 2026-08-18 | **T-65天** | Foosung Q2财报（WF6盈利转正验证） | Foosung ★★★ |
+| TBD 2026 H2 | 数月 | VECO $250M InP设备订单大量交付 | VECO ★★★★ |
+| TBD 2026 H2 | 数月 | LEU $9亿Piketon任务订单合同签署 | LEU ★★★★★ |
+| TBD 2026 H2 | 数月 | L3Harris MSL IPO定价 | 预IPO观察 |
