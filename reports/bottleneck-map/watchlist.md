@@ -6055,3 +6055,51 @@ Kanto Denka Kogyo 7/1永久停止WF6生产，**投资论点核心为NF3，而非
 | Kanto Denka永久停产 | 7/1 | T-12 | 4047.T/Foosung | 无新进展 |
 | ICL 72h监察到期 | 6/20 | T-1 | ICL | 溴价未破红线，明日结束 |
 | Nittobo 5:1拆股 | 6/29 | T-10 | 3110.T | 无变化 |
+
+---
+
+## 状态快照（2026-06-20 09:00 — 第245轮早间扫描）
+
+> **主要变更**：① **HEX.L（Helix Exploration）升级 ★★→★★★**——首份100%体量offtake协议2026年5月中旬签署（升级触发条件满足），待确认是否为半导体客户；② **ICL Group 72h监察窗口今日关闭**——溴价始终未破$2,800红线，监察结束，恢复正常，★★★★维持；③ **Samsung S7 8英寸fab关闭H2 2026确认**——PMIC供给再收缩，GMT(8081.TW)论点从"有压力"升为"有定价权"，DB HiTek(083450.KS)列为下轮估值核查候选。
+
+| 标的 | 代码 | 评级 | 变化 | 关键状态/下一催化剂 |
+|------|------|------|------|-------------------|
+| **関東電化** | 4047.T | ★★★★★（最紧迫） | 无变化 | **7/1永久停产 T-11天**；危机已主流化（NaturalNews/WccfTech） |
+| **Centrus Energy** | LEU | ★★★★★⚠️ | 无变化 | **6/30 Option 1b T-10天**；每日监控，DOE $2.7B项目政策支撑再确认 |
+| **ICL Group** | ICL | ★★★★ | ⬛ 72h监察关闭 | 监察结束，★★★★维持；下一关键节点：**6/25死海续约（T-5天）** |
+| **Chemring** | CHG.L | ★★★★ | 无变化 | H1 FY2026在轨，C&E+32%；£1.4B订单簿；等H2结果（11月） |
+| **Nittobo** | 3110.T | ★★★★ | 无变化 | **5:1拆股6/29生效（T-9天）**；拆后等效¥3,892，目标¥3,000-3,500，不追高 |
+| **Yageo** | 2327.TW | ★★★★ | 无变化 | MLCC累计涨价+65%；Samsung EM第四轮涨价；**Q2财报7月中（★★★★★升评节点）** |
+| **IQE plc** | IQE.L | ★★★★ | 无变化 | Tower多年InP协议已签（6/15）；InP月需求70-80万 vs 产能40万（缺口50%）；**8月H1财报（升评节点）** |
+| **Helix Exploration** | HEX.L / HHEXF | ★★★（⬆升级） | **★★→★★★** | 首份100%体量offtake已签（2026年5月中）；市值~$87M / PS~5x绿灯；⚠️待确认半导体客户身份 |
+| **GMT Global Mixed-mode** | 8081.TW | ★★★ | 论点强化 | Samsung S7关闭确认PMIC供给再收缩；6/12涨价；PE 12-14x / PS 2.6x绿灯；**Q2财报7-8月** |
+| **Foosung** | 093370.KS | ★★★ | 无变化 | WF6 7/1停产后受益；PE 241x/PS 4x；等Q2财报验证WF6占比>30%和利润拐点 |
+| **Iljin Electric** | 103590.KS | ★★★ | 无变化 | 变压器128-144周交期，5年交期报告；等Q2财报 |
+| **Aixtron** | AIXA | ★★★ | 无变化 | InP MOCVD龙头；PS 12.3x；等回调至€42（PS<8.5x） |
+| **Veeco** | VECO | ★★★ | 无变化 | InP MOCVD #2；PS 5.2x绿灯；Ennostar MicroLED认证；等Q2盈利兑现 |
+| **uPI Semiconductor** | 6719.TW | ★★★（初始） | 无变化 | PMIC A级；估值核查待完成 |
+| **L3Harris Missile Solutions** | AXYV（待IPO） | ★★★（pre-IPO） | 无变化 | H2 2026 IPO；机密S-1申报中；SRM S级瓶颈DPA加持 |
+| **Almonty Industries** | ALM | ★★ | 无变化（基本面改善） | Q1收入+221% / EBITDA转正；Russell 1000纳入**T-9天（6/29）**；估值红灯（PS~54x）仍触发 |
+| **AXT Inc** | AXTI | ★★ | 无变化 | 三重红灯（PS>30x / 市值>TAM20% / 增发后翻倍）；等Q2财报及PS<25x |
+| **Coherent Corp** | COHR | ★★（估值透支） | 无变化 | InP EML Layer 2；NVIDIA $2B战略锁定；PS 10.7x透支；等PS<8x |
+| **Lumentum Holdings** | LITE | ★★（估值透支） | 无变化 | InP EML Layer 2；"sold out"欠交30%；前向PS~16.3x；等PS<10x |
+| **Co-Tech Development** | 8358.TWO | ★★（估值修正） | 无变化 | HVLP4铜箔；PS修正~20x（前值2.12x为错误）；等PS<13x重评 |
+
+### 今日新增候选（下轮估值核查）
+
+| 公司 | 代码 | 候选原因 | 预期评级 |
+|------|------|---------|---------|
+| DB HiTek | 083450.KS | Samsung S7关闭后8英寸PMIC满产受益方；需核查市值/PS/PE/纯正度 | 待核查 |
+
+### 倒计时事件（2026-06-20 更新）
+
+| 事件 | 截止日 | T-days | 标的 | 状态 |
+|------|--------|--------|------|------|
+| DOE Option 1b决策 | 6/30 | **T-10** | LEU | 每日监控，无新公告 |
+| Kanto Denka永久停产 | 7/1 | **T-11** | 4047.T / Foosung | 危机主流化，无新替代进展 |
+| ICL死海续约 | 6/25 | **T-5** | ICL | 🆕监察窗口关闭后下一关键节点 |
+| Nittobo 5:1拆股生效 | 6/29 | **T-9** | 3110.T | 等拆后回落至¥3,000-3,500 |
+| Almonty Russell 1000纳入 | 6/29 | **T-9** | ALM | Q1基本面改善，估值红灯不变 |
+| IQE AGM | 6/30 | **T-10** | IQE.L | 正常年会，无重大议程 |
+
+*来源：Proactive Investors / TrendForce / TipRanks ICL Q1 / ANS Nuclear $2.7B / Digitimes GMT / WccfTech WF6 / Kalkine ALM / Globe and Mail 3110（详见 daily/2026-06-20-am.md）*
