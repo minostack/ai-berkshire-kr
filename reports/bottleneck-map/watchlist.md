@@ -6593,3 +6593,32 @@ H2执行是关键：论点不变，等待H2利润率兑现。
 | VECO（Veeco） | ★★★ | ✅ 无变化 | 等Q2财报 |
 | IntelliEPI（4971.TWO） | ★★ | ✅ 无变化 | 等350-450 TWD |
 | HE1.L（Helium One） | ★★ | ✅ 无变化 | — |
+
+---
+
+## 观察名单更新 — 2026-06-20 25:00（第257轮，夜间扫描）
+
+### 状态变化摘要
+
+| 标的 | 代码 | 变化 | 详情 |
+|------|------|------|------|
+| Foosung | 093370.KS | **估值更优化** | 股价~17,750 KRW（-21%从6/15高点），Forward PS ~3.22x（最优入场区）；Q1净亏已知；T-10天WF6停产；★★★维持 |
+| FormFactor | FORM | **分析师升级** | B. Riley Buy/$165 PT；Investor Day CPO测试新增TAM；Forward PS 11.4x/PE 61x/PEG 0.43；★★★★维持，等$110-120 |
+| HEX.L | HEX.L | 无变化 | 短期offtake（至~8月中旬）履行中；长期合约谈判继续；★★★★维持 |
+| IntelliEPI | 4971.TWO | 无变化 | 等350-450 TWD回调 |
+| AXTI | AXTI | 无变化 | PS 59x+亏损；★★维持 |
+| LEU | NYSE:LEU | 无变化 | TAM红灯/PE 94x；★★维持，等$120-130 |
+
+### 新增竞争格局信息：SK Specialty-三星WF6长期合约
+
+SK Specialty锁定三星150吨/月（1,800吨/年）长期合约，占日本停产量（2,200吨/年）的82%，剩余400+吨/年缺口留给Foosung和其他供应商。Foosung的主要增量客户（SK Hynix、TSMC、DB HiTek）合同化压力更大，有利于Foosung的议价地位。
+
+### 下一轮行动清单
+
+| 优先级 | 行动 |
+|--------|------|
+| 🔴 紧急 | 7月1日WF6停产T-10天：关注停产后现货价格反应；监控Foosung CSSC认证进展 |
+| 🟡 中 | Foosung Q1亏损核查：DART/InvestingKR确认是否一次性费用 |
+| 🟡 中 | HEX.L长期offtake合约：预计7-8月签署，官宣时触发★★★★→★★★★★ |
+| 🟡 中 | FormFactor：等$110-120回调（PS 8-9x） |
+| 🟢 常规 | IntelliEPI（4971.TWO）：等350-450 TWD |
