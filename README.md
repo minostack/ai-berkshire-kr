@@ -12,16 +12,6 @@
 
 一个人 + Claude Code / Codex = 一个投研团队。
 
-<p align="center">
-  <a href="https://trendshift.io/repositories/63696" target="_blank">
-    <img src="https://trendshift.io/api/badge/repositories/63696" alt="xbtlin/ai-berkshire | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/>
-  </a>
-</p>
-
-<p align="center">
-  <sub>开源里程碑：AI Berkshire 曾于 2026-06-27 登上 GitHub Trending 第 1 位。</sub>
-</p>
-
 ---
 
 ## Real Track Record
