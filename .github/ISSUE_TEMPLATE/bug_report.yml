@@ -1,18 +1,20 @@
-name: 🐞 Skill 报错 / 无法运行
-description: 某个 skill 执行报错、卡住，或工具/参数缺失导致跑不起来
+name: 🐞 스킬 오류 / 실행 불가
+description: 특정 스킬 실행 중 오류 발생, 멈춤, 또는 도구/파라미터 누락으로 실행이 안 되는 경우
 title: "[Bug] "
 labels: ["bug"]
 body:
   - type: markdown
     attributes:
       value: |
-        感谢反馈 🙏 **请务必给出可复现的具体信息**——没有复现信息的报错无法定位，会被要求补充或直接关闭。
-        提交前请先搜索是否已有相同 issue。
+        피드백 감사합니다 🙏 **재현 가능한 구체적인 정보를 반드시 제공해 주세요.**
+        재현 정보가 없는 버그 리포트는 원인 파악이 어려워 보완 요청 또는 종료될 수 있습니다.
+        제출 전에 동일한 이슈가 이미 등록되어 있는지 검색해 주세요.
+
   - type: dropdown
     id: skill
     attributes:
-      label: 涉及的 Skill
-      description: 报错发生在哪个 skill？只选一个，且确保标题与正文描述的是同一个（曾出现标题写 investment-research、正文写 investment-team 的情况）。
+      label: 오류가 발생한 스킬
+      description: 어떤 스킬에서 오류가 발생했나요? 하나만 선택해 주세요.
       options:
         - bottleneck-hunter
         - deep-company-series
@@ -32,57 +34,62 @@ body:
         - quality-screen
         - thesis-drift
         - thesis-tracker
-        - wechat-article
-        - 不确定
-        - 其他 / 涉及多个
+        - 모르겠음
+        - 기타 / 여러 스킬 관련
     validations:
       required: true
+
   - type: input
     id: command
     attributes:
-      label: 你运行的完整命令
-      description: 一字不差地贴出你实际输入的命令。
-      placeholder: "/investment-team 美团"
+      label: 실행한 명령어 전체
+      description: 실제로 입력한 명령어를 그대로 붙여넣어 주세요.
+      placeholder: "/investment-team 삼성전자"
     validations:
       required: true
+
   - type: textarea
     id: expected-actual
     attributes:
-      label: 期望结果 vs 实际结果
-      description: 你期望发生什么？实际发生了什么？请**完整贴出报错信息/日志**，不要只描述。
+      label: 기대한 결과 vs 실제 결과
+      description: 어떤 결과를 기대했나요? 실제로는 어떤 일이 일어났나요? **오류 메시지/로그를 전체 붙여넣어 주세요.**
       placeholder: |
-        期望：正常生成四大师并行分析报告
-        实际：报错 "TeamCreate is not a valid tool"，流程中断
+        기대: 4개 에이전트 병렬 분석 리포트가 정상 생성됨
+        실제: "TeamCreate is not a valid tool" 오류 발생, 프로세스 중단
     validations:
       required: true
+
   - type: textarea
     id: repro
     attributes:
-      label: 复现步骤
-      description: 从头到尾怎么操作能重现？（安装方式、运行环境、具体操作顺序）
+      label: 재현 순서
+      description: 처음부터 끝까지 어떻게 하면 재현되나요? (설치 방법, 실행 환경, 조작 순서)
     validations:
       required: true
+
   - type: input
     id: model
     attributes:
-      label: 使用的模型
-      description: 不同模型表现可能不同，这一项对定位至关重要。
-      placeholder: "Opus 4.8 / Sonnet / 其他"
+      label: 사용한 모델
+      description: 모델마다 동작이 다를 수 있어 원인 파악에 중요합니다.
+      placeholder: "Claude Opus 4 / Sonnet 4.6 / 기타"
     validations:
       required: true
+
   - type: input
     id: client
     attributes:
-      label: 客户端及版本
-      placeholder: "Claude Code CLI (版本号) / Codex / IDE 插件"
+      label: 클라이언트 및 버전
+      placeholder: "Claude Code CLI (버전) / VS Code 확장 / 기타"
     validations:
       required: true
+
   - type: checkboxes
     id: confirm
     attributes:
-      label: 确认
+      label: 확인
       options:
-        - label: 我已搜索过现有 issue，确认没有重复
+        - label: 기존 이슈를 검색했으며 중복이 없음을 확인했습니다
           required: true
-        - label: 我已提供可复现的完整信息（命令、报错、模型、客户端）
+        - label: 재현 가능한 전체 정보(명령어, 오류, 모델, 클라이언트)를 제공했습니다
           required: true

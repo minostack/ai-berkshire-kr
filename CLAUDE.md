@@ -1,112 +1,132 @@
-# AI Berkshire — 项目指令
+# AI Berkshire KR — 프로젝트 지침
 
-## 项目概述
+## 프로젝트 개요
 
-基于 Claude Code 的价值投资研究 Skill 合集。四大师框架：巴菲特、芒格、段永平、李录。
-GitHub: xbtlin/ai-berkshire
+Claude Code 기반의 가치투자 리서치 스킬 모음 (한국어 버전).
+4대가 프레임워크: 버핏, 멍거, 단용핑, 리루.
+원본 GitHub: xbtlin/ai-berkshire
+포크 GitHub: minostack/ai-berkshire-kr
 
-## 项目结构
+## 프로젝트 구조
 
 ```
-skills/          — 投研 Skill 定义（.md），复制到 ~/.claude/commands/ 使用
-tools/           — 辅助工具（financial_rigor.py 精确计算、twstock_data.py 台股FinMind取数）
-reports/         — 投资研究报告输出
-assets/          — 图片等静态资源
+skills/          — 투자 리서치 스킬 정의 (.md), ~/.claude/commands/에 복사하여 사용
+tools/           — 보조 도구 (financial_rigor.py 정밀 계산)
+reports/         — 투자 리서치 리포트 출력
+assets/          — 이미지 등 정적 자원
+local/           — 로컬 전용 (Git 비추적, 민감 정보)
 ```
 
-## 报告目录结构
+## 리포트 디렉토리 구조
 
-所有报告按**公司名**建文件夹，公司相关的所有报告放在对应文件夹内：
+모든 리포트는 **기업명** 폴더로 구분하고, 해당 기업 관련 리포트를 모두 그 안에 저장합니다:
 
 ```
 reports/
-├── AI产业研究/              — AI产业链全景研究（置顶）
-│   ├── AI五层蛋糕-产业全景研究-20260605.md
-│   └── AI五层蛋糕-公众号-20260605.md
-├── 腾讯/                    — 腾讯所有研究报告
-│   ├── 腾讯-research-20260408.md
-│   ├── 腾讯-earnings-2025Q4.md
-│   ├── 腾讯-management-20260409.md
-│   └── 腾讯-thesis.md
-├── 拼多多/                  — 拼多多所有研究报告
-├── 泡泡玛特/                — 泡泡玛特所有研究报告
-├── 核电-industry-20260409.md — 行业报告放根目录
-├── AI算力-funnel-20260509.md  — 漏斗筛选报告放根目录
-├── AI-轮动判断-20260509.md    — 主题级综合判断报告放根目录
-├── portfolio-latest.md       — 组合报告放根目录
-└── 多公司对比-checklist-20260408.md — 多公司报告放根目录
+├── 삼성전자/                    — 삼성전자 관련 모든 리포트
+│   ├── 삼성전자-research-20260101.md
+│   ├── 삼성전자-earnings-2025Q4.md
+│   └── 삼성전자-thesis.md
+├── 카카오/                      — 카카오 관련 모든 리포트
+├── SK하이닉스/
+├── 반도체-industry-20260101.md  — 산업 리포트는 루트에
+├── AI인프라-funnel-20260101.md  — 펀넬 스크리닝 리포트는 루트에
+├── portfolio-latest.md           — 포트폴리오 리포트는 루트에
+└── 멀티기업-checklist-20260101.md
 ```
 
-## 报告命名规范
+## 리포트 명명 규칙
 
-| Skill | 文件命名格式 | 示例 |
-|------|---------|------|
-| /investment-team | `{公司名}/` 目录内含4个视角+最终报告 | `reports/拼多多/最终报告.md` |
-| /investment-research | `{公司名}-research-{YYYYMMDD}.md` | `reports/腾讯/腾讯-research-20260408.md` |
-| /investment-checklist | `{公司名}-checklist-{YYYYMMDD}.md` | `reports/腾讯/腾讯-checklist-20260408.md` |
-| /industry-research | `{行业名}-industry-{YYYYMMDD}.md`（根目录） | `reports/核电-industry-20260409.md` |
-| /industry-funnel | `{行业名}-funnel-{YYYYMMDD}.md`（根目录） | `reports/AI算力-funnel-20260509.md` |
-| /private-company-research | `{公司名}-private-{YYYYMMDD}.md` | `reports/字节跳动/字节跳动-private-20260408.md` |
-| /earnings-review | `{公司名}-earnings-{期间}.md` | `reports/腾讯/腾讯-earnings-2025Q4.md` |
-| /earnings-team | `{公司名}/` 目录内含4个大师视角+研究底稿+公众号文章+读者评审 | `reports/腾讯/腾讯-earnings-2025Q4.md`（公众号定稿） |
-| /thesis-tracker | `{公司名}-thesis.md`（长期维护） | `reports/腾讯/腾讯-thesis.md` |
-| /portfolio-review | `portfolio-latest.md`（根目录，持续更新） | `reports/portfolio-latest.md` |
-| /management-deep-dive | `{公司名}-management-{YYYYMMDD}.md` | `reports/腾讯/腾讯-management-20260409.md` |
+| 스킬 | 파일명 형식 | 예시 |
+|------|-----------|------|
+| /investment-team | `{기업명}/` 디렉토리 내 4개 관점 + 최종 리포트 | `reports/삼성전자/최종리포트.md` |
+| /investment-research | `{기업명}-research-{YYYYMMDD}.md` | `reports/삼성전자/삼성전자-research-20260101.md` |
+| /investment-checklist | `{기업명}-checklist-{YYYYMMDD}.md` | `reports/삼성전자/삼성전자-checklist-20260101.md` |
+| /industry-research | `{산업명}-industry-{YYYYMMDD}.md` (루트) | `reports/반도체-industry-20260101.md` |
+| /industry-funnel | `{산업명}-funnel-{YYYYMMDD}.md` (루트) | `reports/AI인프라-funnel-20260101.md` |
+| /private-company-research | `{기업명}-private-{YYYYMMDD}.md` | `reports/카카오페이/카카오페이-private-20260101.md` |
+| /earnings-review | `{기업명}-earnings-{기간}.md` | `reports/삼성전자/삼성전자-earnings-2025Q4.md` |
+| /earnings-team | `{기업명}/` 디렉토리 내 4개 대가 관점 + 리서치 초안 | `reports/삼성전자/삼성전자-earnings-2025Q4.md` |
+| /thesis-tracker | `{기업명}-thesis.md` (장기 유지) | `reports/삼성전자/삼성전자-thesis.md` |
+| /portfolio-review | `portfolio-latest.md` (루트, 지속 업데이트) | `reports/portfolio-latest.md` |
+| /management-deep-dive | `{기업명}-management-{YYYYMMDD}.md` | `reports/삼성전자/삼성전자-management-20260101.md` |
 
-## /investment-team 文件结构
+## /investment-team 파일 구조
 
 ```
-reports/{公司名}/
-├── README.md                         — 研究框架概览+核心结论
-├── 01-商业模式分析-段永平视角.md
-├── 02-财务估值分析-巴菲特视角.md
-├── 03-行业竞争分析-芒格视角.md
-├── 04-风险管理层评估-李录视角.md
-└── 最终报告.md                       — Team Lead 综合报告
+reports/{기업명}/
+├── README.md                         — 리서치 프레임워크 개요 + 핵심 결론
+├── 01-비즈니스모델분석-단용핑관점.md
+├── 02-재무밸류에이션분석-버핏관점.md
+├── 03-산업경쟁분석-멍거관점.md
+├── 04-리스크경영진평가-리루관점.md
+└── 최종리포트.md                     — Team Lead 종합 리포트
 ```
 
-## 投研分析核心原则（最高优先级）
+## 투자 리서치 핵심 원칙 (최우선)
 
-- **客观、客观、客观**——所有投研分析必须基于事实和数据，严禁主观臆断
-- 严格区分"事实"与"观点"：事实用数据支撑，观点必须明确标注为"观点"或"推测"
-- **不预设立场**：不预设看多或看空，先摆数据、再推逻辑、最后得结论。结论必须从数据中自然推出
-- 禁止使用"我认为"、"我觉得"、"显然"等主观表述，改用"数据显示"、"证据表明"、"根据XX来源"
-- **呈现正反两面**：每个核心判断都必须附带反面论据（"但另一方面..."），让读者自己权衡
-- 对不确定的事情诚实说"不确定"或"数据不足"，不要用推测填充确定性
-- 所有skill（investment-team、investment-research、earnings-review等）在执行时都必须遵守以上原则
+- **객관성, 객관성, 객관성** — 모든 투자 분석은 사실과 데이터에 근거해야 하며, 주관적 추측을 금합니다
+- **'사실'과 '의견' 엄격 구분**: 사실은 데이터로 뒷받침하고, 의견은 반드시 "의견" 또는 "추정"으로 표기
+- **선입견 금지**: 매수/매도 관점을 미리 설정하지 않고, 데이터 → 논리 → 결론 순으로 전개. 결론은 데이터에서 자연스럽게 도출
+- "나는 생각한다", "명백히" 등 주관적 표현 금지 → "데이터에 따르면", "증거에 의하면", "출처 X에 따르면"으로 대체
+- **양면 제시**: 모든 핵심 판단에는 반론도 첨부("반면에..."), 독자가 스스로 판단하도록
+- 불확실한 사항은 솔직하게 "불확실" 또는 "데이터 부족"으로 표기하고 추측으로 채우지 않기
+- 모든 스킬(investment-team, investment-research, earnings-review 등) 실행 시 위 원칙 준수 필수
 
-## 报告语言与风格
+## 리포트 언어 및 스타일
 
-- 所有报告使用**中文**
-- 风格：直接、犀利、不说废话
-- 数据必须标注来源，关键数据至少2个来源交叉验证
-- 估计值必须注明"估计"
-- 评分使用★符号（★1-5），不含半星
-- 穿插巴菲特/芒格/段永平/李录的语录点评
+- 모든 리포트는 **한국어** 작성
+- 스타일: 직접적이고 명확하게, 불필요한 표현 없이
+- 데이터에는 반드시 출처 표기, 핵심 데이터는 최소 2개 이상 출처 교차 검증
+- 추정값은 반드시 "추정"으로 명시
+- 평점은 ★ 기호 사용 (★1~5점), 반점 없음
+- 버핏/멍거/단용핑/리루의 어록 인용으로 포인트 강화
 
-## GitHub 操作
+## 한국 데이터 출처 기준
 
-- 本地克隆路径：`~/ai-berkshire/`
-- 远程仓库：`https://github.com/xbtlin/ai-berkshire.git`
-- 推送前先 `git pull --rebase origin main`（远程经常有新提交）
-- commit message 用中文，描述清楚改了什么
-- 不要推送中间过程文件（如 data_collection.md），只推最终报告
+| 시장 | 1차 출처 | 2차 출처 |
+|------|---------|---------|
+| 한국주 (KOSPI/KOSDAQ) | 전자공시시스템 DART (dart.fss.or.kr) | 네이버금융 / KRX |
+| 미국주 | SEC EDGAR / 회사 IR | macrotrends / stockanalysis |
+| 홍콩주 | 홍콩거래소 공시 | aastocks / macrotrends |
+| 중국주 (A주) | 거래소(SSE/SZSE) | 동방재부 / 거조자순 |
 
-## 常用命令
+두 출처 간 오차 >1% 시 반드시 표시
+
+<!--
+
+## GitHub 운영
+
+- 로컬 클론 경로: `C:\myProject_room\agentic_AI\ai-berkshire-kr\`
+- 원격 저장소: `https://github.com/(내 계정)/ai-berkshire-kr.git`
+- 푸시 전 반드시 `git pull --rebase origin main` (원격에 새 커밋이 있을 수 있음)
+- 커밋 메시지는 **한국어**로, 변경 내용을 명확히 기술
+- 중간 과정 파일은 푸시하지 않음 (최종 리포트만 푸시)
+
+## 자주 쓰는 명령어
 
 ```bash
-# 推送报告到GitHub
-cd ~/ai-berkshire
-git add reports/xxx.md
-git commit -m "添加xxx报告"
+# 리포트를 GitHub에 푸시
+cd C:\myProject_room\agentic_AI\ai-berkshire-kr
+git add reports/기업명/리포트.md
+git commit -m "삼성전자 리서치 리포트 추가"
 git pull --rebase origin main
 git push origin main
 ```
 
-## 注意事项
+-->
 
-- 市值必须手算校验：股价 × 总股本，与报告市值对比
-- 货币单位要明确（港币/人民币/美元/新台币），防止混淆
-- PE/ROE等指标用 tools/financial_rigor.py 精确计算
-- 台股数据用 tools/twstock_data.py（FinMind）获取，并按 skills/financial-data.md 台股章节交叉验证
-- 报告写完后主动询问是否推送到GitHub
+## 주의사항
+
+- 시가총액은 반드시 수동 검증: 주가 × 총발행주식수, 리포트 시총과 대조
+- 통화 단위 명확히 표기 (원/달러/홍콩달러), 혼동 방지
+- PER/ROE 등 지표는 tools/financial_rigor.py로 정밀 계산
+- 리포트 완성 후 GitHub 푸시 여부 능동적으로 확인
+
+## .gitignore 핵심 항목
+
+```
+local/                    # 민감 정보, 절대 공개 금지
+reports/portfolio-latest.md   # 실제 포지션 비공개
+logs/command-log.jsonl    # 명령어 로그 비공개
+```
