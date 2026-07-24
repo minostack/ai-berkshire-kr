@@ -5,34 +5,66 @@
 
 ---
 
+## ⚠️ 데이터 수집 도구 사용 제한 (반드시 숙지)
+
+Claude Code의 내장 Fetch 도구는 아래 사이트에서 **접속이 차단**됩니다.
+이 사이트들은 반드시 **WebSearch 도구** 또는 **python3 tools/ 스크립트**로만 접근해야 합니다.
+
+| 차단 사이트 | 오류 유형 | 대체 방법 |
+|-----------|---------|---------|
+| `finance.naver.com` | Claude Code unable to fetch | WebSearch 또는 `kstock_data.py` |
+| `comp.fnguide.com` | Parse Error: Missing expected CR | WebSearch로 대체 |
+| `data.krx.co.kr` | 403 Forbidden | `kr_scanner.py` 또는 WebSearch |
+
+**올바른 데이터 수집 우선순위 (방법 1 → 2 → 3 순서로 시도)**:
+
+```
+방법 1: python3 tools/kstock_data.py 또는 kr_scanner.py (DART API, 가장 정확)
+방법 2: WebSearch 도구 (검색엔진 경유, 차단 우회 가능)
+방법 3: DART 웹사이트 URL 안내 후 수동 확인
+```
+
+**절대 사용 금지**: `Fetch(https://finance.naver.com/...)` 형태의 직접 접속
+
+---
+
 ## 시장별 데이터 출처 우선순위
 
 ### 🇰🇷 한국주 (KOSPI / KOSDAQ)
 
-| 우선순위 | 출처 | URL | 수집 방법 |
-|---------|------|-----|---------|
-| 1순위 (주) | **DART 전자공시** | dart.fss.or.kr | `kstock_data.py financials` 또는 직접 접속 |
-| 2순위 (부) | **네이버금융** | finance.naver.com/item/coinfo.naver?code={종목코드} | `kstock_data.py quote` 또는 직접 접속 |
-| 3순위 (부) | **KRX 정보데이터시스템** | data.krx.co.kr | 직접 접속 |
-| 원본 1차 | **DART 사업보고서** | dart.fss.or.kr → 사업보고서 | 연간보고서 / 분기보고서 원문 PDF |
+| 우선순위 | 출처 | 수집 방법 | 비고 |
+|---------|------|---------|------|
+| 1순위 ✅ | **DART Open API** | `python3 tools/kstock_data.py financials {코드}` | API 키 필요, 가장 정확 |
+| 2순위 ✅ | **DART 재무비율 일괄** | `python3 tools/kr_scanner.py dart-ratio` | 전 상장사 일괄 조회 |
+| 3순위 ✅ | **WebSearch** | `WebSearch: "{종목명} ROE 영업이익률 재무제표 2024"` | 차단 없이 접근 가능 |
+| 원본 확인 | **DART 사업보고서** | WebSearch: `"dart.fss.or.kr {종목코드} 사업보고서"` | 원문 PDF |
+| ❌ 사용금지 | **네이버금융 직접 접속** | `Fetch(finance.naver.com/...)` | 차단됨 — WebSearch로 대체 |
+| ❌ 사용금지 | **fnguide 직접 접속** | `Fetch(comp.fnguide.com/...)` | 차단됨 — WebSearch로 대체 |
 
 **자동 수집 명령어 (Bash로 반드시 실행):**
 ```bash
-# 실시간 시세 및 밸류에이션 지표
-python3 tools/kstock_data.py quote {종목코드}
-
-# 핵심 재무 데이터 (최근 5년, DART API 키 있으면 자동)
+# [방법 1] DART API로 핵심 재무 데이터 (API 키 필요)
 python3 tools/kstock_data.py financials {종목코드}
 
-# 밸류에이션 요약
-python3 tools/kstock_data.py valuation {종목코드}
+# [방법 1] 실시간 시세 및 밸류에이션
+python3 tools/kstock_data.py quote {종목코드}
 
-# 종목 코드 검색
+# [방법 1] 전 상장사 재무비율 일괄 조회 (스크리닝용)
+python3 tools/kr_scanner.py dart-ratio --year 2024
+
+# [방법 1] 종목 코드 검색
 python3 tools/kstock_data.py search {기업명}
 ```
 
-> DART API 키 미등록 시 → DART 웹사이트 URL을 안내합니다.
-> 키 등록: `export DART_API_KEY=발급받은키` (발급: opendart.fss.or.kr)
+**방법 1 실패 시 방법 2 (WebSearch) 검색 키워드:**
+```
+"{종목명} {종목코드} 재무제표 ROE 영업이익 2024"
+"{종목명} 사업보고서 매출액 순이익 site:dart.fss.or.kr"
+"{종목명} 주가 PER PBR 배당수익률"
+```
+
+> DART API 키 등록: `export DART_API_KEY=발급받은키`
+> API 키 발급: https://opendart.fss.or.kr/intro/main.do (무료, 1~2일 소요)
 
 ---
 
