@@ -15,36 +15,107 @@ Python >= 3.8, 외부 라이브러리 불필요.
 
 import argparse
 import json
+import os
 import subprocess
 import sys
+import zipfile
+import io
 from decimal import Decimal, ROUND_HALF_EVEN
 from urllib.parse import urlencode
 
 _TIMEOUT = 15
+_CORP_LIST_CACHE = os.path.join(os.path.dirname(__file__), "..", ".dart_corp_cache.json")
+
+
+def _curl_raw(url: str, extra_headers: list = None) -> bytes:
+    """curl로 직접 요청, 바이트 반환."""
+    cmd = [
+        "curl", "-s", "--noproxy", "*",
+        "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        "-H", "Referer: https://finance.naver.com/",
+    ]
+    if extra_headers:
+        for h in extra_headers:
+            cmd += ["-H", h]
+    cmd.append(url)
+    result = subprocess.run(cmd, capture_output=True, timeout=_TIMEOUT)
+    if result.returncode != 0 or not result.stdout.strip():
+        raise ConnectionError(f"요청 실패: {url}")
+    return result.stdout
 
 
 def _curl(url: str) -> str:
-    """curl로 직접 요청. 프록시 환경 우회."""
-    result = subprocess.run(
-        ["curl", "-s", "--noproxy", "*",
-         "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-         "-H", "Referer: https://finance.naver.com/",
-         url],
-        capture_output=True, timeout=_TIMEOUT,
-    )
-    if result.returncode != 0 or not result.stdout.strip():
-        raise ConnectionError(f"요청 실패: {url}")
+    raw = _curl_raw(url)
     try:
-        return result.stdout.decode("utf-8")
+        return raw.decode("utf-8")
     except UnicodeDecodeError:
-        return result.stdout.decode("euc-kr", errors="replace")
+        return raw.decode("euc-kr", errors="replace")
 
 
 def _curl_json(url: str, params: dict = None) -> dict:
-    """curl로 JSON 응답 수신."""
     if params:
         url = f"{url}?{urlencode(params)}"
     return json.loads(_curl(url))
+
+
+# ---------------------------------------------------------------------------
+# DART 기업 코드 매핑 (ZIP 파일 다운로드 방식 — 공식 방법)
+# ---------------------------------------------------------------------------
+
+def _load_corp_map(api_key: str) -> dict:
+    """
+    DART 전체 기업 목록(ZIP)을 다운로드해서 {stock_code: corp_code} 매핑 반환.
+    캐시 파일이 있으면 재사용합니다.
+    """
+    # 캐시 확인 (24시간 이내)
+    import time
+    if os.path.exists(_CORP_LIST_CACHE):
+        age = time.time() - os.path.getmtime(_CORP_LIST_CACHE)
+        if age < 86400:  # 24시간
+            with open(_CORP_LIST_CACHE, encoding="utf-8") as f:
+                return json.load(f)
+
+    print("  📥 DART 기업 목록 다운로드 중... (최초 1회, 이후 24시간 캐시)")
+
+    url = f"https://opendart.fss.or.kr/api/corpCode.xml?crtfc_key={api_key}"
+    try:
+        raw = _curl_raw(url)
+    except Exception as e:
+        print(f"  ❌ DART 기업 목록 다운로드 실패: {e}")
+        return {}
+
+    # ZIP 파일 파싱
+    try:
+        with zipfile.ZipFile(io.BytesIO(raw)) as z:
+            xml_name = z.namelist()[0]
+            xml_bytes = z.read(xml_name)
+    except Exception as e:
+        print(f"  ❌ ZIP 파싱 실패: {e}")
+        return {}
+
+    # XML 파싱 (표준 라이브러리)
+    try:
+        import xml.etree.ElementTree as ET
+        root = ET.fromstring(xml_bytes.decode("utf-8"))
+    except Exception as e:
+        print(f"  ❌ XML 파싱 실패: {e}")
+        return {}
+
+    corp_map = {}
+    for item in root.findall("list"):
+        stock_code = (item.findtext("stock_code") or "").strip()
+        corp_code  = (item.findtext("corp_code")  or "").strip()
+        corp_name  = (item.findtext("corp_name")  or "").strip()
+        if stock_code and corp_code:
+            corp_map[stock_code] = {"corp_code": corp_code, "corp_name": corp_name}
+
+    # 캐시 저장
+    os.makedirs(os.path.dirname(_CORP_LIST_CACHE), exist_ok=True)
+    with open(_CORP_LIST_CACHE, "w", encoding="utf-8") as f:
+        json.dump(corp_map, f, ensure_ascii=False)
+
+    print(f"  ✅ 기업 목록 로드 완료: {len(corp_map):,}개 상장사")
+    return corp_map
 
 
 # ---------------------------------------------------------------------------
@@ -52,7 +123,6 @@ def _curl_json(url: str, params: dict = None) -> dict:
 # ---------------------------------------------------------------------------
 
 def _naver_quote(code: str) -> dict:
-    """네이버금융 시세 API에서 실시간 데이터 수신."""
     url = f"https://polling.finance.naver.com/api/realtime/domestic/stock/{code}"
     try:
         data = _curl_json(url)
@@ -81,7 +151,6 @@ def _naver_quote(code: str) -> dict:
 
 
 def _fmt_krw(value) -> str:
-    """원화 금액을 읽기 쉬운 형태로 포맷."""
     if value is None or value in ("-", ""):
         return "-"
     try:
@@ -97,24 +166,13 @@ def _fmt_krw(value) -> str:
     return f"{v:,.0f}원"
 
 
-def _fmt_pct(value) -> str:
-    if value is None or value in ("-", ""):
-        return "-"
-    try:
-        return f"{float(str(value).replace(',','')):.2f}%"
-    except (ValueError, TypeError):
-        return str(value)
-
-
 # ---------------------------------------------------------------------------
 # 명령 구현
 # ---------------------------------------------------------------------------
 
 def cmd_quote(code: str):
-    """실시간 시세 스냅샷."""
     d = _naver_quote(code)
     if not d or not d.get("name"):
-        # 네이버 API 실패 시 KRX 대체
         print(f"⚠️  네이버금융 API 응답 없음. KRX 또는 DART에서 직접 확인해 주세요.")
         print(f"   DART: https://dart.fss.or.kr/")
         print(f"   KRX:  http://www.krx.co.kr/")
@@ -141,7 +199,6 @@ def cmd_quote(code: str):
 
 
 def cmd_valuation(code: str):
-    """밸류에이션 지표 요약."""
     d = _naver_quote(code)
     if not d or not d.get("name"):
         print(f"❌ {code} 시세 조회 실패")
@@ -158,135 +215,181 @@ def cmd_valuation(code: str):
     print(f"  BPS:         {d['bps']}원")
     print(f"  외국인 비중: {d['foreign_ratio']}%")
 
-    # 시가총액 간이 검증
     try:
-        price = Decimal(str(d["price"]).replace(",", ""))
+        price   = Decimal(str(d["price"]).replace(",", ""))
         cap_raw = str(d["market_cap"]).replace(",", "")
-        cap = Decimal(cap_raw)
-        shares = cap / price
+        cap     = Decimal(cap_raw)
+        shares  = cap / price
         print(f"\n  추산 발행주식수: {float(shares)/1e8:.2f}억주")
-        print(f"  ✅ 시가총액 간이 검증 완료 (정밀 검증: financial_rigor.py verify-market-cap 사용)")
+        print(f"  ✅ 시가총액 간이 검증 완료")
     except Exception:
         pass
 
 
 def cmd_financials(code: str):
-    """DART 전자공시 기반 핵심 재무 데이터 (최근 5년)."""
-    # DART Open API 사용 (무료 API 키 필요: https://opendart.fss.or.kr/)
-    # API 키가 없으면 네이버금융 재무 요약 페이지로 대체
+    """DART Open API 기반 재무 데이터 조회."""
+    dart_key = os.environ.get("DART_API_KEY")
+
     print("=" * 60)
     print(f"핵심 재무 데이터: {code}")
     print("=" * 60)
 
-    # 네이버금융 재무 요약 (HTML 파싱 없이 URL 안내)
-    naver_url = f"https://finance.naver.com/item/coinfo.naver?code={code}&target=finsum_more"
-    dart_url  = f"https://dart.fss.or.kr/dsab001/main.do"
-
-    print(f"\n  📌 권장 데이터 출처 (정확도 순위):")
-    print(f"  1순위 (공식): DART 전자공시 → {dart_url}")
-    print(f"     검색: '{code}' → 사업보고서 → 재무제표")
-    print(f"  2순위 (요약): 네이버금융 → {naver_url}")
-    print()
-
-    # DART API 키 환경변수 확인
-    import os
-    dart_key = os.environ.get("DART_API_KEY")
-    if dart_key:
-        _fetch_dart_financials(code, dart_key)
-    else:
-        print(f"  💡 DART Open API 자동 조회를 원하면 환경변수를 설정하세요:")
+    if not dart_key:
+        # API 키 없음 → 안내 출력
+        print(f"\n  ⚠️  [데이터 출처] DART API 키 미등록 → 네이버금융 URL 안내")
+        print(f"\n  💡 DART Open API 자동 조회를 원하면 환경변수를 설정하세요:")
         print(f"     export DART_API_KEY=발급받은키")
         print(f"     API 키 발급: https://opendart.fss.or.kr/intro/main.do")
         print()
         _fetch_naver_financials_summary(code)
+        return
 
+    # API 키 있음 → DART에서 직접 조회
+    print(f"\n  ✅ [데이터 출처] DART Open API (공식 재무제표)")
 
-def _fetch_dart_financials(code: str, api_key: str):
-    """DART Open API로 재무 데이터 조회."""
-    # 기업 고유번호 조회
-    try:
-        corp_url = "https://opendart.fss.or.kr/api/company.json"
-        params = {"crtfc_key": api_key, "stock_code": code}
-        data = _curl_json(corp_url, params)
-        corp_no = data.get("corp_code", "")
-        corp_name = data.get("corp_name", code)
+    # 1단계: 전체 기업 목록에서 corp_code 찾기
+    corp_map = _load_corp_map(dart_key)
+    if not corp_map:
+        print(f"  ❌ 기업 목록 로드 실패. 네이버금융으로 대체합니다.")
+        _fetch_naver_financials_summary(code)
+        return
 
-        if not corp_no:
-            print(f"  ⚠️  DART 기업 코드 조회 실패. DART 웹사이트에서 직접 확인하세요.")
-            return
+    corp_info = corp_map.get(code)
+    if not corp_info:
+        print(f"  ❌ 종목코드 {code}를 DART 기업 목록에서 찾을 수 없습니다.")
+        print(f"     비상장 또는 ETF일 수 있습니다.")
+        _fetch_naver_financials_summary(code)
+        return
 
-        # 재무제표 조회 (최근 5년 연간)
-        fin_url = "https://opendart.fss.or.kr/api/fnlttSinglAcntAll.json"
-        current_year = 2025
-        for year in range(current_year, current_year - 5, -1):
-            params = {
-                "crtfc_key": api_key,
-                "corp_code":  corp_no,
-                "bsns_year":  str(year),
-                "reprt_code": "11011",  # 사업보고서
-                "fs_div":     "CFS",    # 연결재무제표
-            }
-            try:
+    corp_code = corp_info["corp_code"]
+    corp_name = corp_info["corp_name"]
+    print(f"  기업명:   {corp_name}")
+    print(f"  고유번호: {corp_code}")
+
+    # 2단계: 재무제표 조회 (최근 5년 연간)
+    fin_url = "https://opendart.fss.or.kr/api/fnlttSinglAcntAll.json"
+    import datetime
+    current_year = datetime.datetime.now().year - 1  # 직전 완료 연도
+
+    found_any = False
+    for year in range(current_year, current_year - 5, -1):
+        params = {
+            "crtfc_key":  dart_key,
+            "corp_code":  corp_code,
+            "bsns_year":  str(year),
+            "reprt_code": "11011",   # 사업보고서
+            "fs_div":     "CFS",     # 연결재무제표
+        }
+        try:
+            fin_data = _curl_json(fin_url, params)
+            status   = fin_data.get("status", "")
+            message  = fin_data.get("message", "")
+
+            if status != "000":
+                # 연결재무제표 없으면 별도재무제표 시도
+                params["fs_div"] = "OFS"
                 fin_data = _curl_json(fin_url, params)
-                items = fin_data.get("list", [])
-                if not items:
+                status   = fin_data.get("status", "")
+                if status != "000":
                     continue
+                fs_label = "별도재무제표"
+            else:
+                fs_label = "연결재무제표"
 
-                print(f"\n  --- {year}년 연간 (연결재무제표) ---")
-                key_items = {
-                    "매출액":       "ifrs-full_Revenue",
-                    "영업이익":     "dart_OperatingIncomeLoss",
-                    "당기순이익":   "ifrs-full_ProfitLoss",
-                    "자산총계":     "ifrs-full_Assets",
-                    "부채총계":     "ifrs-full_Liabilities",
-                    "자본총계":     "ifrs-full_Equity",
-                }
-                for label, account in key_items.items():
-                    for item in items:
-                        if item.get("account_id") == account and item.get("sj_div") in ("IS", "BS", "CF"):
-                            val = item.get("thstrm_amount", "")
-                            if val:
-                                try:
-                                    v = int(val.replace(",", ""))
-                                    print(f"  {label:12}: {_fmt_krw(v)}")
-                                except ValueError:
-                                    print(f"  {label:12}: {val}")
-                            break
-            except Exception:
+            items = fin_data.get("list", [])
+            if not items:
                 continue
 
-    except Exception as e:
-        print(f"  ⚠️  DART API 오류: {e}")
-        print(f"  DART 웹사이트에서 직접 확인하세요: https://dart.fss.or.kr/")
+            found_any = True
+            print(f"\n  ── {year}년 연간 ({fs_label}) ──")
+
+            key_accounts = {
+                "매출액":     ["ifrs-full_Revenue",
+                                "ifrs_Revenue",
+                                "dart_TotalSalesAndRevenue"],
+                "영업이익":   ["dart_OperatingIncomeLoss",
+                                "ifrs-full_ProfitLossFromOperatingActivities"],
+                "당기순이익": ["ifrs-full_ProfitLoss",
+                                "ifrs_ProfitLoss"],
+                "자산총계":   ["ifrs-full_Assets",
+                                "ifrs_Assets"],
+                "부채총계":   ["ifrs-full_Liabilities",
+                                "ifrs_Liabilities"],
+                "자본총계":   ["ifrs-full_Equity",
+                                "ifrs_Equity"],
+            }
+
+            # account_map: {account_id: {sj_div: item}} — sj_div별로 분리 보관
+            # (같은 account_id가 IS/BS/CF에 중복 출현하므로 덮어쓰기 방지)
+            account_map = {}
+            for item in items:
+                aid    = item.get("account_id", "")
+                sj_div = item.get("sj_div", "")
+                if aid and sj_div:
+                    account_map.setdefault(aid, {})[sj_div] = item
+
+            # 항목별 우선 sj_div 지정
+            # IS = 손익계산서, BS = 재무상태표, CF = 현금흐름표
+            sj_priority = {
+                "매출액":     ["IS"],
+                "영업이익":   ["IS"],
+                "당기순이익": ["IS"],       # CF의 ProfitLoss와 혼동 방지
+                "자산총계":   ["BS"],
+                "부채총계":   ["BS"],
+                "자본총계":   ["BS"],       # IS의 Equity 변동과 혼동 방지
+            }
+
+            for label, account_ids in key_accounts.items():
+                found = False
+                priority_divs = sj_priority.get(label, ["IS", "BS", "CF"])
+                for aid in account_ids:
+                    if aid not in account_map:
+                        continue
+                    div_map = account_map[aid]
+                    # 우선순위 sj_div 순서대로 탐색
+                    item = None
+                    for div in priority_divs:
+                        if div in div_map:
+                            item = div_map[div]
+                            break
+                    # 우선순위에 없으면 첫 번째 것 사용
+                    if item is None:
+                        item = next(iter(div_map.values()))
+                    val = item.get("thstrm_amount", "")
+                    if val:
+                        try:
+                            v = int(val.replace(",", ""))
+                            print(f"  {label:10}: {_fmt_krw(v)}")
+                        except ValueError:
+                            print(f"  {label:10}: {val}")
+                        found = True
+                        break
+                if not found:
+                    print(f"  {label:10}: (데이터 없음)")
+
+        except Exception as e:
+            continue
+
+    if not found_any:
+        print(f"\n  ⚠️  DART에서 재무제표를 찾을 수 없습니다.")
+        print(f"     사업보고서가 미제출 상태이거나 최근 데이터가 없을 수 있습니다.")
+        _fetch_naver_financials_summary(code)
+
+    print(f"\n  📌 원본 확인: https://dart.fss.or.kr/dsab001/main.do (검색: {code})")
 
 
 def _fetch_naver_financials_summary(code: str):
-    """네이버금융 재무 데이터 요약 안내."""
-    print(f"  📊 네이버금융 재무 요약 페이지:")
+    print(f"\n  📊 네이버금융 재무 요약:")
     print(f"  https://finance.naver.com/item/coinfo.naver?code={code}&target=finsum_more")
     print()
-    print(f"  확인할 핵심 지표:")
-    print(f"  ┌─────────────┬──────────────────────────────────────┐")
-    print(f"  │ 항목        │ 확인 방법                            │")
-    print(f"  ├─────────────┼──────────────────────────────────────┤")
-    print(f"  │ 매출액      │ 손익계산서 → 매출액 (연간/분기)      │")
-    print(f"  │ 영업이익    │ 손익계산서 → 영업이익                │")
-    print(f"  │ 순이익      │ 손익계산서 → 당기순이익              │")
-    print(f"  │ ROE         │ 주요 재무비율 → ROE                  │")
-    print(f"  │ 부채비율    │ 주요 재무비율 → 부채비율             │")
-    print(f"  │ EPS/BPS     │ 주요 재무비율 → EPS, BPS             │")
-    print(f"  └─────────────┴──────────────────────────────────────┘")
-    print()
-    print(f"  ⚠️  네이버금융 데이터는 DART 원본과 1% 이상 차이날 수 있습니다.")
-    print(f"     중요 수치는 반드시 DART 원본 재무제표와 교차 검증하세요.")
+    print(f"  확인 항목: 매출액 / 영업이익 / 순이익 / ROE / 부채비율 / EPS / BPS")
+    print(f"  ⚠️  네이버금융 데이터는 DART 원본과 차이가 있을 수 있습니다.")
 
 
 def cmd_search(keyword: str):
-    """종목 코드 검색."""
-    # 네이버금융 종목 검색 API
     url = f"https://ac.finance.naver.com/ac?q={keyword}&q_enc=UTF-8&target=stock"
     try:
-        raw = _curl(url)
+        raw  = _curl(url)
         data = json.loads(raw)
         items = data.get("items", [[]])[0]
 
@@ -299,15 +402,11 @@ def cmd_search(keyword: str):
         print(f"종목 검색 결과: '{keyword}'")
         print("=" * 60)
         for item in items[:10]:
-            # [종목명, 코드, ...]
             if len(item) >= 2:
-                name = item[0]
-                code = item[1]
-                print(f"  {code}  {name}")
+                print(f"  {item[1]}  {item[0]}")
     except Exception as e:
         print(f"⚠️  검색 실패: {e}")
         print(f"   KRX 종목 검색: http://www.krx.co.kr/")
-        print(f"   DART 기업 검색: https://dart.fss.or.kr/")
 
 
 # ---------------------------------------------------------------------------
@@ -337,10 +436,10 @@ DART API 키 발급: https://opendart.fss.or.kr/intro/main.do
     p_quote = sub.add_parser("quote",      help="실시간 시세")
     p_quote.add_argument("code",           help="종목 코드 (예: 005930)")
 
-    p_fin = sub.add_parser("financials",   help="핵심 재무 데이터 (최근 5년)")
+    p_fin   = sub.add_parser("financials", help="핵심 재무 데이터 (최근 5년)")
     p_fin.add_argument("code",             help="종목 코드")
 
-    p_val = sub.add_parser("valuation",    help="밸류에이션 지표")
+    p_val   = sub.add_parser("valuation",  help="밸류에이션 지표")
     p_val.add_argument("code",             help="종목 코드")
 
     p_search = sub.add_parser("search",    help="종목 코드 검색")
