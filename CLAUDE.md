@@ -5,7 +5,7 @@
 Claude Code 기반의 가치투자 리서치 스킬 모음 (한국어 버전).
 4대가 프레임워크: 버핏, 멍거, 단용핑, 리루.
 원본 GitHub: xbtlin/ai-berkshire
-포크 GitHub: minostack/ai-berkshire-kr
+포크 GitHub: (내 계정)/ai-berkshire-kr
 
 ## 프로젝트 구조
 
@@ -19,16 +19,25 @@ local/           — 로컬 전용 (Git 비추적, 민감 정보)
 
 ## 리포트 디렉토리 구조
 
-모든 리포트는 **기업명** 폴더로 구분하고, 해당 기업 관련 리포트를 모두 그 안에 저장합니다:
+`/investment-team` 리포트는 **종목명_날짜** 폴더로 저장합니다.
+같은 종목을 여러 시점에 분석하면 날짜별 폴더로 이력이 관리됩니다.
 
 ```
 reports/
-├── 삼성전자/                    — 삼성전자 관련 모든 리포트
+├── 삼성전기_20260101/           — 종목명 + 조회날짜 폴더 (investment-team)
+│   ├── 01-비즈니스모델분석-단용핑관점.md
+│   ├── 02-재무밸류에이션분석-버핏관점.md
+│   ├── 03-산업경쟁분석-멍거관점.md
+│   ├── 04-리스크경영진평가-리루관점.md
+│   └── 최종리포트.md
+├── 삼성전기_20260401/           — 동일 종목 다음 분기 분석
+│   └── 최종리포트.md
+├── 삼성전자_20260101/           — 다른 종목
+│   └── 최종리포트.md
+├── 삼성전자/                    — 단일 리포트 스킬 (기업명 폴더)
 │   ├── 삼성전자-research-20260101.md
 │   ├── 삼성전자-earnings-2025Q4.md
 │   └── 삼성전자-thesis.md
-├── 카카오/                      — 카카오 관련 모든 리포트
-├── SK하이닉스/
 ├── 반도체-industry-20260101.md  — 산업 리포트는 루트에
 ├── AI인프라-funnel-20260101.md  — 펀넬 스크리닝 리포트는 루트에
 ├── portfolio-latest.md           — 포트폴리오 리포트는 루트에
@@ -39,7 +48,7 @@ reports/
 
 | 스킬 | 파일명 형식 | 예시 |
 |------|-----------|------|
-| /investment-team | `{기업명}/` 디렉토리 내 4개 관점 + 최종 리포트 | `reports/삼성전자/최종리포트.md` |
+| /investment-team | `{기업명}_{YYYYMMDD}/` 디렉토리 내 4개 관점 + 최종 리포트 | `reports/삼성전기_20260101/최종리포트.md` |
 | /investment-research | `{기업명}-research-{YYYYMMDD}.md` | `reports/삼성전자/삼성전자-research-20260101.md` |
 | /investment-checklist | `{기업명}-checklist-{YYYYMMDD}.md` | `reports/삼성전자/삼성전자-checklist-20260101.md` |
 | /industry-research | `{산업명}-industry-{YYYYMMDD}.md` (루트) | `reports/반도체-industry-20260101.md` |
@@ -53,14 +62,21 @@ reports/
 
 ## /investment-team 파일 구조
 
+폴더명은 **종목명_조회날짜(YYYYMMDD)** 형식입니다.
+같은 종목을 여러 시점에 분석하면 날짜별로 폴더가 생성되어 이력 관리가 됩니다.
+
 ```
-reports/{기업명}/
-├── README.md                         — 리서치 프레임워크 개요 + 핵심 결론
+reports/{기업명}_{YYYYMMDD}/
 ├── 01-비즈니스모델분석-단용핑관점.md
 ├── 02-재무밸류에이션분석-버핏관점.md
 ├── 03-산업경쟁분석-멍거관점.md
 ├── 04-리스크경영진평가-리루관점.md
 └── 최종리포트.md                     — Team Lead 종합 리포트
+
+예시:
+reports/삼성전기_20260101/   ← 1월 분석
+reports/삼성전기_20260401/   ← 4월 분석 (분기 실적 반영)
+reports/삼성전기_20260701/   ← 7월 분석
 ```
 
 ## 투자 리서치 핵심 원칙 (최우선)
@@ -93,8 +109,6 @@ reports/{기업명}/
 
 두 출처 간 오차 >1% 시 반드시 표시
 
-<!--
-
 ## GitHub 운영
 
 - 로컬 클론 경로: `C:\myProject_room\agentic_AI\ai-berkshire-kr\`
@@ -108,13 +122,11 @@ reports/{기업명}/
 ```bash
 # 리포트를 GitHub에 푸시
 cd C:\myProject_room\agentic_AI\ai-berkshire-kr
-git add reports/기업명/리포트.md
-git commit -m "삼성전자 리서치 리포트 추가"
+git add reports/삼성전기_20260101/
+git commit -m "삼성전기 20260101 투자 리서치 리포트 추가"
 git pull --rebase origin main
 git push origin main
 ```
-
--->
 
 ## 주의사항
 
