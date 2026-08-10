@@ -1,187 +1,272 @@
-# Income Investment: Durable and Opportunistic Distribution Analysis
+# 인컴 투자 분석: 배당·이자 수익 포지션 관리
 
-Analyze `$ARGUMENTS` to answer:
+$ARGUMENTS 에 대한 인컴 투자 포지션을 분석합니다.
 
-> Can this company produce sufficiently durable and attractive distributable income to justify a portfolio role, either as a long-term income conviction or as an opportunistic yield position?
+**지원 입력 형식**:
 
-Never treat a high displayed yield as evidence of a good opportunity. This workflow is for learning and research, not personalized investment advice.
-
-## Input
-
-Use this command form:
-
-```text
-/income-investment "<company or ticker>" [mode=new|existing] [role=core-income|opportunistic-income|unspecified] [quantity=...] [cost_basis=...] [portfolio_weight=...] [target_yield=...] [tax_residence=...] [portfolio_file=...] [horizon=...]
+```
+/income-investment 삼성전자 mode=new role=core-income quantity=100 cost_basis=78000 tax_residence=KR horizon=5y
+/income-investment KT mode=existing role=satellite quantity=200 cost_basis=35000 tax_residence=KR horizon=3y
+/income-investment SCHD mode=new role=core-income quantity=50 cost_basis=27.50 tax_residence=KR horizon=10y
 ```
 
-The company or ticker is required. All other fields are optional. Accept equivalent natural-language input. Do not invent missing values: mark them `Unknown` or `Not calculable` and state the consequence. In particular, do not estimate net income without the tax residence, account type, applicable treaty, and confirmed withholding treatment.
+**파라미터 설명**:
 
-## Related Workflows
+| 파라미터 | 값 | 설명 |
+|---------|-----|------|
+| `mode` | `new` / `existing` | 신규 매수 검토 / 기존 보유 포지션 검토 |
+| `role` | `core-income` / `satellite` / `growth-income` | 핵심 인컴 / 위성 / 성장+배당 혼합 |
+| `quantity` | 숫자 | 보유(예정) 수량 |
+| `cost_basis` | 숫자 | 매수 단가 (원 또는 달러) |
+| `tax_residence` | `KR` / `US` / `JP` 등 | 세금 거주지 (배당 원천징수 계산용) |
+| `horizon` | `3y` / `5y` / `10y` 등 | 투자 기간 |
 
-Use or refer to existing workflows instead of reproducing them:
+---
 
-| Need | Workflow |
-|---|---|
-| Verified financial data and cross-source reconciliation | `financial-data` |
-| Full general fundamental research | `investment-research` |
-| Final pre-purchase decision | `investment-checklist` |
-| Portfolio fit, concentration, and sizing | `portfolio-review` |
-| Post-decision monitoring | `thesis-tracker` |
-| Update after reported results | `earnings-review` |
-| Rapid analysis of a discrete event | `news-pulse` |
+## 설계 철학
 
-`income-investment` owns the income-specific decision. It must not silently override a current `portfolio-review` conclusion.
+> "배당 투자의 핵심은 배당 자체가 아니라, 배당을 지속적으로 늘릴 수 있는 사업의 질이다." — 버핏
 
-## Research Discipline
+이 스킬은 단순히 배당수익률을 보는 것이 아니라 **배당 지속 가능성과 성장성**을 중심으로 분석합니다.
 
-1. Run `date` before research. Put the data cutoff date in the report header.
-2. Prefer annual and interim reports, earnings releases, investor documents, regulatory filings, official releases, and official exchange data, in that order. Use secondary sources only to fill gaps and label them as secondary.
-3. Apply `skills/financial-data.md`: verify decision-critical financial data with at least two independent sources when available and flag discrepancies above 1%.
-4. Date or period-label every time-sensitive figure. Separate every material statement as **Verified fact**, **Estimate**, **Assumption**, or **Analytical judgment**.
-5. Use `python3 tools/financial_rigor.py` for exact payout, yield, valuation, market-cap, portfolio-income, and scenario arithmetic. Never rely on mental arithmetic for a decision-sensitive result.
-6. After saving the report, run the `tools/report_audit.py extract` and `verdict` workflow. A report that fails audit is a draft, not publishable research.
+배당수익률이 높다는 것은 두 가지를 의미합니다: 저평가된 훌륭한 인컴 주식이거나, 배당 컷 위험이 있는 함정 주식입니다. 이 둘을 구분하는 것이 핵심입니다.
 
-## Execution Workflow
+---
 
-### 1. Parse the Request and Establish Data Quality
+## ⚠️ 데이터 수집 필수 규칙
 
-- Resolve the security, listing, currency, distribution currency, mode, desired role, and optional portfolio inputs.
-- State which gross-income, net-income, yield-on-cost, portfolio contribution, and after-trade calculations are possible.
-- Rate evidence quality `A` (complete primary material), `B` (partial primary material), or `C` (mostly secondary/incomplete). Materially insufficient fundamentals trigger the `INSUFFICIENT DATA` gate.
+```
+방법 1 (우선): python3 tools/kstock_data.py quote {종목코드}  — 한국주 배당 데이터
+방법 2 (보완): WebSearch — 배당 이력, 배당성향, 배당성장률
+방법 3 (최후): DART URL 안내 — 배당 관련 공시 원본
+❌ 금지: Fetch(finance.naver.com/...) 직접 접속
+```
 
-### 2. Understand the Distribution
+---
 
-Cover at least five years when available:
+## 실행 흐름
 
-- frequency; ordinary, special, or variable status; payment currency;
-- annual dividend per share and total distributions;
-- counts of increases, holds, cuts, and suspensions;
-- dividend CAGR, with the exact period and treatment of special dividends;
-- indicative announcement, ex-dividend, record, and payment dates.
+### 1단계: 포지션 기본 정보 파악
 
-Explain that waiting for the ex-dividend date is not a free gain: the share price theoretically adjusts by the distribution. The calendar may inform execution timing, but must never justify buying a weak company or delaying a necessary sale.
-
-### 3. Trace the Cash Available for Distribution
-
-Analyze net-income payout, free-cash-flow payout, cash flow after necessary investment, cash-flow stability and quality, interest coverage, net debt, debt maturities, refinancing needs, maintenance and growth capex, relevant off-balance-sheet commitments, and buybacks competing with dividends.
-
-Do not mechanically apply an EPS payout ratio across sectors:
-
-| Sector | Required sector measures |
-|---|---|
-| REIT / SIIC | FFO, AFFO, occupancy, LTV |
-| Bank | CET1, distributable earnings, regulatory constraints |
-| Insurer | Solvency and capital generation |
-| BDC | NII, NAV, non-accruals |
-| Resources | Mid-cycle cash flow and variable-distribution policy |
-| Telecom / utility | Capex, debt, and FCF coverage |
-
-### 4. Test Quality and Durability
-
-Assess the business model, moat, pricing power, cyclicality, rate/currency/commodity sensitivity, income predictability, capital allocation, management quality, and the ability to maintain the distribution in a downside case. Distinguish accounting profit from repeatable distributable cash.
-
-### 5. Value the Income Stream
-
-Analyze current yield, historical average yield, appropriate sector multiples, FCF yield, a reasonable intrinsic-value range, margin of safety, and combined price-decline/dividend-cut scenarios. Yield on cost is retrospective information only and never a reason to keep a position.
-
-### 6. Calculate Usable Income
-
-Only when inputs support it, calculate annual gross dividend, gross dividend per payment frequency, known source withholding, estimated net income, contribution to portfolio income, and annual income after the proposed trade. If tax or account information is incomplete, show gross income and explain exactly why net income is not calculable. Label treaty rates and tax treatments with jurisdiction, account assumptions, and effective date.
-
-### 7. Check Portfolio Fit
-
-If a portfolio is provided:
-
-- determine current and proposed weight;
-- examine sector and geographic concentration, duplicated risks, and income dependence on one industry;
-- distinguish capital diversification from dividend diversification;
-- read the latest relevant `portfolio-review` report when available.
-
-If conclusions diverge, show both conclusions, explain why, and separate company quality from allocation fit. A sound income security may still merit `HOLD – DO NOT ADD`, `REDUCE`, or `WATCHLIST` because of portfolio concentration.
-
-When data permit, show expected gross income by month. Never recommend an inferior company to fill an empty month; quarterly payers can be combined to create monthly cash flow without requiring monthly payers.
-
-### 8. Build Three Scenarios
-
-Provide base, adverse, and severe cases. Each must state operating assumptions, distributable cash flow, payout coverage, balance-sheet/refinancing effect, dividend outcome, and valuation implication. The adverse and severe cases must explicitly test a dividend cut rather than assuming the dividend is fixed.
-
-## Classification, Gates, and Verdict
-
-First classify the income profile:
-
-- **Conviction + durable income**: quality business, sustainable and potentially growing dividend, plausible long holding period.
-- **Opportunistic income**: temporary yield or discount with explicit entry, monitoring, holding-period, and exit rules.
-- **Yield trap**: recurring lack of coverage, incompatible leverage/investment needs, structural decline, or yield driven mainly by a falling price.
-- **Unsuitable for income**: no meaningful distribution, marginal yield, insufficient evidence, or shareholder returns primarily delivered another way.
-
-Use this qualitative scorecard; do not calculate a numeric average:
-
-| Dimension | Rating (`Strong`, `Adequate`, `Weak`, `Critical`, `Unknown`) | Evidence |
-|---|---|---|
-| Business quality | | |
-| Cash-flow visibility | | |
-| Dividend coverage | | |
-| Balance-sheet strength | | |
-| Distribution history | | |
-| Dividend growth potential | | |
-| Valuation | | |
-| Cyclicality | | |
-| Cut risk | | |
-| Portfolio fit | | |
-
-Check these blocking gates before the verdict:
-
-- recurring uncovered distribution;
-- critical debt or refinancing risk;
-- structural business deterioration;
-- insufficient fundamental data;
-- material governance or integrity concern.
-
-A failed safety, debt, deterioration, or integrity gate overrides the scorecard and normally requires `REJECT / YIELD TRAP` (or `REDUCE` for an existing position when immediate disposal cannot be concluded from available portfolio facts). The insufficient-data gate requires `INSUFFICIENT DATA`. Do not use a score to offset a failed gate.
-
-Return exactly one verdict:
-
-- `CORE INCOME`
-- `OPPORTUNISTIC INCOME`
-- `WATCHLIST`
-- `HOLD – DO NOT ADD`
-- `REDUCE`
-- `REJECT / YIELD TRAP`
-- `INSUFFICIENT DATA`
-
-For the verdict provide: possible portfolio role, primary reason, primary risk, entry conditions, a position-size range to study (never universally suitable), reinforcement conditions, reduction/exit criteria, monitoring indicators, and confidence. Do not give a firm personalized recommendation when portfolio, tax, or risk-tolerance information is insufficient.
-
-## Required Report Format
-
-Use these headings exactly once and avoid repeating the same analysis:
-
-1. Executive summary
-2. Verdict and category
-3. Possible portfolio role
-4. Business and source of distributed cash
-5. Dividend history and calendar
-6. Distribution coverage and safety
-7. Balance sheet and refinancing
-8. Income growth
-9. Valuation and margin of safety
-10. Tax and currency
-11. Portfolio fit
-12. Scenarios: base, adverse, severe
-13. Dividend-cut risks
-14. Purchase or reinforcement conditions
-15. Reduction or sale conditions
-16. Monitoring table
-17. One-sentence conclusion
-18. Sources and data quality
-
-Save the result to `reports/{company}-income-investment-{YYYYMMDD}.md`, using a filesystem-safe company identifier. Include the scorecard and blocking-gate result in section 2, the monthly income calendar in section 11 when calculable, and source title, issuer/publisher, publication date, accessed date, reporting period, URL, and primary/secondary label in section 18.
-
-## Release Audit
+입력 파라미터를 정리하고 현재 상태를 확인합니다:
 
 ```bash
-python3 tools/report_audit.py extract --report reports/{company}-income-investment-{YYYYMMDD}.md
-# Verify every extracted item against reliable sources, then:
-python3 tools/report_audit.py verdict --results '<verified JSON>' --report {company}-income-investment-{YYYYMMDD}.md
+# 한국주인 경우 현재 시세 및 배당 데이터 수집
+python3 tools/kstock_data.py quote {종목코드}
+python3 tools/kstock_data.py valuation {종목코드}
 ```
 
-Fix failed items and repeat the audit. Clearly retain unresolved gaps and lower confidence rather than filling them with assumptions.
+**기본 정보 표**:
+
+| 항목 | 값 |
+|------|-----|
+| 종목명 / 코드 | |
+| 현재가 | |
+| 매수 단가 | |
+| 보유(예정) 수량 | |
+| 평가손익 (existing) | |
+| 현재 배당수익률 | |
+| 세금 거주지 | |
+| 목표 투자 기간 | |
+
+---
+
+### 2단계: 배당 지속 가능성 분석 (핵심)
+
+#### 2-1. 배당성향 분석
+
+```
+배당성향 = 주당배당금 / EPS × 100%
+```
+
+| 배당성향 | 판단 |
+|---------|------|
+| < 30% | 🟢 배당 여력 충분, 향후 증액 가능성 높음 |
+| 30~60% | 🟢 건전한 수준, 안정적 |
+| 60~80% | 🟡 주의 — 이익 감소 시 배당 컷 위험 |
+| > 80% | 🔴 위험 — 이익보다 배당이 과다 |
+| > 100% | 🔴 적자 중에도 배당 — 지속 불가능 |
+
+WebSearch 키워드:
+```
+"{종목명} 배당성향 최근 5년 추이"
+"{종목명} dividend payout ratio history"
+```
+
+#### 2-2. 배당 성장률 분석 (DGR: Dividend Growth Rate)
+
+최근 5년 배당금 추이를 수집해서 연평균 성장률을 계산합니다.
+
+```bash
+python3 tools/financial_rigor.py calc \
+  --expr "(최근배당 / 5년전배당) ** (1/5) - 1"
+```
+
+| DGR | 판단 |
+|-----|------|
+| > 10% | 🟢 고성장 배당주 — 장기 복리 효과 우수 |
+| 5~10% | 🟢 안정 성장 — 인플레이션 헷지 가능 |
+| 0~5% | 🟡 저성장 — 실질 구매력 유지 어려울 수 있음 |
+| < 0% (배당 감소) | 🔴 경고 — 원인 파악 필수 |
+| 배당 컷 이력 있음 | 🔴 위험 신호 — 경기 민감 여부 확인 |
+
+#### 2-3. 잉여현금흐름(FCF) 기반 배당 커버리지
+
+배당을 이익이 아닌 현금흐름으로 지급할 수 있는지 확인합니다.
+
+```
+FCF 배당 커버리지 = 잉여현금흐름 / 총배당금 지급액
+```
+
+| 커버리지 | 판단 |
+|---------|------|
+| > 2.0x | 🟢 매우 안전 |
+| 1.5~2.0x | 🟢 안전 |
+| 1.0~1.5x | 🟡 주의 필요 |
+| < 1.0x | 🔴 현금흐름으로 배당 감당 불가 |
+
+WebSearch 키워드:
+```
+"{종목명} 잉여현금흐름 배당 지급액 비교"
+"{종목명} free cash flow dividend coverage"
+```
+
+---
+
+### 3단계: 세후 실질 수익률 계산
+
+세금 거주지에 따라 실수령 배당수익률이 다릅니다.
+
+#### 한국 거주자 (tax_residence=KR) 기준:
+
+| 구분 | 원천징수세율 | 비고 |
+|------|-----------|------|
+| 국내주 배당 | 15.4% (소득세 14% + 지방세 1.4%) | 금융소득 2000만원 이하 분리과세 |
+| 미국주 배당 | 15% (미국 원천징수) | 한미 조세협약 |
+| 홍콩주 배당 | 0% (홍콩 원천징수 없음) | 국내 신고 필요 |
+| ETF 분배금 | 15.4% | 국내 상장 ETF 기준 |
+
+```bash
+# 세후 배당수익률 계산
+python3 tools/financial_rigor.py calc \
+  --expr "배당수익률 * (1 - 원천징수세율)"
+```
+
+**금융소득 종합과세 주의**: 배당·이자 합산 연 2,000만원 초과 시 종합과세 대상 → 세율이 최고 49.5%까지 올라갈 수 있음
+
+---
+
+### 4단계: 기간별 인컴 시뮬레이션
+
+투자 기간 동안 예상 배당 수입을 시뮬레이션합니다.
+
+**가정 시나리오 3가지**:
+
+| 시나리오 | 배당 성장률 | 주가 성장률 |
+|---------|-----------|-----------|
+| 낙관 (Bull) | 입력값 × 1.5 | 연 8% |
+| 기본 (Base) | 최근 5년 DGR | 연 4% |
+| 비관 (Bear) | 0% (동결) | 연 0% |
+
+```
+기간별 누적 배당 수입 = Σ (주당배당금 × 수량 × (1-세율)) for n in range(horizon_years)
+총 수익률 = (누적 배당 + 평가손익) / 투자 원금 × 100%
+연환산 수익률 (CAGR) = (총수익 / 원금)^(1/기간) - 1
+```
+
+```bash
+python3 tools/financial_rigor.py three-scenario \
+  --price {현재가} --eps {EPS} --shares 1 \
+  --growth {낙관DGR} {기본DGR} {비관DGR} \
+  --pe {낙관PER} {기본PER} {비관PER} \
+  --years {기간} --currency KRW
+```
+
+---
+
+### 5단계: 포지션 역할 적합성 평가
+
+입력한 `role`에 따라 이 종목이 적합한지 평가합니다.
+
+| 역할 | 적합 조건 |
+|------|---------|
+| `core-income` | 배당수익률 ≥ 3%, DGR ≥ 5%, 배당성향 ≤ 70%, 배당 컷 이력 없음 |
+| `satellite` | 배당수익률 ≥ 2%, 성장성 보유, 변동성 허용 |
+| `growth-income` | DGR ≥ 10%, 현재 배당수익률 낮아도 미래 배당 성장 기대 |
+
+**배당 함정(Yield Trap) 체크리스트**:
+```
+□ 배당수익률이 동종업계 평균의 2배 이상인가? → 함정 가능성
+□ 최근 주가가 30% 이상 하락했는가? → 분자/분모 왜곡
+□ EPS가 감소 추세인가? → 배당 지속 불가능 신호
+□ 부채비율이 증가 추세인가? → 배당보다 채무 상환 우선
+□ 경영진이 배당 유지를 "자신한다"고만 말하고 숫자를 안 쓰는가? → 위험
+```
+
+---
+
+### 6단계: 최종 인컴 투자 판정
+
+#### 출력 형식
+
+---
+
+## 📊 인컴 투자 분석: {종목명} ({종목코드})
+
+**분석 일자**: {날짜}
+**포지션 모드**: {mode} | **역할**: {role} | **기간**: {horizon}
+
+### 💰 현재 배당 지표
+
+| 지표 | 값 | 판단 |
+|------|-----|------|
+| 현재 배당수익률 | X% | 🟢/🟡/🔴 |
+| 세후 배당수익률 (KR) | X% | — |
+| 최근 주당배당금 | X원 | — |
+| 배당성향 | X% | 🟢/🟡/🔴 |
+| 5년 배당성장률 (DGR) | X% | 🟢/🟡/🔴 |
+| FCF 배당 커버리지 | X배 | 🟢/🟡/🔴 |
+| 배당 컷 이력 | 있음/없음 | — |
+
+### 📈 기간별 인컴 시뮬레이션 ({horizon})
+
+| 시나리오 | 누적 배당 수입 | 평가손익 | 총 수익률 | 연환산(CAGR) |
+|---------|-------------|---------|---------|------------|
+| 낙관 | | | | |
+| 기본 | | | | |
+| 비관 | | | | |
+
+### 🎯 포지션 역할 적합성
+
+- **{role} 역할 적합도**: 적합 / 조건부 적합 / 부적합
+- **핵심 근거** (3가지):
+  1.
+  2.
+  3.
+
+### ⚠️ 주요 리스크
+
+- 배당 위협 요인:
+- 업황 리스크:
+- 세금 관련 주의사항:
+
+### 📋 종합 의견
+
+**{mode=new이면}: 매수 / 관망 / 회피** + 목표 배당수익률 구간
+**{mode=existing이면}: 유지 / 증액 / 축소 / 전량 매도** + 판단 근거
+
+---
+
+### 7단계: 리포트 저장
+
+`reports/{종목명}-income-{날짜}.md`로 저장합니다.
+
+---
+
+## 주요 주의사항
+
+1. **배당수익률의 함정**: 높은 배당수익률이 곧 좋은 투자가 아닙니다 — 배당 지속 가능성이 핵심
+2. **세금 영향 필수 반영**: 세전/세후 수익률 차이가 크므로 세후 기준으로 판단
+3. **금융소득 종합과세**: 연 2,000만원 초과 시 세율 급등 — 포트폴리오 전체 배당 수입 합산 고려
+4. **이 분석은 투자 권유가 아닙니다** — 개인 재무 상황에 따라 세무사 상담 권장
+5. **데이터 출처**: 모든 배당 데이터는 DART 원본 또는 WebSearch 기준, Fetch 직접 접속 금지

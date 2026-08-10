@@ -116,11 +116,12 @@ reports/삼성전기_20260701/   ← 7월 분석
 - 푸시 전 반드시 `git pull --rebase origin main` (원격에 새 커밋이 있을 수 있음)
 - 커밋 메시지는 **한국어**로, 변경 내용을 명확히 기술
 - 중간 과정 파일은 푸시하지 않음 (최종 리포트만 푸시)
+- **리포트 완성 후 GitHub 푸시는 사용자가 직접 결정한다 — 에이전트가 푸시를 제안하거나 묻지 않는다**
 
 ## 자주 쓰는 명령어
 
 ```bash
-# 리포트를 GitHub에 푸시
+# 리포트를 GitHub에 푸시 (사용자가 직접 실행)
 cd C:\myProject_room\agentic_AI\ai-berkshire-kr
 git add reports/삼성전기_20260101/
 git commit -m "삼성전기 20260101 투자 리서치 리포트 추가"
@@ -133,7 +134,6 @@ git push origin main
 - 시가총액은 반드시 수동 검증: 주가 × 총발행주식수, 리포트 시총과 대조
 - 통화 단위 명확히 표기 (원/달러/홍콩달러), 혼동 방지
 - PER/ROE 등 지표는 tools/financial_rigor.py로 정밀 계산
-- 리포트 완성 후 GitHub 푸시 여부 능동적으로 확인
 
 ## .gitignore 핵심 항목
 
