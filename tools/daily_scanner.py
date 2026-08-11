@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 당일 투자 후보 스캐너 — 기술적 분석 + 증권사 API
 daily-scanner 스킬이 자동 호출합니다.
@@ -25,8 +26,15 @@ import os
 import subprocess
 import sys
 import math
+import io
 from datetime import datetime, timedelta
 from decimal import Decimal
+from typing import Optional, Union
+
+# Windows 환경 한글 깨짐 방지
+if sys.platform == "win32":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8")
 
 _TIMEOUT = 20
 _TODAY   = datetime.now().strftime("%Y-%m-%d")
@@ -53,7 +61,7 @@ def _curl(url: str, headers: list = None) -> str:
         return result.stdout.decode("euc-kr", errors="replace")
 
 
-def _curl_json(url: str, headers: list = None) -> dict | list:
+def _curl_json(url: str, headers: list = None) -> Union[dict, list]:
     return json.loads(_curl(url, headers))
 
 
@@ -230,7 +238,7 @@ def detect_candle_patterns(opens, highs, lows, closes) -> list:
 # 가격 데이터 수집
 # ─────────────────────────────────────────────────────────────
 
-def fetch_ohlcv_yahoo(ticker: str, days: int = 130) -> dict | None:
+def fetch_ohlcv_yahoo(ticker: str, days: int = 130) -> Optional[dict]:
     """Yahoo Finance에서 OHLCV 데이터 수집. 한국주는 .KS 접미사 자동."""
     yf_ticker = f"{ticker}.KS" if ticker.isdigit() and len(ticker) == 6 else ticker
     end_ts   = int(datetime.now().timestamp())
@@ -283,7 +291,7 @@ _KIS_BASE = "https://openapi.koreainvestment.com:9443"
 _KIS_TOKEN_CACHE = os.path.join(os.path.dirname(__file__), "..", ".kis_token.json")
 
 
-def _kis_get_token(app_key: str, app_secret: str) -> str | None:
+def _kis_get_token(app_key: str, app_secret: str) -> Optional[str]:
     """KIS OAuth 토큰 발급 (캐시 활용)."""
     import time
 
@@ -322,7 +330,7 @@ def _kis_get_token(app_key: str, app_secret: str) -> str | None:
         return None
 
 
-def _kis_request(path: str, params: dict, tr_id: str) -> dict | None:
+def _kis_request(path: str, params: dict, tr_id: str) -> Optional[dict]:
     """KIS REST API 호출."""
     app_key    = os.environ.get("KIS_APP_KEY")
     app_secret = os.environ.get("KIS_APP_SECRET")
@@ -372,7 +380,7 @@ def kis_volume_rank(market: str = "0") -> list:
     return data.get("output", [])[:30]
 
 
-def kis_price(ticker: str) -> dict | None:
+def kis_price(ticker: str) -> Optional[dict]:
     """KIS: 현재가 및 기본 정보 조회."""
     data = _kis_request(
         "/uapi/domestic-stock/v1/quotations/inquire-price",
@@ -384,7 +392,7 @@ def kis_price(ticker: str) -> dict | None:
     return data.get("output", {})
 
 
-def kis_investor(ticker: str) -> dict | None:
+def kis_investor(ticker: str) -> Optional[dict]:
     """KIS: 외국인·기관 순매수 조회."""
     data = _kis_request(
         "/uapi/domestic-stock/v1/quotations/inquire-investor",
@@ -791,8 +799,8 @@ KIS API 발급: https://apiportal.koreainvestment.com/
     sub.add_parser("check-market",  help="장 운영 여부 및 API 상태 확인")
     sub.add_parser("check-broker",  help="증권사 API 연결 테스트")
 
-    p_ind = sub.add_parser("indicators", help="기술적 지표 전체 계산")
-    p_ind.add_argument("ticker",          help="종목 코드 (예: 009150, NVDA)")
+    p_ind = sub.add_parser("indicators", help="기술적 지표 전체 계산 (여러 종목 동시 가능)")
+    p_ind.add_argument("tickers", nargs="+", help="종목 코드 1개 이상 (예: 005930 000660 009150)")
 
     p_vol = sub.add_parser("volume-surge", help="거래량 급증 종목")
     p_vol.add_argument("--ratio",  type=float, default=3.0, help="평균 대비 배수 (기본 3.0)")
@@ -821,7 +829,10 @@ KIS API 발급: https://apiportal.koreainvestment.com/
     elif args.command == "check-broker":
         cmd_check_broker()
     elif args.command == "indicators":
-        cmd_indicators(args.ticker)
+        for ticker in args.tickers:
+            cmd_indicators(ticker)
+            if len(args.tickers) > 1:
+                print()  # 종목 간 빈 줄 구분
     elif args.command == "volume-surge":
         cmd_volume_surge(args.ratio, args.min_cap)
     elif args.command == "new-high":
