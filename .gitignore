@@ -66,10 +66,12 @@ logs/.counter
 # ────────────────────────────────────────
 # 한국 증권사 API 인증 토큰 캐시
 # ────────────────────────────────────────
-/tmp/kis_token.json        # 한국투자증권 KIS API 토큰
-/tmp/kiwoom_token.json     # 키움증권 OpenAPI 토큰
-/tmp/ebest_token.json      # 이베스트투자증권 토큰
-/.kis_token.json           # 한국투자증권 KIS API 토큰 (프로젝트 루트 캐시, daily_scanner.py 생성)
+# 한국투자증권 KIS API 토큰 / 키움증권 OpenAPI 토큰 / 이베스트투자증권 토큰
+/tmp/kis_token.json
+/tmp/kiwoom_token.json
+/tmp/ebest_token.json
+# 한국투자증권 KIS API 토큰 (프로젝트 루트 캐시, daily_scanner.py 생성)
+/.kis_token.json
 
 # ────────────────────────────────────────
 # 로컬 전용 자료 (공개하지 않을 파일)
