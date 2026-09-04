@@ -196,6 +196,143 @@ def calc_stochastic(highs, lows, closes, k_period=14, d_period=3) -> dict:
     }
 
 
+def calc_obv(closes: list, volumes: list) -> dict:
+    """OBV(On-Balance Volume) 계산.
+
+    종가가 전일보다 오르면 거래량 +, 내리면 -, 같으면 0 누적.
+    가격-OBV 다이버전스로 추세 반전 신호 포착.
+    """
+    if len(closes) < 2 or len(volumes) < 2:
+        return {"obv": None, "obv_ma20": None, "signal": "데이터 부족", "divergence": None}
+
+    obv_series = [0]
+    for i in range(1, len(closes)):
+        if closes[i] > closes[i-1]:
+            obv_series.append(obv_series[-1] + volumes[i])   # 상승 → 거래량 더함
+        elif closes[i] < closes[i-1]:
+            obv_series.append(obv_series[-1] - volumes[i])   # 하락 → 거래량 뺌
+        else:
+            obv_series.append(obv_series[-1])                 # 보합 → 변화 없음
+
+    current_obv = obv_series[-1]
+
+    # OBV 20일 이동평균
+    obv_ma20 = sum(obv_series[-20:]) / 20 if len(obv_series) >= 20 else None
+
+    # 추세 판단 (최근 5일 OBV 기울기)
+    if len(obv_series) >= 5:
+        obv_slope = (obv_series[-1] - obv_series[-5]) / 5
+        obv_trend = "상승" if obv_slope > 0 else "하락"
+    else:
+        obv_trend = "불명"
+
+    # 다이버전스 탐지 (최근 20일 기준)
+    divergence = None
+    if len(closes) >= 20 and len(obv_series) >= 20:
+        price_chg = closes[-1] - closes[-20]
+        obv_chg   = obv_series[-1] - obv_series[-20]
+        if price_chg > 0 and obv_chg < 0:
+            divergence = "🔴 약세 다이버전스 (가격 상승 + OBV 하락 → 상승 추세 약화 신호)"
+        elif price_chg < 0 and obv_chg > 0:
+            divergence = "🟢 강세 다이버전스 (가격 하락 + OBV 상승 → 하락 추세 약화 신호)"
+
+    # OBV vs MA20 비교
+    if obv_ma20:
+        signal = "🟢 OBV > MA20 (매수세 우위)" if current_obv > obv_ma20 else "🔴 OBV < MA20 (매도세 우위)"
+    else:
+        signal = obv_trend
+
+    return {
+        "obv":        round(current_obv),
+        "obv_ma20":   round(obv_ma20) if obv_ma20 else None,
+        "obv_trend":  obv_trend,
+        "signal":     signal,
+        "divergence": divergence,
+        "series":     obv_series,   # 다이버전스 추가 계산용
+    }
+
+
+def calc_cvd(opens: list, closes: list, volumes: list) -> dict:
+    """CVD(Cumulative Volume Delta) 근사 계산.
+
+    틱 데이터 없이 일봉/분봉 캔들로 근사:
+      - 양봉(종가 > 시가): 거래량의 (종가-시가)/(고가-저가) 비율을 매수 체결로 추정
+      - 음봉(종가 < 시가): 반대로 매도 체결로 추정
+    완전한 CVD는 틱 데이터 필요 — 이 계산은 일봉 기반 근사값임.
+
+    신호 해석:
+      - 가격 상승 + CVD 상승: 실제 매수세 동반 → 강한 상승 신호
+      - 가격 상승 + CVD 하락: 매수세 없는 상승 → 약세 다이버전스 (반전 주의)
+      - 가격 하락 + CVD 상승: 하락 중 매수세 유입 → 강세 다이버전스 (반등 기대)
+      - 가격 하락 + CVD 하락: 실제 매도세 동반 → 강한 하락 신호
+    """
+    if len(opens) < 2 or len(closes) < 2 or len(volumes) < 2:
+        return {"cvd": None, "signal": "데이터 부족", "divergence": None}
+
+    # 일봉 근사 CVD 계산
+    cvd_series = [0]
+    for i in range(len(closes)):
+        o, c, v = opens[i], closes[i], volumes[i]
+        candle_range = abs(c - o)
+        total_range  = candle_range if candle_range > 0 else v * 0.001
+
+        if c >= o:
+            # 양봉: 몸통 비율만큼 매수 체결로 추정
+            buy_vol  = v * (c - o) / total_range if candle_range > 0 else v * 0.5
+            sell_vol = v - buy_vol
+        else:
+            # 음봉: 몸통 비율만큼 매도 체결로 추정
+            sell_vol = v * (o - c) / total_range if candle_range > 0 else v * 0.5
+            buy_vol  = v - sell_vol
+
+        delta = buy_vol - sell_vol
+        cvd_series.append(cvd_series[-1] + delta)
+
+    current_cvd = cvd_series[-1]
+
+    # CVD 20일 이동평균
+    cvd_ma20 = sum(cvd_series[-20:]) / 20 if len(cvd_series) >= 20 else None
+
+    # CVD 5일 기울기 (모멘텀)
+    if len(cvd_series) >= 5:
+        cvd_slope = cvd_series[-1] - cvd_series[-5]
+        cvd_momentum = "매수세 강화" if cvd_slope > 0 else "매도세 강화"
+    else:
+        cvd_momentum = "불명"
+
+    # 다이버전스 탐지 (최근 20일)
+    divergence = None
+    if len(closes) >= 20 and len(cvd_series) >= 20:
+        price_chg = closes[-1] - closes[-20]
+        cvd_chg   = cvd_series[-1] - cvd_series[-20]
+        if price_chg > 0 and cvd_chg < 0:
+            divergence = "🔴 약세 다이버전스 (가격 상승 + CVD 하락 → 매수세 이탈, 반전 주의)"
+        elif price_chg < 0 and cvd_chg > 0:
+            divergence = "🟢 강세 다이버전스 (가격 하락 + CVD 상승 → 저점 매집, 반등 기대)"
+
+    # 신호
+    if cvd_ma20:
+        if current_cvd > cvd_ma20 and cvd_slope > 0:
+            signal = "🟢 강한 매수세 (CVD > MA20, 상승 모멘텀)"
+        elif current_cvd > cvd_ma20:
+            signal = "🟡 매수세 우위 (CVD > MA20)"
+        elif current_cvd < cvd_ma20 and cvd_slope < 0:
+            signal = "🔴 강한 매도세 (CVD < MA20, 하락 모멘텀)"
+        else:
+            signal = "🟡 매도세 우위 (CVD < MA20)"
+    else:
+        signal = cvd_momentum
+
+    return {
+        "cvd":         round(current_cvd),
+        "cvd_ma20":    round(cvd_ma20) if cvd_ma20 else None,
+        "cvd_momentum": cvd_momentum,
+        "signal":      signal,
+        "divergence":  divergence,
+        "note":        "⚠️ 일봉 기반 근사값 — 정밀 CVD는 분봉/틱 데이터 필요",
+    }
+
+
 def detect_candle_patterns(opens, highs, lows, closes) -> list:
     """주요 캔들 패턴 인식."""
     signals = []
@@ -587,6 +724,27 @@ def cmd_indicators(ticker: str):
     print(f"  20일평균: {_fmt(avg_vol)}주")
     print(f"  비율:    {vol_ratio:.1f}배 {'🔥 급증' if vol_ratio > 2 else ''}")
 
+    # OBV
+    obv = calc_obv(closes, volumes)
+    print(f"\n  [OBV (On-Balance Volume)]")
+    print(f"  현재 OBV:  {obv['obv']:,}" if obv['obv'] else "  현재 OBV:  -")
+    print(f"  OBV MA20:  {obv['obv_ma20']:,}" if obv['obv_ma20'] else "  OBV MA20:  -")
+    print(f"  추세:      {obv['obv_trend']}")
+    print(f"  판단:      {obv['signal']}")
+    if obv['divergence']:
+        print(f"  ⚡ 다이버전스: {obv['divergence']}")
+
+    # CVD (일봉 근사)
+    cvd = calc_cvd(opens, closes, volumes)
+    print(f"\n  [CVD (Cumulative Volume Delta) — 일봉 근사]")
+    print(f"  현재 CVD:  {cvd['cvd']:,}" if cvd['cvd'] else "  현재 CVD:  -")
+    print(f"  CVD MA20:  {cvd['cvd_ma20']:,}" if cvd['cvd_ma20'] else "  CVD MA20:  -")
+    print(f"  모멘텀:    {cvd['cvd_momentum']}")
+    print(f"  판단:      {cvd['signal']}")
+    if cvd['divergence']:
+        print(f"  ⚡ 다이버전스: {cvd['divergence']}")
+    print(f"  {cvd['note']}")
+
     # 캔들 패턴
     patterns = detect_candle_patterns(opens, highs, lows, closes)
     print(f"\n  [캔들 패턴]")
@@ -596,25 +754,46 @@ def cmd_indicators(ticker: str):
     else:
         print(f"  특이 패턴 없음")
 
-    # 종합 신호
+    # 종합 신호 (OBV, CVD 포함)
     signals = 0
-    if rsi and rsi < 40:                           signals += 1
-    if macd.get("hist") and macd["hist"] > 0:      signals += 1
-    if bb.get("pct_b") and bb["pct_b"] < 0.3:     signals += 1
-    if aligned:                                     signals += 1
-    if stoch.get("%K") and stoch["%K"] < 40:       signals += 1
-    if vol_ratio > 1.5:                            signals += 1
+    if rsi and rsi < 40:                                        signals += 1
+    if macd.get("hist") and macd["hist"] > 0:                   signals += 1
+    if bb.get("pct_b") and bb["pct_b"] < 0.3:                  signals += 1
+    if aligned:                                                  signals += 1
+    if stoch.get("%K") and stoch["%K"] < 40:                   signals += 1
+    if vol_ratio > 1.5:                                         signals += 1
     bull_patterns = [p for p in patterns if p[1] == "강세"]
     signals += len(bull_patterns)
+    # OBV 강세 신호
+    if obv.get("obv") and obv.get("obv_ma20") and obv["obv"] > obv["obv_ma20"]:
+        signals += 1
+    if obv.get("divergence") and "강세" in obv["divergence"]:
+        signals += 1
+    # CVD 강세 신호
+    if cvd.get("cvd") and cvd.get("cvd_ma20") and cvd["cvd"] > cvd["cvd_ma20"]:
+        signals += 1
+    if cvd.get("divergence") and "강세" in cvd["divergence"]:
+        signals += 1
+
+    max_signals = 9 + len(bull_patterns)
 
     print(f"\n  {'='*40}")
-    print(f"  종합 신호 강도: {signals}/7")
-    if signals >= 5:
+    print(f"  종합 신호 강도: {signals}/{max_signals}")
+    print(f"  (RSI·MACD·BB·정배열·스토캐스틱·거래량·캔들·OBV·CVD 반영)")
+    if signals >= 7:
         print(f"  판정: 🟢 강한 매수 신호")
+    elif signals >= 5:
+        print(f"  판정: 🟢 매수 신호")
     elif signals >= 3:
         print(f"  판정: 🟡 중립 (추가 확인 필요)")
     else:
         print(f"  판정: 🔴 매수 신호 부족")
+
+    # 다이버전스 경고 (종합 판정과 상충 시 강조)
+    if obv.get("divergence") and "약세" in obv["divergence"]:
+        print(f"  ⚠️  OBV 약세 다이버전스 — 상승 추세 신뢰도 저하")
+    if cvd.get("divergence") and "약세" in cvd["divergence"]:
+        print(f"  ⚠️  CVD 약세 다이버전스 — 매수세 이탈 확인 필요")
     print(f"  {'='*40}")
 
 
@@ -718,21 +897,34 @@ def cmd_oversold(rsi_max: float = 30, days: int = 5):
                 continue
             rsi = calc_rsi(d["closes"])
             if rsi and rsi <= rsi_max:
+                obv = calc_obv(d["closes"], d["volumes"])
+                cvd = calc_cvd(d["opens"], d["closes"], d["volumes"])
+
+                # OBV/CVD 강세 다이버전스 여부
+                obv_bull = obv.get("divergence") and "강세" in obv["divergence"]
+                cvd_bull = cvd.get("divergence") and "강세" in cvd["divergence"]
+
                 oversold.append({
-                    "ticker": ticker,
-                    "name":   d["name"],
-                    "rsi":    rsi,
-                    "close":  d["closes"][-1],
-                    "chg5d":  (d["closes"][-1]/d["closes"][-6]-1)*100 if len(d["closes"])>5 else 0
+                    "ticker":   ticker,
+                    "name":     d["name"],
+                    "rsi":      rsi,
+                    "close":    d["closes"][-1],
+                    "chg5d":    (d["closes"][-1]/d["closes"][-6]-1)*100 if len(d["closes"])>5 else 0,
+                    "obv_sig":  "✅" if obv_bull else "  ",
+                    "cvd_sig":  "✅" if cvd_bull else "  ",
+                    "priority": (2 if obv_bull else 0) + (2 if cvd_bull else 0),
                 })
 
         if oversold:
-            oversold.sort(key=lambda x: x["rsi"])
-            print(f"  {'종목명':<15} {'코드':<8} {'현재가':>8} {'RSI':>6} {'5일등락':>8}")
-            print(f"  {'─'*15} {'─'*8} {'─'*8} {'─'*6} {'─'*8}")
+            # OBV/CVD 다이버전스 우선 정렬, 동점이면 RSI 낮은 순
+            oversold.sort(key=lambda x: (-x["priority"], x["rsi"]))
+            print(f"  {'종목명':<15} {'코드':<8} {'현재가':>8} {'RSI':>6} {'5일등락':>8} {'OBV':>5} {'CVD':>5}")
+            print(f"  {'─'*15} {'─'*8} {'─'*8} {'─'*6} {'─'*8} {'─'*5} {'─'*5}")
             for s in oversold:
                 print(f"  {s['name']:<15} {s['ticker']:<8} "
-                      f"{s['close']:>8,.0f}원 {s['rsi']:>6.1f} {s['chg5d']:>+7.1f}%")
+                      f"{s['close']:>8,.0f}원 {s['rsi']:>6.1f} {s['chg5d']:>+7.1f}%"
+                      f" {s['obv_sig']:>5} {s['cvd_sig']:>5}")
+            print(f"\n  ✅ = 강세 다이버전스 확인됨 (OBV/CVD 상승 + 가격 하락 → 반등 기대)")
         else:
             print(f"  RSI {rsi_max} 이하 종목 없음 (watchlist 기준)")
     else:
@@ -773,26 +965,18 @@ def main():
     parser = argparse.ArgumentParser(
         description="당일 투자 후보 스캐너 — 기술적 분석 + 증권사 API",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""\
-사용 예시:
-  %(prog)s check-market                  # 장 상태 및 API 확인
-  %(prog)s check-broker                  # 증권사 API 연결 테스트
-  %(prog)s indicators 009150             # 삼성전기 기술적 지표
-  %(prog)s indicators NVDA               # 미국주 지표
-  %(prog)s volume-surge                  # 거래량 급증 종목
-  %(prog)s volume-surge --ratio 5.0      # 5배 이상 급증
-  %(prog)s new-high                      # 52주 신고가 종목
-  %(prog)s gap-up --min-gap 5.0          # 5% 이상 갭 상승
-  %(prog)s oversold --rsi-max 25         # RSI 25 이하 과매도
-  %(prog)s kis-realtime 005930 000660    # KIS 실시간 데이터
-
-KIS API 환경변수 설정:
-  export KIS_APP_KEY=발급받은앱키
-  export KIS_APP_SECRET=발급받은시크릿
-  export KIS_ACCOUNT_NO=계좌번호-상품코드
-
-KIS API 발급: https://apiportal.koreainvestment.com/
-        """
+        epilog="""사용 예시:
+  python3 daily_scanner.py check-market
+  python3 daily_scanner.py check-broker
+  python3 daily_scanner.py indicators 009150
+  python3 daily_scanner.py indicators 005930 000660 009150
+  python3 daily_scanner.py volume-surge
+  python3 daily_scanner.py volume-surge --ratio 5.0
+  python3 daily_scanner.py new-high
+  python3 daily_scanner.py gap-up --min-gap 5.0
+  python3 daily_scanner.py oversold --rsi-max 25
+  python3 daily_scanner.py kis-realtime 005930 000660
+"""
     )
     sub = parser.add_subparsers(dest="command")
 
