@@ -2,11 +2,13 @@
 # -*- coding: utf-8 -*-
 """
 키움증권 REST API 기반 CVD / OBV 스캐너
-코스피200 / 코스닥150 종목의 최근 5영업일 분봉을 한 번에 수집해서
+코스피200 / 코스닥150 종목의 최근 N영업일 분봉을 수집해서
 CVD·OBV를 계산하고 스코어 상위 종목을 출력합니다.
 
-일별 누적 불필요 — 오늘 한 번 실행으로 5일치 분석 완료.
-키움 분봉 API(ka10080)는 최대 160일치 과거 분봉을 한 번에 제공합니다.
+일별 누적 불필요 — 오늘 한 번 실행으로 지정한 기간(--days) 분석 완료.
+키움 분봉 API(ka10080)는 1회 응답당 약 900건으로 제한되어 있어,
+--days 값이 클수록(예: 90일) next-key/cont-yn 헤더 기반 페이지네이션으로
+여러 번 나눠 요청합니다(자동 처리, 별도 조작 불필요).
 
 사전 준비:
   1. 키움 REST API 신청: https://openapi.kiwoom.com
@@ -37,9 +39,11 @@ CVD·OBV를 계산하고 스코어 상위 종목을 출력합니다.
 import argparse
 import io
 import json
+import math
 import os
 import subprocess
 import sys
+import tempfile
 import time
 from datetime import datetime, timedelta
 from typing import Optional
@@ -61,9 +65,6 @@ _RATE_DELAY    = 0.22   # 초당 5회 제한 준수 (0.2초 + 여유)
 
 _KIWOOM_BASE      = "https://api.kiwoom.com"       # 실전투자
 _KIWOOM_BASE_MOCK = "https://mockapi.kiwoom.com"   # 모의투자
-
-# 5영업일 = 약 7 캘린더 일 (주말 포함)
-_BDAY_5        = 7
 
 # update_index.py가 생성하는 단일 파일에서 종목 목록 로드
 _INDEX_FILE = os.path.join(_DATA_DIR, "index_stocks.json")
@@ -168,34 +169,75 @@ def _get_token() -> Optional[str]:
     return None
 
 
-def _kiwoom(path: str, body: dict, api_id: str, token: str) -> Optional[dict]:
+def _kiwoom(path: str, body: dict, api_id: str, token: str,
+            extra_headers: list = None) -> Optional[dict]:
     """
     키움 REST API POST 호출.
     키움 REST API는 모든 조회를 POST + Body + api-id 헤더로 처리합니다.
+
+    페이지네이션 계속 여부(cont-yn)와 다음 페이지 커서(next-key)는
+    응답 "본문"이 아니라 응답 "HTTP 헤더"로 반환된다(실측 확인:
+    ka10080 응답 헤더에 `next-key: ...`, `cont-yn: Y`, `resp-cnt: 900` 존재,
+    본문 JSON에는 해당 필드가 아예 없음). 따라서 curl로 헤더를 별도
+    캡처해서 반환 dict에 `_next_key`/`_cont_yn`으로 실어 보낸다.
+    다음 요청 시에는 이 값을 다시 `next-key`/`cont-yn` 요청 헤더로
+    그대로 돌려줘야 다음 페이지가 내려온다.
     """
     app_key = os.environ.get("KIWOOM_APP_KEY", "")
     url     = f"{_KIWOOM_BASE}{path}"
     body_str = json.dumps(body)
-    result  = subprocess.run(
-        ["curl", "-s", "--noproxy", "*",
-         "-X", "POST", url,
-         "-H", f"authorization: Bearer {token}",
-         "-H", f"api-id: {api_id}",
-         "-H", "Content-Type: application/json;charset=UTF-8",
-         "-d", body_str],
-        capture_output=True, timeout=_TIMEOUT
-    )
-    raw = result.stdout.strip()
-    if not raw:
-        return None
+    cmd = ["curl", "-s", "--noproxy", "*",
+           "-X", "POST", url,
+           "-H", f"authorization: Bearer {token}",
+           "-H", f"api-id: {api_id}",
+           "-H", f"appkey: {app_key}",
+           "-H", "Content-Type: application/json;charset=UTF-8"]
+    if extra_headers:
+        for h in extra_headers:
+            cmd += ["-H", h]
+    cmd += ["-d", body_str]
+
+    header_path = None
     try:
-        data = json.loads(raw)
-        rc   = data.get("return_code", 0)
+        fd, header_path = tempfile.mkstemp(suffix=".hdr")
+        os.close(fd)
+        cmd += ["-D", header_path]
+        result = subprocess.run(cmd, capture_output=True, timeout=_TIMEOUT)
+        raw = result.stdout.strip()
+        if not raw:
+            return None
+        try:
+            data = json.loads(raw)
+        except Exception:
+            return None
+
+        rc = data.get("return_code", 0)
         if rc not in (0, "0", None, "00000"):
             return None
+
+        # 응답 헤더에서 next-key / cont-yn 추출
+        try:
+            with open(header_path, encoding="utf-8", errors="ignore") as f:
+                for line in f:
+                    if ":" not in line:
+                        continue
+                    k, _, v = line.partition(":")
+                    k = k.strip().lower()
+                    v = v.strip()
+                    if k == "next-key":
+                        data["_next_key"] = v
+                    elif k == "cont-yn":
+                        data["_cont_yn"] = v
+        except OSError:
+            pass
+
         return data
-    except Exception:
-        return None
+    finally:
+        if header_path and os.path.exists(header_path):
+            try:
+                os.remove(header_path)
+            except OSError:
+                pass
 
 
 # ─────────────────────────────────────────────────────────────
@@ -223,31 +265,46 @@ def fetch_stock_name(code: str, token: str) -> str:
     return str(info.get("stk_nm", "")).strip()
 
 
+_MIN_BARS_PER_PAGE_EST = 900   # ka10080 1회 응답 실측 기준 대략적 상한
+_MIN_PER_TRADING_DAY   = 390   # 정규장 09:00~15:30 = 390분
+
 def fetch_minute_bars(code: str, token: str,
                       period: int = 5, bdays: int = 5) -> list:
     """
-    키움 ka10080 (주식분봉조회)로 최근 N영업일 분봉 한 번에 수집.
+    키움 ka10080 (주식분봉조회)로 최근 N영업일 분봉 수집 (페이지네이션).
 
-    키움 분봉 API는 최대 160일치 과거 데이터를 페이지네이션으로 제공.
-    bdays=5 → 약 7 캘린더 일 → 1회~수 회 요청으로 충분히 커버.
-    1회 응답 최대 900건이므로 5분봉 5일 ≈ 780봉 → 보통 1~2회 요청.
+    키움 조회 API는 next_key/cont_yn을 "다음 요청의 헤더"(next-key, cont-yn)로
+    그대로 되돌려줘야 다음 페이지를 반환한다 — body에 next_key를 넣는 방식으로는
+    항상 동일한 첫 페이지만 반환되어, bdays 값과 무관하게 1회 응답 분량
+    (약 900건 ≈ 5분봉 기준 11~12영업일)에서 수집이 멈추는 문제가 있었다.
     """
     all_bars = []
     next_key = ""
-    # 5영업일 = 7 캘린더일 기준 cutoff
-    cutoff   = (datetime.now() - timedelta(days=bdays + 3)).strftime("%Y%m%d")
+    cont_yn  = ""
+    seen_keys = set()
 
-    for page in range(10):  # 안전 상한 (무한루프 방지)
+    # 영업일 → 캘린더일 환산(주 5일 근무 기준 7/5배) + 공휴일 여유분
+    calendar_days = math.ceil(bdays * 7 / 5) + 5
+    cutoff = (datetime.now() - timedelta(days=calendar_days)).strftime("%Y%m%d")
+
+    # bdays가 클수록 더 많은 페이지가 필요 — 요청 기간에 맞춰 안전 상한을 늘림
+    bars_per_day = max(1, _MIN_PER_TRADING_DAY // period)
+    max_pages = min(60, max(10,
+        math.ceil(bdays * bars_per_day / _MIN_BARS_PER_PAGE_EST) + 3))
+
+    for page in range(max_pages):
         body = {
             "stk_cd":       code,
             "tic_scope":    str(period),
             "upd_stkpc_tp": "1",   # 수정주가 적용
         }
+        headers_extra = []
         if next_key:
-            body["next_key"] = next_key
+            headers_extra = [f"next-key: {next_key}", f"cont-yn: {cont_yn}"]
 
         # ka10080: 주식분봉조회
-        data = _kiwoom("/api/dostk/chart", body, "ka10080", token)
+        data = _kiwoom("/api/dostk/chart", body, "ka10080", token,
+                       extra_headers=headers_extra)
 
         if not data:
             break
@@ -285,9 +342,13 @@ def fetch_minute_bars(code: str, token: str,
                 "low": low, "close": close, "volume": vol,
             })
 
-        next_key = data.get("next_key", "")
-        if reached_cutoff or not next_key:
+        next_key = data.get("_next_key", "")
+        cont_yn  = data.get("_cont_yn", "")
+
+        # next_key가 이전과 동일하면 더 이상 새 페이지가 없는 것 — 무한루프 방지
+        if reached_cutoff or not next_key or cont_yn != "Y" or next_key in seen_keys:
             break
+        seen_keys.add(next_key)
 
         time.sleep(_RATE_DELAY)
 
@@ -341,8 +402,14 @@ def fetch_daily_bars(code: str, token: str, days: int = 60) -> list:
 # ─────────────────────────────────────────────────────────────
 
 def _f(v) -> float:
+    """
+    가격(OHLC) 필드 파싱 전용. 키움 API는 등락 방향 표시를 위해
+    절대가격 필드에도 '+'/'-' 부호를 붙여 반환하므로(예: 저가가 "-52700"),
+    부호를 그대로 두면 음수 가격으로 오인식되어 CVD 매수비율 계산이
+    왜곡된다(예: -121% 같은 범위 밖 값). 항상 절대값으로 반환한다.
+    """
     try:
-        return float(str(v).replace(",", "").replace("+", ""))
+        return abs(float(str(v).replace(",", "").replace("+", "")))
     except (ValueError, TypeError):
         return 0.0
 

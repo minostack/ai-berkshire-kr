@@ -41,6 +41,7 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 import time
 from datetime import datetime
 from typing import Optional
@@ -68,7 +69,15 @@ os.makedirs(_DATA_DIR, exist_ok=True)
 # ─────────────────────────────────────────────────────────────
 
 def _curl_json(url: str, method: str = "POST",
-               headers: list = None, body: str = None) -> Optional[dict]:
+               headers: list = None, body: str = None,
+               capture_resp_headers: bool = False) -> Optional[dict]:
+    """
+    키움 조회 API의 페이지네이션 계속 여부(cont-yn)와 다음 커서(next-key)는
+    응답 "본문"이 아니라 응답 "HTTP 헤더"로 내려온다(실측 확인:
+    ka20002/ka10080 응답 헤더에 next-key/cont-yn/resp-cnt 존재, 본문에는 없음).
+    capture_resp_headers=True면 이 두 값을 응답 dict에 `_next_key`/`_cont_yn`
+    으로 실어 반환한다.
+    """
     cmd = ["curl", "-s", "--noproxy", "*",
            "-X", method,
            "-H", "Content-Type: application/json;charset=UTF-8"]
@@ -77,15 +86,46 @@ def _curl_json(url: str, method: str = "POST",
             cmd += ["-H", h]
     if body:
         cmd += ["-d", body]
-    cmd.append(url)
-    result = subprocess.run(cmd, capture_output=True, timeout=_TIMEOUT)
-    raw = result.stdout.strip()
-    if not raw:
-        return None
+
+    header_path = None
     try:
-        return json.loads(raw)
-    except Exception:
-        return None
+        if capture_resp_headers:
+            fd, header_path = tempfile.mkstemp(suffix=".hdr")
+            os.close(fd)
+            cmd += ["-D", header_path]
+        cmd.append(url)
+        result = subprocess.run(cmd, capture_output=True, timeout=_TIMEOUT)
+        raw = result.stdout.strip()
+        if not raw:
+            return None
+        try:
+            data = json.loads(raw)
+        except Exception:
+            return None
+
+        if capture_resp_headers and header_path:
+            try:
+                with open(header_path, encoding="utf-8", errors="ignore") as f:
+                    for line in f:
+                        if ":" not in line:
+                            continue
+                        k, _, v = line.partition(":")
+                        k = k.strip().lower()
+                        v = v.strip()
+                        if k == "next-key":
+                            data["_next_key"] = v
+                        elif k == "cont-yn":
+                            data["_cont_yn"] = v
+            except OSError:
+                pass
+
+        return data
+    finally:
+        if header_path and os.path.exists(header_path):
+            try:
+                os.remove(header_path)
+            except OSError:
+                pass
 
 
 def _load_index_file() -> dict:
@@ -150,7 +190,8 @@ def _kiwoom(path: str, body: dict, api_id: str, token: str,
     if extra_headers:
         headers.extend(extra_headers)
     return _curl_json(url, method="POST",
-                      headers=headers, body=json.dumps(body))
+                      headers=headers, body=json.dumps(body),
+                      capture_resp_headers=True)
 
 
 # ─────────────────────────────────────────────────────────────
@@ -230,9 +271,10 @@ def fetch_from_kiwoom(index_name: str, token: str) -> list:
             if code and code.isdigit() and len(code) == 6:
                 stocks.append({"code": code, "name": name})
 
-        # 페이지네이션
-        next_key = data.get("next_key", "")
-        cont_yn  = data.get("cont_yn",  data.get("cont-yn", ""))
+        # 페이지네이션 (next-key/cont-yn은 응답 헤더로 내려옴 — _kiwoom()이
+        # capture_resp_headers=True로 호출해 _next_key/_cont_yn에 실어줌)
+        next_key = data.get("_next_key", "")
+        cont_yn  = data.get("_cont_yn", "")
         if not next_key or cont_yn != "Y":
             break
         time.sleep(0.25)
