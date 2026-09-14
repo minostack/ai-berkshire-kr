@@ -18,6 +18,13 @@ import subprocess
 import sys
 from urllib.parse import urlencode, quote
 
+# ── .env 로더: 프로젝트 루트의 .env를 os.environ에 주입 ──
+try:
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env"))
+except ImportError:
+    pass  # python-dotenv 미설치 시 OS 환경변수만 사용
+
 _TIMEOUT = 20
 
 
@@ -322,7 +329,7 @@ def cmd_screen(
         print(f"       ?crtfc_key={dart_key[:8]}... &bsns_year=2024 &reprt_code=11011")
     else:
         print(f"  ⚠️  DART API 키 미등록 — WebSearch로 대체")
-        print(f"  키 등록: export DART_API_KEY=발급받은키")
+        print(f"  키 등록: .env 파일에 DART_API_KEY=발급받은키 (.env.example 참고)")
 
     print(f"\n  💡 스캔 완료 후 후보 종목은 아래로 심층 분석하세요:")
     print(f"  /investment-team {{종목명}}({{코드}})     — 4대가 병렬 분석")
@@ -340,8 +347,8 @@ def cmd_dart_ratio(year: int = 2024, market: str = "Y"):
     """
     dart_key = os.environ.get("DART_API_KEY")
     if not dart_key:
-        print("  ❌ DART_API_KEY 환경변수가 필요합니다.")
-        print("  export DART_API_KEY=발급받은키")
+        print("  ❌ DART_API_KEY 설정이 필요합니다.")
+        print("  .env 파일에 DART_API_KEY=발급받은키 (.env.example 참고)")
         return
 
     print("=" * 60)

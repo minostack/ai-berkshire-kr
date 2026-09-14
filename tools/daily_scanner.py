@@ -15,9 +15,9 @@ daily-scanner 스킬이 자동 호출합니다.
     python3 tools/daily_scanner.py patterns 005930       # 캔들 패턴 인식
     python3 tools/daily_scanner.py kis-realtime 005930   # KIS API 실시간
 
-증권사 API 환경변수:
-    KIS: export KIS_APP_KEY=... KIS_APP_SECRET=... KIS_ACCOUNT_NO=...
-    키움: export KIWOOM_APP_KEY=...
+증권사 API 키 설정 — 프로젝트 루트 .env 파일 (.env.example 참고):
+    KIS:  KIS_APP_KEY=... / KIS_APP_SECRET=... / KIS_ACCOUNT_NO=...
+    키움: KIWOOM_APP_KEY=...
 """
 
 import argparse
@@ -35,6 +35,13 @@ from typing import Optional, Union
 if sys.platform == "win32":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8")
+
+# ── .env 로더: 프로젝트 루트의 .env를 os.environ에 주입 ──
+try:
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env"))
+except ImportError:
+    pass  # python-dotenv 미설치 시 OS 환경변수만 사용
 
 _TIMEOUT = 20
 _TODAY   = datetime.now().strftime("%Y-%m-%d")
@@ -583,9 +590,9 @@ def cmd_check_market():
     kiwoom_key = os.environ.get("KIWOOM_APP_KEY")
     dart_key   = os.environ.get("DART_API_KEY")
 
-    print(f"  KIS API:    {'✅ 환경변수 설정됨' if kis_key and kis_secret else '❌ 미설정 — export KIS_APP_KEY=... KIS_APP_SECRET=...'}")
-    print(f"  키움 API:   {'✅ 환경변수 설정됨' if kiwoom_key else '❌ 미설정 — export KIWOOM_APP_KEY=...'}")
-    print(f"  DART API:   {'✅ 환경변수 설정됨' if dart_key else '❌ 미설정 — export DART_API_KEY=...'}")
+    print(f"  KIS API:    {'✅ 환경변수 설정됨' if kis_key and kis_secret else '❌ 미설정 — .env에 KIS_APP_KEY / KIS_APP_SECRET 설정'}")
+    print(f"  키움 API:   {'✅ 환경변수 설정됨' if kiwoom_key else '❌ 미설정 — .env에 KIWOOM_APP_KEY 설정'}")
+    print(f"  DART API:   {'✅ 환경변수 설정됨' if dart_key else '❌ 미설정 — .env에 DART_API_KEY 설정'}")
     print(f"  Yahoo F.:   ✅ 항상 사용 가능 (무료, 지연 15분)")
 
     print(f"\n  [데이터 우선순위]")
@@ -615,9 +622,10 @@ def cmd_check_broker():
     else:
         print("\n  [KIS API] 미설정")
         print("  KIS API 키 발급: https://apiportal.koreainvestment.com/")
-        print("  export KIS_APP_KEY=앱키")
-        print("  export KIS_APP_SECRET=앱시크릿")
-        print("  export KIS_ACCOUNT_NO=계좌번호-상품코드")
+        print("  .env 파일에 아래 항목을 설정하세요 (.env.example 참고):")
+        print("    KIS_APP_KEY=앱키")
+        print("    KIS_APP_SECRET=앱시크릿")
+        print("    KIS_ACCOUNT_NO=계좌번호-상품코드")
 
     print()
 
@@ -823,7 +831,7 @@ def cmd_volume_surge(ratio: float = 3.0, min_cap: float = 500):
     else:
         print("\n  ⚠️  KIS API 미연결 — Yahoo Finance로 대체 (전일 기준)")
         print("  실시간 거래량 순위는 KIS API 연동 필요:")
-        print("  export KIS_APP_KEY=... && export KIS_APP_SECRET=...")
+        print("  .env에 KIS_APP_KEY / KIS_APP_SECRET 설정 (.env.example 참고)")
         print()
         print("  대안 — WebSearch로 전일 거래량 급증 종목 확인:")
         print(f'  검색어: "오늘 거래량 급증 종목 {_TODAY}"')
@@ -867,7 +875,7 @@ def cmd_gap_up(min_gap: float = 3.0):
     print(f'  WebSearch: "gap up stocks Korea {_TODAY}"')
     print()
     print("  실시간 갭 상승 감지는 KIS API 연동 후 가능합니다:")
-    print("  export KIS_APP_KEY=... && export KIS_APP_SECRET=...")
+    print("  .env에 KIS_APP_KEY / KIS_APP_SECRET 설정 (.env.example 참고)")
 
 
 def cmd_oversold(rsi_max: float = 30, days: int = 5):
@@ -938,8 +946,9 @@ def cmd_kis_realtime(*tickers):
     kis_key = os.environ.get("KIS_APP_KEY")
     if not kis_key or not os.environ.get("KIS_APP_SECRET"):
         print("❌ KIS API 미연결")
-        print("   export KIS_APP_KEY=앱키")
-        print("   export KIS_APP_SECRET=앱시크릿")
+        print("   .env 파일에 설정 (.env.example 참고):")
+        print("     KIS_APP_KEY=앱키")
+        print("     KIS_APP_SECRET=앱시크릿")
         print("   발급: https://apiportal.koreainvestment.com/")
         return
 

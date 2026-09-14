@@ -11,7 +11,8 @@ monotone 曲线、嵌入字体、标题带仓库头像、左上图例、右下�
 带 starred_at 时间戳），按页均匀采样（每页 100 条，取每页首条时间戳即可精确
 还原累计曲线）。
 
-用法：
+用法（GITHUB_TOKEN 可写入项目根目录 .env 文件，参见 .env.example）：
+    python3 tools/star_history_chart.py
     GITHUB_TOKEN=$(gh auth token) python3 tools/star_history_chart.py
 
 依赖素材（提取自 star-history 开源仓库，随本仓库提交）：
@@ -29,6 +30,13 @@ import sys
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+# ── .env 로더: 프로젝트 루트의 .env를 os.environ에 주입 ──
+try:
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env"))
+except ImportError:
+    pass  # python-dotenv 미설치 시 OS 환경변수만 사용
 
 REPO = "xbtlin/ai-berkshire"
 API = "https://api.github.com"

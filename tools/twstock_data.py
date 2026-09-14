@@ -7,7 +7,7 @@
 数据源：FinMind (api.finmindtrade.com)，覆盖上市(twse)/上柜(tpex)全部股票。
 未注册可直接使用（有小时级请求限额）。注册后的 API token 可提升额度，
 按以下优先级读取（token 只存本机，严禁提交到 git）：
-    1. 环境变量 FINMIND_TOKEN
+    1. 环境变量 FINMIND_TOKEN（项目根目录 .env 文件亦可，参见 .env.example）
     2. 本地文件 local/finmind_token.txt（local/ 目录已被 .gitignore 永久排除）
 
 用法（由 Skills 自动调用）：
@@ -31,6 +31,13 @@ import sys
 import urllib.parse
 import urllib.request
 from datetime import date, timedelta
+
+# ── .env 로더: 프로젝트 루트의 .env를 os.environ에 주입 ──
+try:
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env"))
+except ImportError:
+    pass  # python-dotenv 미설치 시 OS 환경변수만 사용
 
 _API = "https://api.finmindtrade.com/api/v4/data"
 _TIMEOUT = 30

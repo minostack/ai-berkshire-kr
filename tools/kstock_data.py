@@ -23,6 +23,13 @@ import io
 from decimal import Decimal, ROUND_HALF_EVEN
 from urllib.parse import urlencode
 
+# ── .env 로더: 프로젝트 루트의 .env를 os.environ에 주입 ──
+try:
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env"))
+except ImportError:
+    pass  # python-dotenv 미설치 시 OS 환경변수만 사용
+
 _TIMEOUT = 15
 _CORP_LIST_CACHE = os.path.join(os.path.dirname(__file__), "..", ".dart_corp_cache.json")
 
@@ -237,8 +244,8 @@ def cmd_financials(code: str):
     if not dart_key:
         # API 키 없음 → 안내 출력
         print(f"\n  ⚠️  [데이터 출처] DART API 키 미등록 → 네이버금융 URL 안내")
-        print(f"\n  💡 DART Open API 자동 조회를 원하면 환경변수를 설정하세요:")
-        print(f"     export DART_API_KEY=발급받은키")
+        print(f"\n  💡 DART Open API 자동 조회를 원하면 .env 파일에 키를 설정하세요:")
+        print(f"     DART_API_KEY=발급받은키   (.env.example 참고)")
         print(f"     API 키 발급: https://opendart.fss.or.kr/intro/main.do")
         print()
         _fetch_naver_financials_summary(code)
@@ -424,8 +431,8 @@ def main():
   %(prog)s valuation 000660      # SK하이닉스 밸류에이션
   %(prog)s search 카카오         # 카카오 종목 코드 검색
 
-DART API 자동 연동:
-  export DART_API_KEY=발급받은키
+DART API 자동 연동 — 프로젝트 루트 .env 파일 (.env.example 참고):
+  DART_API_KEY=발급받은키
   python3 tools/kstock_data.py financials 005930
 
 DART API 키 발급: https://opendart.fss.or.kr/intro/main.do

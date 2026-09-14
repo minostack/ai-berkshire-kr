@@ -20,6 +20,13 @@ import subprocess
 import sys
 from decimal import Decimal, ROUND_HALF_EVEN
 
+# ── .env 로더: 프로젝트 루트의 .env를 os.environ에 주입 ──
+try:
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env"))
+except ImportError:
+    pass  # python-dotenv 미설치 시 OS 환경변수만 사용
+
 _TIMEOUT = 15
 
 
@@ -300,8 +307,8 @@ def cmd_financials(code: str):
 def cmd_search(keyword: str):
     """搜索股票代码。"""
     url = "https://searchadapter.eastmoney.com/api/suggest/get"
-    # Use env var or fall back to the public eastmoney search token
-    token = os.environ.get("EASTMONEY_SEARCH_TOKEN") or "D43BF722C8E33BDC906FB84D85E326E8"
+    # .env 의 EASTMONEY_SEARCH_TOKEN 우선, 없으면 공개 기본 토큰 사용
+    token = os.environ.get("EASTMONEY_SEARCH_TOKEN", "D43BF722C8E33BDC906FB84D85E326E8")
     params = {
         "input": keyword,
         "type": "14",

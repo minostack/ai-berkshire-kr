@@ -30,9 +30,9 @@ data/index_stocks.json 파일 하나에 저장합니다.
   python3 tools/update_index.py --show              # 저장된 목록 확인
   python3 tools/update_index.py --show --index kospi200
 
-환경변수 (키움 API 방식 사용 시):
-  export KIWOOM_APP_KEY=앱키
-  export KIWOOM_APP_SECRET=앱시크릿
+키 설정 (키움 API 방식 사용 시) — 프로젝트 루트 .env 파일 (.env.example 참고):
+  KIWOOM_APP_KEY=앱키
+  KIWOOM_APP_SECRET=앱시크릿
 """
 
 import argparse
@@ -49,6 +49,13 @@ from typing import Optional
 if sys.platform == "win32":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8")
+
+# ── .env 로더: 프로젝트 루트의 .env를 os.environ에 주입 ──
+try:
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env"))
+except ImportError:
+    pass  # python-dotenv 미설치 시 OS 환경변수만 사용
 
 # ─────────────────────────────────────────────────────────────
 # 경로 설정
@@ -468,7 +475,7 @@ def main():
         print(f"  ✅ 키움 API 연결됨 — ka20002 업종별주가요청으로 조회")
     else:
         print(f"  ❌ 키움 API 미연결")
-        print(f"  환경변수 설정: export KIWOOM_APP_KEY=키 && export KIWOOM_APP_SECRET=시크릿")
+        print(f"  .env에 KIWOOM_APP_KEY / KIWOOM_APP_SECRET 설정 (.env.example 참고)")
         if not args.from_csv:
             print_manual_guide()
             sys.exit(1)
