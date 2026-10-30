@@ -1,0 +1,29 @@
+사전등록 sha256 58ec08dc
+유니버스 이력 로드
+체결량 로드 J / NX (2024-01-01~2026-10-09)
+  J  482,610행 (744종목) · 흐름없음 9,948
+  NX 174,334행 (564종목) · 흐름없음 280
+  UN 쌍 482,610 · NX 있음 174,334 (36.1%) · 없음 308,276
+  NX 커버리지[구성종목] 90% 최초 도달 2025-03-24 → 신호 시작 2025-04-07 (워밍업 10거래일)
+  NX 커버리지[수집 전체] 최초 도달 None (참고 — 분모 해석이 모호했다, 리포트에 둘 다 적는다)
+일봉 로드 (2024-01-01~) — 797종목
+패널 J
+C:\a-ai\ai-berkshire-kr\tools\truecvd_backtest.py:145: RuntimeWarning: invalid value encountered in divide
+  nd[sl] = np.where(ws > 0, ns / ws, np.nan)
+C:\a-ai\ai-berkshire-kr\tools\truecvd_backtest.py:146: RuntimeWarning: invalid value encountered in divide
+  bull[sl] = np.where(hs > 0, ps / hs, np.nan)
+  J accel: 입력 갖춤 125,116 · 통과 31,285
+  J v15daily: 입력 갖춤 125,116 · 통과 20,302
+패널 UN
+  UN accel: 입력 갖춤 125,116 · 통과 24,733
+  UN v15daily: 입력 갖춤 125,116 · 통과 16,002
+신호 구간 358거래일 (2025-04-07 ~ 2026-10-09)
+  H1 UNDERPOWERED           평균 +0.00036 n=356 q=0.1845
+  H2 UNDERPOWERED           평균 -0.00018 n=356 q=0.8390
+  H3 UNDERPOWERED           평균 +0.00094 n=356 q=0.1620
+  H4 SIGNIFICANT_NEGATIVE   평균 -0.00725 n=356 q=0.0015
+  H5 UNDERPOWERED           평균 -0.00022 n=356 q=0.8390
+  H6 SIGNIFICANT_NEGATIVE   평균 -0.00841 n=356 q=0.0015
+C:\a-ai\ai-berkshire-kr\tools\nxtbasis_backtest.py:377: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "run_id": f"nxtbasis_{datetime.utcnow():%Y%m%d%H%M%S}_{uuid.uuid4().hex[:6]}",
+저장: reports\backtest\prereg-nxtbasis-58ec08dc.json

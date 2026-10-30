@@ -1,0 +1,975 @@
+{
+ "live": [
+  {
+   "security_id": "KRX:000020",
+   "code": "000020",
+   "name": "동화약품"
+  },
+  {
+   "security_id": "KRX:000050",
+   "code": "000050",
+   "name": "경방"
+  },
+  {
+   "security_id": "KRX:000070",
+   "code": "000070",
+   "name": "삼양홀딩스"
+  },
+  {
+   "security_id": "KRX:000140",
+   "code": "000140",
+   "name": "하이트진로홀딩스"
+  },
+  {
+   "security_id": "KRX:000230",
+   "code": "000230",
+   "name": "일동홀딩스"
+  },
+  {
+   "security_id": "KRX:000430",
+   "code": "000430",
+   "name": "대원강업"
+  },
+  {
+   "security_id": "KRX:000480",
+   "code": "000480",
+   "name": "CR홀딩스"
+  },
+  {
+   "security_id": "KRX:000640",
+   "code": "000640",
+   "name": "동아쏘시오홀딩스"
+  },
+  {
+   "security_id": "KRX:000700",
+   "code": "000700",
+   "name": "유수홀딩스"
+  },
+  {
+   "security_id": "KRX:001060",
+   "code": "001060",
+   "name": "JW중외제약"
+  },
+  {
+   "security_id": "KRX:001120",
+   "code": "001120",
+   "name": "LX인터내셔널"
+  },
+  {
+   "security_id": "KRX:001130",
+   "code": "001130",
+   "name": "대한제분"
+  },
+  {
+   "security_id": "KRX:001210",
+   "code": "001210",
+   "name": "금호전기"
+  },
+  {
+   "security_id": "KRX:001230",
+   "code": "001230",
+   "name": "동국홀딩스"
+  },
+  {
+   "security_id": "KRX:001520",
+   "code": "001520",
+   "name": "동양"
+  },
+  {
+   "security_id": "KRX:001570",
+   "code": "001570",
+   "name": "금양"
+  },
+  {
+   "security_id": "KRX:001630",
+   "code": "001630",
+   "name": "종근당홀딩스"
+  },
+  {
+   "security_id": "KRX:001740",
+   "code": "001740",
+   "name": "SK네트웍스"
+  },
+  {
+   "security_id": "KRX:001780",
+   "code": "001780",
+   "name": "알루코"
+  },
+  {
+   "security_id": "KRX:001790",
+   "code": "001790",
+   "name": "대한제당"
+  },
+  {
+   "security_id": "KRX:001940",
+   "code": "001940",
+   "name": "KISCO홀딩스"
+  },
+  {
+   "security_id": "KRX:002020",
+   "code": "002020",
+   "name": "코오롱"
+  },
+  {
+   "security_id": "KRX:002240",
+   "code": "002240",
+   "name": "고려제강"
+  },
+  {
+   "security_id": "KRX:002350",
+   "code": "002350",
+   "name": "넥센타이어"
+  },
+  {
+   "security_id": "KRX:002390",
+   "code": "002390",
+   "name": "한독"
+  },
+  {
+   "security_id": "KRX:002620",
+   "code": "002620",
+   "name": "제일파마홀딩스"
+  },
+  {
+   "security_id": "KRX:002710",
+   "code": "002710",
+   "name": "TCC스틸"
+  },
+  {
+   "security_id": "KRX:002960",
+   "code": "002960",
+   "name": "한국쉘석유"
+  },
+  {
+   "security_id": "KRX:002990",
+   "code": "002990",
+   "name": "금호건설"
+  },
+  {
+   "security_id": "KRX:003000",
+   "code": "003000",
+   "name": "부광약품"
+  },
+  {
+   "security_id": "KRX:003120",
+   "code": "003120",
+   "name": "일성아이에스"
+  },
+  {
+   "security_id": "KRX:003200",
+   "code": "003200",
+   "name": "일신방직"
+  },
+  {
+   "security_id": "KRX:003300",
+   "code": "003300",
+   "name": "한일홀딩스"
+  },
+  {
+   "security_id": "KRX:003480",
+   "code": "003480",
+   "name": "한진중공업홀딩스"
+  },
+  {
+   "security_id": "KRX:003520",
+   "code": "003520",
+   "name": "영진약품"
+  },
+  {
+   "security_id": "KRX:003570",
+   "code": "003570",
+   "name": "SNT다이내믹스"
+  },
+  {
+   "security_id": "KRX:003620",
+   "code": "003620",
+   "name": "KG모빌리티"
+  },
+  {
+   "security_id": "KRX:003850",
+   "code": "003850",
+   "name": "보령"
+  },
+  {
+   "security_id": "KRX:003920",
+   "code": "003920",
+   "name": "남양유업"
+  },
+  {
+   "security_id": "KRX:004150",
+   "code": "004150",
+   "name": "한솔홀딩스"
+  },
+  {
+   "security_id": "KRX:004430",
+   "code": "004430",
+   "name": "송원산업"
+  },
+  {
+   "security_id": "KRX:004490",
+   "code": "004490",
+   "name": "세방전지"
+  },
+  {
+   "security_id": "KRX:004700",
+   "code": "004700",
+   "name": "조광피혁"
+  },
+  {
+   "security_id": "KRX:004710",
+   "code": "004710",
+   "name": "한솔테크닉스"
+  },
+  {
+   "security_id": "KRX:004800",
+   "code": "004800",
+   "name": "효성"
+  },
+  {
+   "security_id": "KRX:004890",
+   "code": "004890",
+   "name": "동일산업"
+  },
+  {
+   "security_id": "KRX:005070",
+   "code": "005070",
+   "name": "코스모신소재"
+  },
+  {
+   "security_id": "KRX:005090",
+   "code": "005090",
+   "name": "SGC에너지"
+  },
+  {
+   "security_id": "KRX:005180",
+   "code": "005180",
+   "name": "빙그레"
+  },
+  {
+   "security_id": "KRX:005250",
+   "code": "005250",
+   "name": "녹십자홀딩스"
+  },
+  {
+   "security_id": "KRX:005440",
+   "code": "005440",
+   "name": "현대지에프홀딩스"
+  },
+  {
+   "security_id": "KRX:005500",
+   "code": "005500",
+   "name": "삼진제약"
+  },
+  {
+   "security_id": "KRX:005610",
+   "code": "005610",
+   "name": "삼립"
+  },
+  {
+   "security_id": "KRX:005680",
+   "code": "005680",
+   "name": "삼영전자"
+  },
+  {
+   "security_id": "KRX:005690",
+   "code": "005690",
+   "name": "파미셀"
+  },
+  {
+   "security_id": "KRX:005740",
+   "code": "005740",
+   "name": "크라운해태홀딩스"
+  },
+  {
+   "security_id": "KRX:005950",
+   "code": "005950",
+   "name": "이수화학"
+  },
+  {
+   "security_id": "KRX:006110",
+   "code": "006110",
+   "name": "삼아알미늄"
+  },
+  {
+   "security_id": "KRX:006120",
+   "code": "006120",
+   "name": "SK디스커버리"
+  },
+  {
+   "security_id": "KRX:006360",
+   "code": "006360",
+   "name": "GS건설"
+  },
+  {
+   "security_id": "KRX:006840",
+   "code": "006840",
+   "name": "AK홀딩스"
+  },
+  {
+   "security_id": "KRX:007210",
+   "code": "007210",
+   "name": "벽산"
+  },
+  {
+   "security_id": "KRX:007570",
+   "code": "007570",
+   "name": "일양약품"
+  },
+  {
+   "security_id": "KRX:007690",
+   "code": "007690",
+   "name": "국도화학"
+  },
+  {
+   "security_id": "KRX:007700",
+   "code": "007700",
+   "name": "F&F홀딩스"
+  },
+  {
+   "security_id": "KRX:007810",
+   "code": "007810",
+   "name": "코리아써키트"
+  },
+  {
+   "security_id": "KRX:007860",
+   "code": "007860",
+   "name": "서연"
+  },
+  {
+   "security_id": "KRX:008040",
+   "code": "008040",
+   "name": "사조동아원"
+  },
+  {
+   "security_id": "KRX:008060",
+   "code": "008060",
+   "name": "대덕"
+  },
+  {
+   "security_id": "KRX:008350",
+   "code": "008350",
+   "name": "남선알미늄"
+  },
+  {
+   "security_id": "KRX:008490",
+   "code": "008490",
+   "name": "서흥"
+  },
+  {
+   "security_id": "KRX:009200",
+   "code": "009200",
+   "name": "무림페이퍼"
+  },
+  {
+   "security_id": "KRX:009290",
+   "code": "009290",
+   "name": "광동제약"
+  },
+  {
+   "security_id": "KRX:009410",
+   "code": "009410",
+   "name": "태영건설"
+  },
+  {
+   "security_id": "KRX:009440",
+   "code": "009440",
+   "name": "KC그린홀딩스"
+  },
+  {
+   "security_id": "KRX:009580",
+   "code": "009580",
+   "name": "무림P&P"
+  },
+  {
+   "security_id": "KRX:009680",
+   "code": "009680",
+   "name": "모토닉"
+  },
+  {
+   "security_id": "KRX:009900",
+   "code": "009900",
+   "name": "명신산업"
+  },
+  {
+   "security_id": "KRX:010690",
+   "code": "010690",
+   "name": "화신"
+  },
+  {
+   "security_id": "KRX:010780",
+   "code": "010780",
+   "name": "아이에스동서"
+  },
+  {
+   "security_id": "KRX:011810",
+   "code": "011810",
+   "name": "STX"
+  },
+  {
+   "security_id": "KRX:011930",
+   "code": "011930",
+   "name": "신성이엔지"
+  },
+  {
+   "security_id": "KRX:012630",
+   "code": "012630",
+   "name": "HDC"
+  },
+  {
+   "security_id": "KRX:013570",
+   "code": "013570",
+   "name": "디와이"
+  },
+  {
+   "security_id": "KRX:013890",
+   "code": "013890",
+   "name": "지누스"
+  },
+  {
+   "security_id": "KRX:014830",
+   "code": "014830",
+   "name": "유니드"
+  },
+  {
+   "security_id": "KRX:014990",
+   "code": "014990",
+   "name": "인디에프"
+  },
+  {
+   "security_id": "KRX:015590",
+   "code": "015590",
+   "name": "DKME"
+  },
+  {
+   "security_id": "KRX:016380",
+   "code": "016380",
+   "name": "KG스틸"
+  },
+  {
+   "security_id": "KRX:016800",
+   "code": "016800",
+   "name": "퍼시스"
+  },
+  {
+   "security_id": "KRX:017900",
+   "code": "017900",
+   "name": "광전자"
+  },
+  {
+   "security_id": "KRX:018250",
+   "code": "018250",
+   "name": "애경산업"
+  },
+  {
+   "security_id": "KRX:019170",
+   "code": "019170",
+   "name": "신풍제약"
+  },
+  {
+   "security_id": "KRX:019680",
+   "code": "019680",
+   "name": "대교"
+  },
+  {
+   "security_id": "KRX:020000",
+   "code": "020000",
+   "name": "한섬"
+  },
+  {
+   "security_id": "KRX:020150",
+   "code": "020150",
+   "name": "롯데에너지머티리얼즈"
+  },
+  {
+   "security_id": "KRX:020560",
+   "code": "020560",
+   "name": "아시아나항공"
+  },
+  {
+   "security_id": "KRX:020760",
+   "code": "020760",
+   "name": "일진디스플"
+  },
+  {
+   "security_id": "KRX:025000",
+   "code": "025000",
+   "name": "KPX케미칼"
+  },
+  {
+   "security_id": "KRX:025540",
+   "code": "025540",
+   "name": "한국단자"
+  },
+  {
+   "security_id": "KRX:025860",
+   "code": "025860",
+   "name": "남해화학"
+  },
+  {
+   "security_id": "KRX:027410",
+   "code": "027410",
+   "name": "BGF"
+  },
+  {
+   "security_id": "KRX:027970",
+   "code": "027970",
+   "name": "한국제지"
+  },
+  {
+   "security_id": "KRX:029530",
+   "code": "029530",
+   "name": "신도리코"
+  },
+  {
+   "security_id": "KRX:031430",
+   "code": "031430",
+   "name": "신세계인터내셔날"
+  },
+  {
+   "security_id": "KRX:032350",
+   "code": "032350",
+   "name": "롯데관광개발"
+  },
+  {
+   "security_id": "KRX:033240",
+   "code": "033240",
+   "name": "자화전자"
+  },
+  {
+   "security_id": "KRX:033530",
+   "code": "033530",
+   "name": "SJG세종"
+  },
+  {
+   "security_id": "KRX:033920",
+   "code": "033920",
+   "name": "무학"
+  },
+  {
+   "security_id": "KRX:034120",
+   "code": "034120",
+   "name": "SBS"
+  },
+  {
+   "security_id": "KRX:036580",
+   "code": "036580",
+   "name": "팜스코"
+  },
+  {
+   "security_id": "KRX:039130",
+   "code": "039130",
+   "name": "하나투어"
+  },
+  {
+   "security_id": "KRX:044820",
+   "code": "044820",
+   "name": "코스맥스비티아이"
+  },
+  {
+   "security_id": "KRX:060980",
+   "code": "060980",
+   "name": "HL홀딩스"
+  },
+  {
+   "security_id": "KRX:064960",
+   "code": "064960",
+   "name": "SNT모티브"
+  },
+  {
+   "security_id": "KRX:071840",
+   "code": "071840",
+   "name": "롯데하이마트"
+  },
+  {
+   "security_id": "KRX:077970",
+   "code": "077970",
+   "name": "STX엔진"
+  },
+  {
+   "security_id": "KRX:078520",
+   "code": "078520",
+   "name": "에이블씨엔씨"
+  },
+  {
+   "security_id": "KRX:079160",
+   "code": "079160",
+   "name": "CJ CGV"
+  },
+  {
+   "security_id": "KRX:079430",
+   "code": "079430",
+   "name": "현대리바트"
+  },
+  {
+   "security_id": "KRX:079980",
+   "code": "079980",
+   "name": "휴비스"
+  },
+  {
+   "security_id": "KRX:084010",
+   "code": "084010",
+   "name": "대한제강"
+  },
+  {
+   "security_id": "KRX:084870",
+   "code": "084870",
+   "name": "TBH글로벌"
+  },
+  {
+   "security_id": "KRX:085310",
+   "code": "085310",
+   "name": "엔케이"
+  },
+  {
+   "security_id": "KRX:093050",
+   "code": "093050",
+   "name": "LF"
+  },
+  {
+   "security_id": "KRX:096760",
+   "code": "096760",
+   "name": "JW홀딩스"
+  },
+  {
+   "security_id": "KRX:097230",
+   "code": "097230",
+   "name": "HJ중공업"
+  },
+  {
+   "security_id": "KRX:100840",
+   "code": "100840",
+   "name": "SNT에너지"
+  },
+  {
+   "security_id": "KRX:103590",
+   "code": "103590",
+   "name": "일진전기"
+  },
+  {
+   "security_id": "KRX:104700",
+   "code": "104700",
+   "name": "한국철강"
+  },
+  {
+   "security_id": "KRX:105630",
+   "code": "105630",
+   "name": "한세실업"
+  },
+  {
+   "security_id": "KRX:108670",
+   "code": "108670",
+   "name": "LX하우시스"
+  },
+  {
+   "security_id": "KRX:114090",
+   "code": "114090",
+   "name": "GKL"
+  },
+  {
+   "security_id": "KRX:145720",
+   "code": "145720",
+   "name": "덴티움"
+  },
+  {
+   "security_id": "KRX:145990",
+   "code": "145990",
+   "name": "삼양사"
+  },
+  {
+   "security_id": "KRX:170900",
+   "code": "170900",
+   "name": "동아에스티"
+  },
+  {
+   "security_id": "KRX:178920",
+   "code": "178920",
+   "name": "PI첨단소재"
+  },
+  {
+   "security_id": "KRX:192400",
+   "code": "192400",
+   "name": "쿠쿠홀딩스"
+  },
+  {
+   "security_id": "KRX:214320",
+   "code": "214320",
+   "name": "이노션"
+  },
+  {
+   "security_id": "KRX:241590",
+   "code": "241590",
+   "name": "화승엔터프라이즈"
+  },
+  {
+   "security_id": "KRX:271940",
+   "code": "271940",
+   "name": "일진하이솔루스"
+  },
+  {
+   "security_id": "KRX:284740",
+   "code": "284740",
+   "name": "쿠쿠홈시스"
+  },
+  {
+   "security_id": "KRX:294870",
+   "code": "294870",
+   "name": "IPARK현대산업개발"
+  },
+  {
+   "security_id": "KRX:336260",
+   "code": "336260",
+   "name": "두산퓨얼셀"
+  },
+  {
+   "security_id": "KRX:381970",
+   "code": "381970",
+   "name": "케이카"
+  },
+  {
+   "security_id": "KRX:383800",
+   "code": "383800",
+   "name": "LX홀딩스"
+  },
+  {
+   "security_id": "KRX:489790",
+   "code": "489790",
+   "name": "한화비전"
+  }
+ ],
+ "delisted": [
+  {
+   "security_id": "KRX:000030",
+   "code": "000030",
+   "name": "우리은행",
+   "delisted_on": "2019-02-13"
+  },
+  {
+   "security_id": "KRX:000060",
+   "code": "000060",
+   "name": "메리츠화재",
+   "delisted_on": "2023-02-21"
+  },
+  {
+   "security_id": "KRX:000830",
+   "code": "000830",
+   "name": "삼성물산",
+   "delisted_on": "2015-09-15"
+  },
+  {
+   "security_id": "KRX:001300",
+   "code": "001300",
+   "name": "제일모직",
+   "delisted_on": "2014-07-15"
+  },
+  {
+   "security_id": "KRX:002270",
+   "code": "002270",
+   "name": "롯데푸드",
+   "delisted_on": "2022-07-20"
+  },
+  {
+   "security_id": "KRX:002300",
+   "code": "002300",
+   "name": "한국제지",
+   "delisted_on": "2020-07-13"
+  },
+  {
+   "security_id": "KRX:003190",
+   "code": "003190",
+   "name": "알앤엘바이오",
+   "delisted_on": "2013-05-03"
+  },
+  {
+   "security_id": "KRX:003410",
+   "code": "003410",
+   "name": "쌍용C&E",
+   "delisted_on": "2024-07-09"
+  },
+  {
+   "security_id": "KRX:003450",
+   "code": "003450",
+   "name": "현대증권",
+   "delisted_on": "2016-11-01"
+  },
+  {
+   "security_id": "KRX:003600",
+   "code": "003600",
+   "name": "SK",
+   "delisted_on": "2015-08-17"
+  },
+  {
+   "security_id": "KRX:003640",
+   "code": "003640",
+   "name": "유니온스틸",
+   "delisted_on": "2015-01-16"
+  },
+  {
+   "security_id": "KRX:003940",
+   "code": "003940",
+   "name": "삼양제넥스",
+   "delisted_on": "2016-01-21"
+  },
+  {
+   "security_id": "KRX:004130",
+   "code": "004130",
+   "name": "대덕GDS",
+   "delisted_on": "2018-12-19"
+  },
+  {
+   "security_id": "KRX:004940",
+   "code": "004940",
+   "name": "외환은행",
+   "delisted_on": "2013-04-26"
+  },
+  {
+   "security_id": "KRX:005270",
+   "code": "005270",
+   "name": "대구은행",
+   "delisted_on": "2011-06-07"
+  },
+  {
+   "security_id": "KRX:005280",
+   "code": "005280",
+   "name": "부산은행",
+   "delisted_on": "2011-03-30"
+  },
+  {
+   "security_id": "KRX:006380",
+   "code": "006380",
+   "name": "카프로",
+   "delisted_on": "2026-09-17"
+  },
+  {
+   "security_id": "KRX:006390",
+   "code": "006390",
+   "name": "한일현대시멘트",
+   "delisted_on": "2025-11-21"
+  },
+  {
+   "security_id": "KRX:008000",
+   "code": "008000",
+   "name": "도레이케미칼",
+   "delisted_on": "2018-03-20"
+  },
+  {
+   "security_id": "KRX:008320",
+   "code": "008320",
+   "name": "한국기술산업",
+   "delisted_on": "2010-03-11"
+  },
+  {
+   "security_id": "KRX:008560",
+   "code": "008560",
+   "name": "메리츠증권",
+   "delisted_on": "2023-04-25"
+  },
+  {
+   "security_id": "KRX:009720",
+   "code": "009720",
+   "name": "전기초자",
+   "delisted_on": "2011-02-16"
+  },
+  {
+   "security_id": "KRX:010520",
+   "code": "010520",
+   "name": "현대하이스코",
+   "delisted_on": "2015-07-15"
+  },
+  {
+   "security_id": "KRX:010620",
+   "code": "010620",
+   "name": "HD현대미포",
+   "delisted_on": "2025-12-15"
+  },
+  {
+   "security_id": "KRX:011400",
+   "code": "011400",
+   "name": "케이씨오에너지",
+   "delisted_on": "2010-05-20"
+  },
+  {
+   "security_id": "KRX:025850",
+   "code": "025850",
+   "name": "한화화인케미칼",
+   "delisted_on": "2016-03-15"
+  },
+  {
+   "security_id": "KRX:037620",
+   "code": "037620",
+   "name": "미래에셋증권",
+   "delisted_on": "2017-01-20"
+  },
+  {
+   "security_id": "KRX:042670",
+   "code": "042670",
+   "name": "HD현대인프라코어",
+   "delisted_on": "2026-01-26"
+  },
+  {
+   "security_id": "KRX:049770",
+   "code": "049770",
+   "name": "동원F&B",
+   "delisted_on": "2025-07-31"
+  },
+  {
+   "security_id": "KRX:051310",
+   "code": "051310",
+   "name": "포스코플랜텍",
+   "delisted_on": "2016-04-15"
+  },
+  {
+   "security_id": "KRX:053000",
+   "code": "053000",
+   "name": "우리금융",
+   "delisted_on": "2014-11-19"
+  },
+  {
+   "security_id": "KRX:057050",
+   "code": "057050",
+   "name": "현대홈쇼핑",
+   "delisted_on": "2026-07-20"
+  },
+  {
+   "security_id": "KRX:064420",
+   "code": "064420",
+   "name": "케이피케미칼",
+   "delisted_on": "2013-01-15"
+  },
+  {
+   "security_id": "KRX:067250",
+   "code": "067250",
+   "name": "STX조선해양",
+   "delisted_on": "2014-04-15"
+  },
+  {
+   "security_id": "KRX:068870",
+   "code": "068870",
+   "name": "LG생명과학",
+   "delisted_on": "2017-01-17"
+  },
+  {
+   "security_id": "KRX:091090",
+   "code": "091090",
+   "name": "세원이앤씨",
+   "delisted_on": "2025-10-27"
+  },
+  {
+   "security_id": "KRX:103130",
+   "code": "103130",
+   "name": "웅진에너지",
+   "delisted_on": "2020-06-01"
+  },
+  {
+   "security_id": "KRX:103150",
+   "code": "103150",
+   "name": "하이트맥주",
+   "delisted_on": "2011-09-26"
+  },
+  {
+   "security_id": "KRX:115390",
+   "code": "115390",
+   "name": "락앤락",
+   "delisted_on": "2024-12-09"
+  }
+ ]
+}

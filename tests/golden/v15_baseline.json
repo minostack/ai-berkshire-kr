@@ -1,0 +1,1448 @@
+{
+  "as_of": "2026-09-16 15:35:00",
+  "fixture_version": "1.0.0",
+  "functions": {
+    "analyze": [
+      {
+        "args": {
+          "as_of": "2026-09-16 15:35:00",
+          "bdays": 5,
+          "daily_scope": "auto",
+          "period": 5,
+          "rank_session": "REGULAR"
+        },
+        "case": "bullish",
+        "output": {
+          "as_of": "2026-09-16 15:35:00",
+          "bars_by_session": {
+            "AFTER": 96,
+            "OTHER": 0,
+            "REGULAR": 385
+          },
+          "close_check": {
+            "daily_close": 79314.0,
+            "date": "20260915",
+            "diff_pct": 56.249876873978046,
+            "regular_close": 50761.0
+          },
+          "code": "900001",
+          "cvd": {
+            "absent_days": [],
+            "bars_used": 385,
+            "bull_days": 5,
+            "bull_ratio": 1.0,
+            "bull_ratio_for_rank": 1.0,
+            "buy_ratio": 71.6,
+            "buy_vol": 2500282,
+            "completed_bull_ratio": 1.0,
+            "completed_total_days": 5,
+            "completeness": 1.0,
+            "cvd": 1509749,
+            "cvd_ma": 1460327,
+            "data_status": "SUCCESS",
+            "estimated_cvd": 1509749,
+            "expected_bars_per_day": 77,
+            "intraday_delta": null,
+            "last_bar_age_min": 0.0,
+            "last_bar_at": "2026-09-16 15:35",
+            "latest_day_traded_value": 36268428339.0,
+            "missing_days": [],
+            "momentum": 31255,
+            "momentum_bars": 4,
+            "momentum_minutes": 30,
+            "momentum_minutes_actual": 30,
+            "momentum_status": "SUCCESS",
+            "normalized_delta": 0.43249162834167,
+            "normalized_momentum": 0.5172187128345018,
+            "over_count_days": [],
+            "period": 5,
+            "price_cvd_divergence": null,
+            "price_cvd_divergence_lag": null,
+            "score": 5.0,
+            "sell_vol": 990534,
+            "session": "REGULAR",
+            "session_label": "정규장",
+            "signal": "🟢강한매수",
+            "stale": false,
+            "status_reasons": [],
+            "total_days": 5
+          },
+          "cvd_after": {
+            "absent_days": [],
+            "bars_used": 96,
+            "bull_days": 2,
+            "bull_ratio": 1.0,
+            "bull_ratio_for_rank": 1.0,
+            "buy_ratio": 69.3,
+            "buy_vol": 72543,
+            "completed_bull_ratio": 1.0,
+            "completed_total_days": 2,
+            "completeness": 1.0,
+            "cvd": 40381,
+            "cvd_ma": 36532,
+            "data_status": "SUCCESS",
+            "estimated_cvd": 40381,
+            "expected_bars_per_day": 48,
+            "intraday_delta": null,
+            "last_bar_age_min": 1175.0,
+            "last_bar_at": "2026-09-15 20:00",
+            "latest_day_traded_value": 2703351237.0,
+            "missing_days": [],
+            "momentum": 2256,
+            "momentum_bars": 6,
+            "momentum_minutes": 30,
+            "momentum_minutes_actual": 30,
+            "momentum_status": "SUCCESS",
+            "normalized_delta": 0.3856699657261474,
+            "normalized_momentum": 0.38441886431161487,
+            "over_count_days": [],
+            "period": 5,
+            "price_cvd_divergence": null,
+            "price_cvd_divergence_lag": null,
+            "score": 5.0,
+            "sell_vol": 32161,
+            "session": "AFTER",
+            "session_label": "애프터마켓",
+            "signal": "🟢강한매수",
+            "stale": false,
+            "status_reasons": [],
+            "total_days": 2
+          },
+          "cvd_regular": {
+            "absent_days": [],
+            "bars_used": 385,
+            "bull_days": 5,
+            "bull_ratio": 1.0,
+            "bull_ratio_for_rank": 1.0,
+            "buy_ratio": 71.6,
+            "buy_vol": 2500282,
+            "completed_bull_ratio": 1.0,
+            "completed_total_days": 5,
+            "completeness": 1.0,
+            "cvd": 1509749,
+            "cvd_ma": 1460327,
+            "data_status": "SUCCESS",
+            "estimated_cvd": 1509749,
+            "expected_bars_per_day": 77,
+            "intraday_delta": null,
+            "last_bar_age_min": 0.0,
+            "last_bar_at": "2026-09-16 15:35",
+            "latest_day_traded_value": 36268428339.0,
+            "missing_days": [],
+            "momentum": 31255,
+            "momentum_bars": 4,
+            "momentum_minutes": 30,
+            "momentum_minutes_actual": 30,
+            "momentum_status": "SUCCESS",
+            "normalized_delta": 0.43249162834167,
+            "normalized_momentum": 0.5172187128345018,
+            "over_count_days": [],
+            "period": 5,
+            "price_cvd_divergence": null,
+            "price_cvd_divergence_lag": null,
+            "score": 5.0,
+            "sell_vol": 990534,
+            "session": "REGULAR",
+            "session_label": "정규장",
+            "signal": "🟢강한매수",
+            "stale": false,
+            "status_reasons": [],
+            "total_days": 5
+          },
+          "daily_bars_used": 149,
+          "daily_scope": "auto",
+          "days": 5,
+          "index": "golden",
+          "liquidity": {
+            "data_status": "SUCCESS",
+            "days_used": 20,
+            "value": 91692835848.35
+          },
+          "min_bars": 481,
+          "name": "합성강세",
+          "obv": {
+            "data_status": "SUCCESS",
+            "divergence": null,
+            "lookback": 5,
+            "normalized_slope": 0.32568032908162553,
+            "obv": 89412758,
+            "obv_ma20": 86057759,
+            "pivot_divergence": null,
+            "pivot_divergence_lag": null,
+            "score": 3.0,
+            "signal": "🟢매수축적",
+            "slope": 1866586,
+            "up_ratio": 0.6
+          },
+          "price": {
+            "above_ma120": true,
+            "above_ma20": true,
+            "above_ma60": true,
+            "close_vs_ma20_pct": 1.35,
+            "data_status": "SUCCESS",
+            "ma20_above_ma60": true,
+            "ma20_rising": true,
+            "ma60_rising": true,
+            "score": 2.0
+          },
+          "rank_session": "REGULAR",
+          "raw_score": 10.0,
+          "risk": {
+            "atr": 721.97,
+            "atr_pct": 0.91,
+            "data_status": "SUCCESS",
+            "overheat_penalty": 0.0,
+            "overheated": false
+          }
+        }
+      },
+      {
+        "args": {
+          "as_of": "2026-09-16 15:35:00",
+          "bdays": 5,
+          "daily_scope": "auto",
+          "period": 5,
+          "rank_session": "REGULAR"
+        },
+        "case": "bearish",
+        "output": {
+          "as_of": "2026-09-16 15:35:00",
+          "bars_by_session": {
+            "AFTER": 96,
+            "OTHER": 0,
+            "REGULAR": 385
+          },
+          "close_check": {
+            "daily_close": 30005.0,
+            "date": "20260915",
+            "diff_pct": -40.61943399960419,
+            "regular_close": 50530.0
+          },
+          "code": "900002",
+          "cvd": {
+            "absent_days": [],
+            "bars_used": 385,
+            "bull_days": 0,
+            "bull_ratio": 0.0,
+            "bull_ratio_for_rank": 0.0,
+            "buy_ratio": 30.8,
+            "buy_vol": 1091080,
+            "completed_bull_ratio": 0.0,
+            "completed_total_days": 5,
+            "completeness": 1.0,
+            "cvd": -1363345,
+            "cvd_ma": -1329696,
+            "data_status": "SUCCESS",
+            "estimated_cvd": -1363345,
+            "expected_bars_per_day": 77,
+            "intraday_delta": null,
+            "last_bar_age_min": 0.0,
+            "last_bar_at": "2026-09-16 15:35",
+            "latest_day_traded_value": 36379191844.0,
+            "missing_days": [],
+            "momentum": -16115,
+            "momentum_bars": 4,
+            "momentum_minutes": 30,
+            "momentum_minutes_actual": 30,
+            "momentum_status": "SUCCESS",
+            "normalized_delta": -0.3845278419451519,
+            "normalized_momentum": -0.3479042017015654,
+            "over_count_days": [],
+            "period": 5,
+            "price_cvd_divergence": null,
+            "price_cvd_divergence_lag": null,
+            "score": -4.0,
+            "sell_vol": 2454425,
+            "session": "REGULAR",
+            "session_label": "정규장",
+            "signal": "🔴강한매도",
+            "stale": false,
+            "status_reasons": [],
+            "total_days": 5
+          },
+          "cvd_after": {
+            "absent_days": [],
+            "bars_used": 96,
+            "bull_days": 0,
+            "bull_ratio": 0.0,
+            "bull_ratio_for_rank": 0.0,
+            "buy_ratio": 28.6,
+            "buy_vol": 28655,
+            "completed_bull_ratio": 0.0,
+            "completed_total_days": 2,
+            "completeness": 1.0,
+            "cvd": -42816,
+            "cvd_ma": -38590,
+            "data_status": "SUCCESS",
+            "estimated_cvd": -42816,
+            "expected_bars_per_day": 48,
+            "intraday_delta": null,
+            "last_bar_age_min": 1175.0,
+            "last_bar_at": "2026-09-15 20:00",
+            "latest_day_traded_value": 2589679827.0,
+            "missing_days": [],
+            "momentum": -3114,
+            "momentum_bars": 6,
+            "momentum_minutes": 30,
+            "momentum_minutes_actual": 30,
+            "momentum_status": "SUCCESS",
+            "normalized_delta": -0.4276174919990885,
+            "normalized_momentum": -0.43426505253079983,
+            "over_count_days": [],
+            "period": 5,
+            "price_cvd_divergence": null,
+            "price_cvd_divergence_lag": null,
+            "score": -4.0,
+            "sell_vol": 71471,
+            "session": "AFTER",
+            "session_label": "애프터마켓",
+            "signal": "🔴강한매도",
+            "stale": false,
+            "status_reasons": [],
+            "total_days": 2
+          },
+          "cvd_regular": {
+            "absent_days": [],
+            "bars_used": 385,
+            "bull_days": 0,
+            "bull_ratio": 0.0,
+            "bull_ratio_for_rank": 0.0,
+            "buy_ratio": 30.8,
+            "buy_vol": 1091080,
+            "completed_bull_ratio": 0.0,
+            "completed_total_days": 5,
+            "completeness": 1.0,
+            "cvd": -1363345,
+            "cvd_ma": -1329696,
+            "data_status": "SUCCESS",
+            "estimated_cvd": -1363345,
+            "expected_bars_per_day": 77,
+            "intraday_delta": null,
+            "last_bar_age_min": 0.0,
+            "last_bar_at": "2026-09-16 15:35",
+            "latest_day_traded_value": 36379191844.0,
+            "missing_days": [],
+            "momentum": -16115,
+            "momentum_bars": 4,
+            "momentum_minutes": 30,
+            "momentum_minutes_actual": 30,
+            "momentum_status": "SUCCESS",
+            "normalized_delta": -0.3845278419451519,
+            "normalized_momentum": -0.3479042017015654,
+            "over_count_days": [],
+            "period": 5,
+            "price_cvd_divergence": null,
+            "price_cvd_divergence_lag": null,
+            "score": -4.0,
+            "sell_vol": 2454425,
+            "session": "REGULAR",
+            "session_label": "정규장",
+            "signal": "🔴강한매도",
+            "stale": false,
+            "status_reasons": [],
+            "total_days": 5
+          },
+          "daily_bars_used": 149,
+          "daily_scope": "auto",
+          "days": 5,
+          "index": "golden",
+          "liquidity": {
+            "data_status": "SUCCESS",
+            "days_used": 20,
+            "value": 37010949865.5
+          },
+          "min_bars": 481,
+          "name": "합성약세",
+          "obv": {
+            "data_status": "SUCCESS",
+            "divergence": null,
+            "lookback": 5,
+            "normalized_slope": -1.0,
+            "obv": -107744614,
+            "obv_ma20": -98834477,
+            "pivot_divergence": null,
+            "pivot_divergence_lag": null,
+            "score": -3.0,
+            "signal": "🔴매도이탈",
+            "slope": -5863093,
+            "up_ratio": 0.0
+          },
+          "price": {
+            "above_ma120": false,
+            "above_ma20": false,
+            "above_ma60": false,
+            "close_vs_ma20_pct": -2.04,
+            "data_status": "SUCCESS",
+            "ma20_above_ma60": false,
+            "ma20_rising": false,
+            "ma60_rising": false,
+            "score": -2.0
+          },
+          "rank_session": "REGULAR",
+          "raw_score": -9.0,
+          "risk": {
+            "atr": 288.71,
+            "atr_pct": 0.96,
+            "data_status": "SUCCESS",
+            "overheat_penalty": 0.0,
+            "overheated": false
+          }
+        }
+      },
+      {
+        "args": {
+          "as_of": "2026-09-16 15:35:00",
+          "bdays": 5,
+          "daily_scope": "auto",
+          "period": 5,
+          "rank_session": "REGULAR"
+        },
+        "case": "warmup",
+        "output": {
+          "as_of": "2026-09-16 15:35:00",
+          "bars_by_session": {
+            "AFTER": 96,
+            "OTHER": 0,
+            "REGULAR": 385
+          },
+          "close_check": {
+            "daily_close": 51623.0,
+            "date": "20260915",
+            "diff_pct": 3.658561073070832,
+            "regular_close": 49801.0
+          },
+          "code": "900003",
+          "cvd": {
+            "absent_days": [],
+            "bars_used": 385,
+            "bull_days": 5,
+            "bull_ratio": 1.0,
+            "bull_ratio_for_rank": 1.0,
+            "buy_ratio": 60.9,
+            "buy_vol": 2191714,
+            "completed_bull_ratio": 1.0,
+            "completed_total_days": 5,
+            "completeness": 1.0,
+            "cvd": 787063,
+            "cvd_ma": 766031,
+            "data_status": "SUCCESS",
+            "estimated_cvd": 787063,
+            "expected_bars_per_day": 77,
+            "intraday_delta": null,
+            "last_bar_age_min": 0.0,
+            "last_bar_at": "2026-09-16 15:35",
+            "latest_day_traded_value": 36994015927.0,
+            "missing_days": [],
+            "momentum": 9821,
+            "momentum_bars": 4,
+            "momentum_minutes": 30,
+            "momentum_minutes_actual": 30,
+            "momentum_status": "SUCCESS",
+            "normalized_delta": 0.2188494653442839,
+            "normalized_momentum": 0.20012285503624228,
+            "over_count_days": [],
+            "period": 5,
+            "price_cvd_divergence": null,
+            "price_cvd_divergence_lag": null,
+            "score": 5.0,
+            "sell_vol": 1404651,
+            "session": "REGULAR",
+            "session_label": "정규장",
+            "signal": "🟢강한매수",
+            "stale": false,
+            "status_reasons": [],
+            "total_days": 5
+          },
+          "cvd_after": {
+            "absent_days": [],
+            "bars_used": 96,
+            "bull_days": 2,
+            "bull_ratio": 1.0,
+            "bull_ratio_for_rank": 1.0,
+            "buy_ratio": 60.0,
+            "buy_vol": 60936,
+            "completed_bull_ratio": 1.0,
+            "completed_total_days": 2,
+            "completeness": 1.0,
+            "cvd": 20372,
+            "cvd_ma": 18544,
+            "data_status": "SUCCESS",
+            "estimated_cvd": 20372,
+            "expected_bars_per_day": 48,
+            "intraday_delta": null,
+            "last_bar_age_min": 1175.0,
+            "last_bar_at": "2026-09-15 20:00",
+            "latest_day_traded_value": 2386205550.0,
+            "missing_days": [],
+            "momentum": 1128,
+            "momentum_bars": 6,
+            "momentum_minutes": 30,
+            "momentum_minutes_actual": 30,
+            "momentum_status": "SUCCESS",
+            "normalized_delta": 0.20070796622233295,
+            "normalized_momentum": 0.19980990491099548,
+            "over_count_days": [],
+            "period": 5,
+            "price_cvd_divergence": null,
+            "price_cvd_divergence_lag": null,
+            "score": 5.0,
+            "sell_vol": 40564,
+            "session": "AFTER",
+            "session_label": "애프터마켓",
+            "signal": "🟢강한매수",
+            "stale": false,
+            "status_reasons": [],
+            "total_days": 2
+          },
+          "cvd_regular": {
+            "absent_days": [],
+            "bars_used": 385,
+            "bull_days": 5,
+            "bull_ratio": 1.0,
+            "bull_ratio_for_rank": 1.0,
+            "buy_ratio": 60.9,
+            "buy_vol": 2191714,
+            "completed_bull_ratio": 1.0,
+            "completed_total_days": 5,
+            "completeness": 1.0,
+            "cvd": 787063,
+            "cvd_ma": 766031,
+            "data_status": "SUCCESS",
+            "estimated_cvd": 787063,
+            "expected_bars_per_day": 77,
+            "intraday_delta": null,
+            "last_bar_age_min": 0.0,
+            "last_bar_at": "2026-09-16 15:35",
+            "latest_day_traded_value": 36994015927.0,
+            "missing_days": [],
+            "momentum": 9821,
+            "momentum_bars": 4,
+            "momentum_minutes": 30,
+            "momentum_minutes_actual": 30,
+            "momentum_status": "SUCCESS",
+            "normalized_delta": 0.2188494653442839,
+            "normalized_momentum": 0.20012285503624228,
+            "over_count_days": [],
+            "period": 5,
+            "price_cvd_divergence": null,
+            "price_cvd_divergence_lag": null,
+            "score": 5.0,
+            "sell_vol": 1404651,
+            "session": "REGULAR",
+            "session_label": "정규장",
+            "signal": "🟢강한매수",
+            "stale": false,
+            "status_reasons": [],
+            "total_days": 5
+          },
+          "daily_bars_used": 17,
+          "daily_scope": "auto",
+          "days": 5,
+          "index": "golden",
+          "liquidity": {
+            "data_status": "PARTIAL",
+            "days_used": 17,
+            "value": 56176984515.588234
+          },
+          "min_bars": 481,
+          "name": "합성워밍업",
+          "obv": {
+            "data_status": "PARTIAL",
+            "divergence": null,
+            "lookback": 5,
+            "normalized_slope": 0.3897443290312627,
+            "obv": 7727654,
+            "obv_ma20": null,
+            "pivot_divergence": null,
+            "pivot_divergence_lag": null,
+            "score": 1.0,
+            "signal": "⬜중립",
+            "slope": 2311521,
+            "up_ratio": 0.6
+          },
+          "price": {
+            "above_ma120": null,
+            "above_ma20": null,
+            "above_ma60": null,
+            "close_vs_ma20_pct": null,
+            "data_status": "PARTIAL",
+            "ma20_above_ma60": null,
+            "ma20_rising": null,
+            "ma60_rising": null,
+            "score": 0
+          },
+          "rank_session": "REGULAR",
+          "raw_score": 6.0,
+          "risk": {
+            "atr": 565.37,
+            "atr_pct": 1.1,
+            "data_status": "SUCCESS",
+            "overheat_penalty": 0.0,
+            "overheated": false
+          }
+        }
+      }
+    ],
+    "calc_cvd": [
+      {
+        "args": {
+          "absent_is_error": true,
+          "as_of": "2026-09-16 15:35:00",
+          "bars_sha256": "sha256:6d51209bdc5059f72a2e68c5a32815a1ad052c5ad32636f0bac5526f1070e41b",
+          "min_bars": 10,
+          "period": 5,
+          "requested_days": 5,
+          "session": "REGULAR",
+          "trading_days_count": 150
+        },
+        "case": "bullish",
+        "output": {
+          "absent_days": [],
+          "bars_used": 385,
+          "bull_days": 5,
+          "bull_ratio": 1.0,
+          "bull_ratio_for_rank": 1.0,
+          "buy_ratio": 71.6,
+          "buy_vol": 2500282,
+          "completed_bull_ratio": 1.0,
+          "completed_total_days": 5,
+          "completeness": 1.0,
+          "cvd": 1509749,
+          "cvd_ma": 1460327,
+          "data_status": "SUCCESS",
+          "estimated_cvd": 1509749,
+          "expected_bars_per_day": 77,
+          "intraday_delta": null,
+          "last_bar_age_min": 0.0,
+          "last_bar_at": "2026-09-16 15:35",
+          "latest_day_traded_value": 36268428339.0,
+          "missing_days": [],
+          "momentum": 31255,
+          "momentum_bars": 4,
+          "momentum_minutes": 30,
+          "momentum_minutes_actual": 30,
+          "momentum_status": "SUCCESS",
+          "normalized_delta": 0.43249162834167,
+          "normalized_momentum": 0.5172187128345018,
+          "over_count_days": [],
+          "period": 5,
+          "price_cvd_divergence": null,
+          "price_cvd_divergence_lag": null,
+          "score": 5.0,
+          "sell_vol": 990534,
+          "session": "REGULAR",
+          "session_label": "정규장",
+          "signal": "🟢강한매수",
+          "stale": false,
+          "status_reasons": [],
+          "total_days": 5
+        },
+        "session": "REGULAR"
+      },
+      {
+        "args": {
+          "absent_is_error": false,
+          "as_of": "2026-09-16 15:35:00",
+          "bars_sha256": "sha256:462338e4bdd0f586b0c5d5221a6f5cd69af91dc82e7644f267182e6e4f93103e",
+          "min_bars": 3,
+          "period": 5,
+          "requested_days": null,
+          "session": "AFTER",
+          "trading_days_count": 150
+        },
+        "case": "bullish",
+        "output": {
+          "absent_days": [],
+          "bars_used": 96,
+          "bull_days": 2,
+          "bull_ratio": 1.0,
+          "bull_ratio_for_rank": 1.0,
+          "buy_ratio": 69.3,
+          "buy_vol": 72543,
+          "completed_bull_ratio": 1.0,
+          "completed_total_days": 2,
+          "completeness": 1.0,
+          "cvd": 40381,
+          "cvd_ma": 36532,
+          "data_status": "SUCCESS",
+          "estimated_cvd": 40381,
+          "expected_bars_per_day": 48,
+          "intraday_delta": null,
+          "last_bar_age_min": 1175.0,
+          "last_bar_at": "2026-09-15 20:00",
+          "latest_day_traded_value": 2703351237.0,
+          "missing_days": [],
+          "momentum": 2256,
+          "momentum_bars": 6,
+          "momentum_minutes": 30,
+          "momentum_minutes_actual": 30,
+          "momentum_status": "SUCCESS",
+          "normalized_delta": 0.3856699657261474,
+          "normalized_momentum": 0.38441886431161487,
+          "over_count_days": [],
+          "period": 5,
+          "price_cvd_divergence": null,
+          "price_cvd_divergence_lag": null,
+          "score": 5.0,
+          "sell_vol": 32161,
+          "session": "AFTER",
+          "session_label": "애프터마켓",
+          "signal": "🟢강한매수",
+          "stale": false,
+          "status_reasons": [],
+          "total_days": 2
+        },
+        "session": "AFTER"
+      },
+      {
+        "args": {
+          "absent_is_error": true,
+          "as_of": "2026-09-16 15:35:00",
+          "bars_sha256": "sha256:e86cbbb9fec128408487dbb37274016389be07cf5cfd36daed53f6f2a0b080b5",
+          "min_bars": 10,
+          "period": 5,
+          "requested_days": 5,
+          "session": "REGULAR",
+          "trading_days_count": 150
+        },
+        "case": "bearish",
+        "output": {
+          "absent_days": [],
+          "bars_used": 385,
+          "bull_days": 0,
+          "bull_ratio": 0.0,
+          "bull_ratio_for_rank": 0.0,
+          "buy_ratio": 30.8,
+          "buy_vol": 1091080,
+          "completed_bull_ratio": 0.0,
+          "completed_total_days": 5,
+          "completeness": 1.0,
+          "cvd": -1363345,
+          "cvd_ma": -1329696,
+          "data_status": "SUCCESS",
+          "estimated_cvd": -1363345,
+          "expected_bars_per_day": 77,
+          "intraday_delta": null,
+          "last_bar_age_min": 0.0,
+          "last_bar_at": "2026-09-16 15:35",
+          "latest_day_traded_value": 36379191844.0,
+          "missing_days": [],
+          "momentum": -16115,
+          "momentum_bars": 4,
+          "momentum_minutes": 30,
+          "momentum_minutes_actual": 30,
+          "momentum_status": "SUCCESS",
+          "normalized_delta": -0.3845278419451519,
+          "normalized_momentum": -0.3479042017015654,
+          "over_count_days": [],
+          "period": 5,
+          "price_cvd_divergence": null,
+          "price_cvd_divergence_lag": null,
+          "score": -4.0,
+          "sell_vol": 2454425,
+          "session": "REGULAR",
+          "session_label": "정규장",
+          "signal": "🔴강한매도",
+          "stale": false,
+          "status_reasons": [],
+          "total_days": 5
+        },
+        "session": "REGULAR"
+      },
+      {
+        "args": {
+          "absent_is_error": false,
+          "as_of": "2026-09-16 15:35:00",
+          "bars_sha256": "sha256:3828d20cf18b8eb3431f1aeb33214f76e8eec343f3a712828a6263219e08d32c",
+          "min_bars": 3,
+          "period": 5,
+          "requested_days": null,
+          "session": "AFTER",
+          "trading_days_count": 150
+        },
+        "case": "bearish",
+        "output": {
+          "absent_days": [],
+          "bars_used": 96,
+          "bull_days": 0,
+          "bull_ratio": 0.0,
+          "bull_ratio_for_rank": 0.0,
+          "buy_ratio": 28.6,
+          "buy_vol": 28655,
+          "completed_bull_ratio": 0.0,
+          "completed_total_days": 2,
+          "completeness": 1.0,
+          "cvd": -42816,
+          "cvd_ma": -38590,
+          "data_status": "SUCCESS",
+          "estimated_cvd": -42816,
+          "expected_bars_per_day": 48,
+          "intraday_delta": null,
+          "last_bar_age_min": 1175.0,
+          "last_bar_at": "2026-09-15 20:00",
+          "latest_day_traded_value": 2589679827.0,
+          "missing_days": [],
+          "momentum": -3114,
+          "momentum_bars": 6,
+          "momentum_minutes": 30,
+          "momentum_minutes_actual": 30,
+          "momentum_status": "SUCCESS",
+          "normalized_delta": -0.4276174919990885,
+          "normalized_momentum": -0.43426505253079983,
+          "over_count_days": [],
+          "period": 5,
+          "price_cvd_divergence": null,
+          "price_cvd_divergence_lag": null,
+          "score": -4.0,
+          "sell_vol": 71471,
+          "session": "AFTER",
+          "session_label": "애프터마켓",
+          "signal": "🔴강한매도",
+          "stale": false,
+          "status_reasons": [],
+          "total_days": 2
+        },
+        "session": "AFTER"
+      },
+      {
+        "args": {
+          "absent_is_error": true,
+          "as_of": "2026-09-16 15:35:00",
+          "bars_sha256": "sha256:27abbbd16394cdf18d0f2e04acde5e9be3cc72e787b8185095bd9238e988a2a6",
+          "min_bars": 10,
+          "period": 5,
+          "requested_days": 5,
+          "session": "REGULAR",
+          "trading_days_count": 18
+        },
+        "case": "warmup",
+        "output": {
+          "absent_days": [],
+          "bars_used": 385,
+          "bull_days": 5,
+          "bull_ratio": 1.0,
+          "bull_ratio_for_rank": 1.0,
+          "buy_ratio": 60.9,
+          "buy_vol": 2191714,
+          "completed_bull_ratio": 1.0,
+          "completed_total_days": 5,
+          "completeness": 1.0,
+          "cvd": 787063,
+          "cvd_ma": 766031,
+          "data_status": "SUCCESS",
+          "estimated_cvd": 787063,
+          "expected_bars_per_day": 77,
+          "intraday_delta": null,
+          "last_bar_age_min": 0.0,
+          "last_bar_at": "2026-09-16 15:35",
+          "latest_day_traded_value": 36994015927.0,
+          "missing_days": [],
+          "momentum": 9821,
+          "momentum_bars": 4,
+          "momentum_minutes": 30,
+          "momentum_minutes_actual": 30,
+          "momentum_status": "SUCCESS",
+          "normalized_delta": 0.2188494653442839,
+          "normalized_momentum": 0.20012285503624228,
+          "over_count_days": [],
+          "period": 5,
+          "price_cvd_divergence": null,
+          "price_cvd_divergence_lag": null,
+          "score": 5.0,
+          "sell_vol": 1404651,
+          "session": "REGULAR",
+          "session_label": "정규장",
+          "signal": "🟢강한매수",
+          "stale": false,
+          "status_reasons": [],
+          "total_days": 5
+        },
+        "session": "REGULAR"
+      },
+      {
+        "args": {
+          "absent_is_error": false,
+          "as_of": "2026-09-16 15:35:00",
+          "bars_sha256": "sha256:cdbe233794ecb2c781587beab040701c3c3230f48c0b717fcef217012096f412",
+          "min_bars": 3,
+          "period": 5,
+          "requested_days": null,
+          "session": "AFTER",
+          "trading_days_count": 18
+        },
+        "case": "warmup",
+        "output": {
+          "absent_days": [],
+          "bars_used": 96,
+          "bull_days": 2,
+          "bull_ratio": 1.0,
+          "bull_ratio_for_rank": 1.0,
+          "buy_ratio": 60.0,
+          "buy_vol": 60936,
+          "completed_bull_ratio": 1.0,
+          "completed_total_days": 2,
+          "completeness": 1.0,
+          "cvd": 20372,
+          "cvd_ma": 18544,
+          "data_status": "SUCCESS",
+          "estimated_cvd": 20372,
+          "expected_bars_per_day": 48,
+          "intraday_delta": null,
+          "last_bar_age_min": 1175.0,
+          "last_bar_at": "2026-09-15 20:00",
+          "latest_day_traded_value": 2386205550.0,
+          "missing_days": [],
+          "momentum": 1128,
+          "momentum_bars": 6,
+          "momentum_minutes": 30,
+          "momentum_minutes_actual": 30,
+          "momentum_status": "SUCCESS",
+          "normalized_delta": 0.20070796622233295,
+          "normalized_momentum": 0.19980990491099548,
+          "over_count_days": [],
+          "period": 5,
+          "price_cvd_divergence": null,
+          "price_cvd_divergence_lag": null,
+          "score": 5.0,
+          "sell_vol": 40564,
+          "session": "AFTER",
+          "session_label": "애프터마켓",
+          "signal": "🟢강한매수",
+          "stale": false,
+          "status_reasons": [],
+          "total_days": 2
+        },
+        "session": "AFTER"
+      }
+    ],
+    "calc_liquidity": [
+      {
+        "args": {
+          "bars_sha256": "sha256:d874d8e15856b13f029301a4d06a0805ec2842c47efbe089b02fd6211922d0b7",
+          "n": 20
+        },
+        "case": "bullish",
+        "output": {
+          "data_status": "SUCCESS",
+          "days_used": 20,
+          "value": 91692835848.35
+        }
+      },
+      {
+        "args": {
+          "bars_sha256": "sha256:d8bc5bdc5c8cf293a3566d38eea0dc4c64c97b8b55633ffbf0ff8c8db701b430",
+          "n": 20
+        },
+        "case": "bearish",
+        "output": {
+          "data_status": "SUCCESS",
+          "days_used": 20,
+          "value": 37010949865.5
+        }
+      },
+      {
+        "args": {
+          "bars_sha256": "sha256:86dbe81565cc875b839bba20adbf7f87f99e329ba17349a9f8043b71b59f912d",
+          "n": 20
+        },
+        "case": "warmup",
+        "output": {
+          "data_status": "PARTIAL",
+          "days_used": 17,
+          "value": 56176984515.588234
+        }
+      }
+    ],
+    "calc_obv": [
+      {
+        "args": {
+          "bars_sha256": "sha256:d874d8e15856b13f029301a4d06a0805ec2842c47efbe089b02fd6211922d0b7",
+          "divergence_lookback": 5
+        },
+        "case": "bullish",
+        "output": {
+          "data_status": "SUCCESS",
+          "divergence": null,
+          "lookback": 5,
+          "normalized_slope": 0.32568032908162553,
+          "obv": 89412758,
+          "obv_ma20": 86057759,
+          "pivot_divergence": null,
+          "pivot_divergence_lag": null,
+          "score": 3.0,
+          "signal": "🟢매수축적",
+          "slope": 1866586,
+          "up_ratio": 0.6
+        }
+      },
+      {
+        "args": {
+          "bars_sha256": "sha256:d8bc5bdc5c8cf293a3566d38eea0dc4c64c97b8b55633ffbf0ff8c8db701b430",
+          "divergence_lookback": 5
+        },
+        "case": "bearish",
+        "output": {
+          "data_status": "SUCCESS",
+          "divergence": null,
+          "lookback": 5,
+          "normalized_slope": -1.0,
+          "obv": -107744614,
+          "obv_ma20": -98834477,
+          "pivot_divergence": null,
+          "pivot_divergence_lag": null,
+          "score": -3.0,
+          "signal": "🔴매도이탈",
+          "slope": -5863093,
+          "up_ratio": 0.0
+        }
+      },
+      {
+        "args": {
+          "bars_sha256": "sha256:86dbe81565cc875b839bba20adbf7f87f99e329ba17349a9f8043b71b59f912d",
+          "divergence_lookback": 5
+        },
+        "case": "warmup",
+        "output": {
+          "data_status": "PARTIAL",
+          "divergence": null,
+          "lookback": 5,
+          "normalized_slope": 0.3897443290312627,
+          "obv": 7727654,
+          "obv_ma20": null,
+          "pivot_divergence": null,
+          "pivot_divergence_lag": null,
+          "score": 1.0,
+          "signal": "⬜중립",
+          "slope": 2311521,
+          "up_ratio": 0.6
+        }
+      }
+    ],
+    "calc_price_trend": [
+      {
+        "args": {
+          "bars_sha256": "sha256:d874d8e15856b13f029301a4d06a0805ec2842c47efbe089b02fd6211922d0b7"
+        },
+        "case": "bullish",
+        "output": {
+          "above_ma120": true,
+          "above_ma20": true,
+          "above_ma60": true,
+          "close_vs_ma20_pct": 1.35,
+          "data_status": "SUCCESS",
+          "ma20_above_ma60": true,
+          "ma20_rising": true,
+          "ma60_rising": true,
+          "score": 2.0
+        }
+      },
+      {
+        "args": {
+          "bars_sha256": "sha256:d8bc5bdc5c8cf293a3566d38eea0dc4c64c97b8b55633ffbf0ff8c8db701b430"
+        },
+        "case": "bearish",
+        "output": {
+          "above_ma120": false,
+          "above_ma20": false,
+          "above_ma60": false,
+          "close_vs_ma20_pct": -2.04,
+          "data_status": "SUCCESS",
+          "ma20_above_ma60": false,
+          "ma20_rising": false,
+          "ma60_rising": false,
+          "score": -2.0
+        }
+      },
+      {
+        "args": {
+          "bars_sha256": "sha256:86dbe81565cc875b839bba20adbf7f87f99e329ba17349a9f8043b71b59f912d"
+        },
+        "case": "warmup",
+        "output": {
+          "above_ma120": null,
+          "above_ma20": null,
+          "above_ma60": null,
+          "close_vs_ma20_pct": null,
+          "data_status": "PARTIAL",
+          "ma20_above_ma60": null,
+          "ma20_rising": null,
+          "ma60_rising": null,
+          "score": 0
+        }
+      }
+    ],
+    "calc_risk": [
+      {
+        "args": {
+          "bars_sha256": "sha256:d874d8e15856b13f029301a4d06a0805ec2842c47efbe089b02fd6211922d0b7",
+          "close_vs_ma20_pct": 1.35
+        },
+        "case": "bullish",
+        "output": {
+          "atr": 721.97,
+          "atr_pct": 0.91,
+          "data_status": "SUCCESS",
+          "overheat_penalty": 0.0,
+          "overheated": false
+        }
+      },
+      {
+        "args": {
+          "bars_sha256": "sha256:d8bc5bdc5c8cf293a3566d38eea0dc4c64c97b8b55633ffbf0ff8c8db701b430",
+          "close_vs_ma20_pct": -2.04
+        },
+        "case": "bearish",
+        "output": {
+          "atr": 288.71,
+          "atr_pct": 0.96,
+          "data_status": "SUCCESS",
+          "overheat_penalty": 0.0,
+          "overheated": false
+        }
+      },
+      {
+        "args": {
+          "bars_sha256": "sha256:86dbe81565cc875b839bba20adbf7f87f99e329ba17349a9f8043b71b59f912d",
+          "close_vs_ma20_pct": null
+        },
+        "case": "warmup",
+        "output": {
+          "atr": 565.37,
+          "atr_pct": 1.1,
+          "data_status": "SUCCESS",
+          "overheat_penalty": 0.0,
+          "overheated": false
+        }
+      }
+    ]
+  },
+  "golden_version": "1.0.0",
+  "inputs": {
+    "bearish": {
+      "bars_by_session": {
+        "AFTER": 96,
+        "OTHER": 0,
+        "REGULAR": 385
+      },
+      "code": "900002",
+      "daily_bars": {
+        "count": 150,
+        "first": {
+          "close": 49616.0,
+          "dt": "20260219",
+          "high": 49660.0,
+          "low": 49242.0,
+          "open": 49630.0,
+          "volume": 1087072
+        },
+        "last": {
+          "close": 29923.0,
+          "dt": "20260916",
+          "high": 30015.0,
+          "low": 29812.0,
+          "open": 29922.0,
+          "volume": 907923
+        },
+        "sha256": "sha256:c7b0e01d07876761f5240c6fa657281849accc9350bfeec7df1d1658616b5fa5"
+      },
+      "daily_bars_completed": {
+        "count": 149,
+        "first": {
+          "close": 49616.0,
+          "dt": "20260219",
+          "high": 49660.0,
+          "low": 49242.0,
+          "open": 49630.0,
+          "volume": 1087072
+        },
+        "last": {
+          "close": 30005.0,
+          "dt": "20260915",
+          "high": 30201.0,
+          "low": 29799.0,
+          "open": 30000.0,
+          "volume": 734881
+        },
+        "sha256": "sha256:d8bc5bdc5c8cf293a3566d38eea0dc4c64c97b8b55633ffbf0ff8c8db701b430"
+      },
+      "daily_days": 150,
+      "minute_bars": {
+        "count": 481,
+        "first": {
+          "bar_end": "2026-09-10 09:05:00",
+          "bar_start": "2026-09-10 09:00:00",
+          "close": 49939.0,
+          "dt": "20260910090000",
+          "high": 50045.0,
+          "low": 49892.0,
+          "open": 49992.0,
+          "session": "REGULAR",
+          "volume": 7430
+        },
+        "last": {
+          "bar_end": "2026-09-16 15:35:00",
+          "bar_start": "2026-09-16 15:30:00",
+          "close": 50815.0,
+          "dt": "20260916153000",
+          "high": 50925.0,
+          "low": 50771.0,
+          "open": 50875.0,
+          "session": "REGULAR",
+          "volume": 17156
+        },
+        "sha256": "sha256:766edc38a9338ec36225e21d89e7d6ef1db27ed3038aa285fa1428630d91f9cb"
+      },
+      "name": "합성약세"
+    },
+    "bullish": {
+      "bars_by_session": {
+        "AFTER": 96,
+        "OTHER": 0,
+        "REGULAR": 385
+      },
+      "code": "900001",
+      "daily_bars": {
+        "count": 150,
+        "first": {
+          "close": 50252.0,
+          "dt": "20260219",
+          "high": 50385.0,
+          "low": 50200.0,
+          "open": 50246.0,
+          "volume": 1251045
+        },
+        "last": {
+          "close": 79737.0,
+          "dt": "20260916",
+          "high": 79765.0,
+          "low": 79474.0,
+          "open": 79726.0,
+          "volume": 1578208
+        },
+        "sha256": "sha256:304b9ab5cd225ef9f89ec0bc1c79c991aefcc1b83a906fc44baf8b622348a46f"
+      },
+      "daily_bars_completed": {
+        "count": 149,
+        "first": {
+          "close": 50252.0,
+          "dt": "20260219",
+          "high": 50385.0,
+          "low": 50200.0,
+          "open": 50246.0,
+          "volume": 1251045
+        },
+        "last": {
+          "close": 79314.0,
+          "dt": "20260915",
+          "high": 79961.0,
+          "low": 79273.0,
+          "open": 79340.0,
+          "volume": 951896
+        },
+        "sha256": "sha256:d874d8e15856b13f029301a4d06a0805ec2842c47efbe089b02fd6211922d0b7"
+      },
+      "daily_days": 150,
+      "minute_bars": {
+        "count": 481,
+        "first": {
+          "bar_end": "2026-09-10 09:05:00",
+          "bar_start": "2026-09-10 09:00:00",
+          "close": 50087.0,
+          "dt": "20260910090000",
+          "high": 50114.0,
+          "low": 49982.0,
+          "open": 50018.0,
+          "session": "REGULAR",
+          "volume": 4714
+        },
+        "last": {
+          "bar_end": "2026-09-16 15:35:00",
+          "bar_start": "2026-09-16 15:30:00",
+          "close": 50810.0,
+          "dt": "20260916153000",
+          "high": 50846.0,
+          "low": 50696.0,
+          "open": 50740.0,
+          "session": "REGULAR",
+          "volume": 31923
+        },
+        "sha256": "sha256:bd52d275609b3842d541bb9bb0e2a2d1d297516bc39b9b94694c16e6ce13f786"
+      },
+      "name": "합성강세"
+    },
+    "warmup": {
+      "bars_by_session": {
+        "AFTER": 96,
+        "OTHER": 0,
+        "REGULAR": 385
+      },
+      "code": "900003",
+      "daily_bars": {
+        "count": 18,
+        "first": {
+          "close": 49510.0,
+          "dt": "20260824",
+          "high": 49553.0,
+          "low": 49209.0,
+          "open": 49544.0,
+          "volume": 1494476
+        },
+        "last": {
+          "close": 51094.0,
+          "dt": "20260916",
+          "high": 51525.0,
+          "low": 50848.0,
+          "open": 51131.0,
+          "volume": 1154578
+        },
+        "sha256": "sha256:2533fc134d6e680d0c280888f9138aae7b408963742a14353b48b6836e9e9e8c"
+      },
+      "daily_bars_completed": {
+        "count": 17,
+        "first": {
+          "close": 49510.0,
+          "dt": "20260824",
+          "high": 49553.0,
+          "low": 49209.0,
+          "open": 49544.0,
+          "volume": 1494476
+        },
+        "last": {
+          "close": 51623.0,
+          "dt": "20260915",
+          "high": 51944.0,
+          "low": 51539.0,
+          "open": 51655.0,
+          "volume": 952524
+        },
+        "sha256": "sha256:86dbe81565cc875b839bba20adbf7f87f99e329ba17349a9f8043b71b59f912d"
+      },
+      "daily_days": 18,
+      "minute_bars": {
+        "count": 481,
+        "first": {
+          "bar_end": "2026-09-10 09:05:00",
+          "bar_start": "2026-09-10 09:00:00",
+          "close": 49976.0,
+          "dt": "20260910090000",
+          "high": 50039.0,
+          "low": 49874.0,
+          "open": 49941.0,
+          "session": "REGULAR",
+          "volume": 5329
+        },
+        "last": {
+          "bar_end": "2026-09-16 15:35:00",
+          "bar_start": "2026-09-16 15:30:00",
+          "close": 49209.0,
+          "dt": "20260916153000",
+          "high": 49276.0,
+          "low": 49075.0,
+          "open": 49148.0,
+          "session": "REGULAR",
+          "volume": 17386
+        },
+        "sha256": "sha256:aeb165bd11823ec1a5cd62110cd226704eb0f378414020269e25ae8e14237357"
+      },
+      "name": "합성워밍업"
+    }
+  },
+  "market_rule_version": "KRX-2026-09-14-aftermarket",
+  "params": {
+    "bdays": 5,
+    "daily_scope": "auto",
+    "end_date": "20260916",
+    "period": 5,
+    "rank_session": "REGULAR"
+  },
+  "pipeline": {
+    "_compute_gate": [
+      {
+        "code": "900001",
+        "output": {
+          "gate_passed": true,
+          "gate_reasons": [],
+          "status": "BUY_CANDIDATE"
+        }
+      },
+      {
+        "code": "900002",
+        "output": {
+          "gate_passed": false,
+          "gate_reasons": [
+            "CVD 정규화 Delta ≤ 0(정규장)",
+            "CVD 정규화 모멘텀 ≤ 0(정규장)",
+            "정규장 매수우위일 비율 < 50%",
+            "종가가 MA20 이하",
+            "OBV 상승 조건 미충족(정규화 기울기>0 & OBV>MA20)"
+          ],
+          "status": "WATCH"
+        }
+      },
+      {
+        "code": "900003",
+        "output": {
+          "gate_passed": false,
+          "gate_reasons": [
+            "데이터 품질 미충족(CVD/OBV/가격추세 중 PARTIAL·FAILED)",
+            "종가가 MA20 이하",
+            "OBV 상승 조건 미충족(정규화 기울기>0 & OBV>MA20)"
+          ],
+          "status": "DATA_INSUFFICIENT"
+        }
+      }
+    ],
+    "_finalize_scores": [
+      {
+        "code": "900001",
+        "cvd_points": 37.5,
+        "gate_passed": true,
+        "gate_reasons": [],
+        "liquidity_percentile": 100.0,
+        "liquidity_points": 10.0,
+        "obv_points": 35.0,
+        "price_points": 15.0,
+        "risk_penalty": 0.0,
+        "status": "BUY_CANDIDATE",
+        "total": 97.5
+      },
+      {
+        "code": "900002",
+        "cvd_points": 0.0,
+        "gate_passed": false,
+        "gate_reasons": [
+          "CVD 정규화 Delta ≤ 0(정규장)",
+          "CVD 정규화 모멘텀 ≤ 0(정규장)",
+          "정규장 매수우위일 비율 < 50%",
+          "종가가 MA20 이하",
+          "OBV 상승 조건 미충족(정규화 기울기>0 & OBV>MA20)"
+        ],
+        "liquidity_percentile": 0.0,
+        "liquidity_points": 0.0,
+        "obv_points": 0.0,
+        "price_points": 0.0,
+        "risk_penalty": 0.0,
+        "status": "WATCH",
+        "total": 0.0
+      },
+      {
+        "code": "900003",
+        "cvd_points": 22.5,
+        "gate_passed": false,
+        "gate_reasons": [
+          "데이터 품질 미충족(CVD/OBV/가격추세 중 PARTIAL·FAILED)",
+          "종가가 MA20 이하",
+          "OBV 상승 조건 미충족(정규화 기울기>0 & OBV>MA20)"
+        ],
+        "liquidity_percentile": null,
+        "liquidity_points": 0.0,
+        "obv_points": 0.0,
+        "price_points": 0.0,
+        "risk_penalty": 0.0,
+        "status": "DATA_INSUFFICIENT",
+        "total": 22.5
+      }
+    ]
+  },
+  "scanner_version": "1.5"
+}

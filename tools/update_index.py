@@ -3,11 +3,19 @@
 """
 코스피200 / 코스닥150 구성종목 목록 생성 도구
 
-키움 REST API 또는 KRX 공식 데이터로 구성종목을 조회해서
-data/index_stocks.json 파일 하나에 저장합니다.
+기본 출처는 **유니버스 이력**(`silver.universe_membership`)이다. KRX 지수운영
+공지 첨부와 시총 항등식 검산으로 복원한 구성종목 이력에서, 마지막 관측일의
+구성을 꺼내 data/index_stocks.json 파일 하나에 저장한다.
 
-코스피200, 코스닥150은 분기별로 정기 변경되므로
-변경 시마다 이 도구를 실행해서 목록을 최신화하세요.
+왜 이력이 기본인가 (2026-09-27)
+-------------------------------
+예전 기본값이던 키움 ka20002는 코스닥150 전용 코드가 없어 **코스닥 시총 상위
+150개로 근사**했다. 2026-09-23 명단은 실제 구성과 37종목이 달랐고, 일봉 수집기가
+이 파일로 대상을 고르므로 실제 구성종목 39개의 일봉이 조용히 빠졌다. 이력은
+백테스트·스캐너가 쓰는 유니버스와 **같은 원천**이라 둘이 어긋나지 않는다.
+
+코스피200, 코스닥150은 매년 6·12월 정기 변경되고, 그 사이 수시변경(합병·상장폐지 등)이 있다. 변경 후에는 **유니버스 이력을
+먼저 갱신**하고(아래 "이력 갱신") 이 도구를 실행한다.
 
 저장 경로: data/index_stocks.json
   {
@@ -24,31 +32,49 @@ data/index_stocks.json 파일 하나에 저장합니다.
   }
 
 사용법:
-  python3 tools/update_index.py                     # 전체 갱신
+  python3 tools/update_index.py                     # 전체 갱신(유니버스 이력)
   python3 tools/update_index.py --index kospi200    # 코스피200만
-  python3 tools/update_index.py --index kosdaq150   # 코스닥150만
+  python3 tools/update_index.py --as-of 2026-06-12  # 특정 날짜 구성
   python3 tools/update_index.py --show              # 저장된 목록 확인
-  python3 tools/update_index.py --show --index kospi200
+  python3 tools/update_index.py --verify            # KRX 지수 시총과 대조
+  python3 tools/update_index.py --source kiwoom     # (근사) 키움 ka20002
+  python3 tools/update_index.py --from-csv 파일.csv --index kospi200
 
-키 설정 (키움 API 방식 사용 시) — 프로젝트 루트 .env 파일 (.env.example 참고):
+이력 갱신 (정기 변경 후 — 이 도구보다 먼저, docs/STAGE_STATUS_V2.md "Stage 3 전체 재현 순서"):
+  python cvdobv.py daily-cache build --index KOSPI200 --start {최근일-7} --end {어제} --run-id topup-{오늘}-kospi200
+  python cvdobv.py calendar build                        # 일봉에서 거래일 달력 연장 — rebuild가 달력 마지막 날에 씨앗을 놓는다
+  python cvdobv.py universe snapshot --index KOSPI200    # 오늘 구성(KIS, 2026-10-23~) — 역행 복원의 출발점. KRX 시총 검산 차이 0원이어야 정상
+  python cvdobv.py universe snapshot --index KOSDAQ150   # KIS는 코스닥150도 찍는다(키움은 불가)
+  python cvdobv.py universe krx-cache --start {이력 마지막일} --market BOTH    # 검산 재료
+  python cvdobv.py universe notices                      # 지수운영공지·첨부(정기변경 명단)
+  python cvdobv.py universe rebuild --index KOSPI200     # 매 거래일 시총 항등식 검산하며 복원
+  python cvdobv.py universe rebuild --index KOSDAQ150
+  python cvdobv.py universe verify --index KOSPI200      # 독립 재검산(수십 분)
+  python cvdobv.py universe verify --index KOSDAQ150
+
+키 설정 (`--source kiwoom`일 때만) — 프로젝트 루트 .env 파일 (.env.example 참고):
   KIWOOM_APP_KEY=앱키
   KIWOOM_APP_SECRET=앱시크릿
 """
 
 import argparse
-import io
 import json
 import os
 import subprocess
 import sys
 import tempfile
 import time
-from datetime import datetime
+from datetime import date, datetime
 from typing import Optional
 
 if sys.platform == "win32":
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8")
+    # 스트림을 새로 감싸지 않고 인코딩만 바꾼다 — 감싸면 import하는 쪽(pytest 등)의
+    # 출력 캡처가 닫힌 스트림을 잡게 된다.
+    for _stream in (sys.stdout, sys.stderr):
+        try:
+            _stream.reconfigure(encoding="utf-8")
+        except (AttributeError, ValueError):
+            pass
 
 # ── .env 로더: 프로젝트 루트의 .env를 os.environ에 주입 ──
 try:
@@ -69,6 +95,11 @@ _KIWOOM_BASE   = "https://api.kiwoom.com"
 _TIMEOUT       = 30
 
 os.makedirs(_DATA_DIR, exist_ok=True)
+
+#: 이력 마지막 관측일이 이보다 오래되면 경고한다 — 정기 변경(6·12월)이나
+#: 그 사이 수시변경을 놓쳤을 수 있다.
+_HISTORY_STALE_DAYS = 80
+_INDEX_ID = {"kospi200": "KOSPI200", "kosdaq150": "KOSDAQ150"}
 
 
 # ─────────────────────────────────────────────────────────────
@@ -202,7 +233,84 @@ def _kiwoom(path: str, body: dict, api_id: str, token: str,
 
 
 # ─────────────────────────────────────────────────────────────
-# 방법 1 — 키움 API로 구성종목 조회
+# 방법 0 (기본) — 유니버스 이력에서 구성종목
+# ─────────────────────────────────────────────────────────────
+
+def _src_path():
+    src = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src")
+    if src not in sys.path:
+        sys.path.insert(0, src)
+
+
+def _security_names() -> dict:
+    """{security_id: 종목명} — 종목 마스터, 같은 종목이면 가장 최근 valid_from."""
+    _src_path()
+    try:
+        from cvd_obv.storage.parquet_store import ParquetStore
+        t = ParquetStore().read_arrow("silver", "security_master",
+                                      columns=["security_id", "name", "valid_from"])
+    except Exception:                                     # noqa: BLE001
+        return {}
+    rows = sorted(zip(t.column("security_id").to_pylist(), t.column("name").to_pylist(),
+                      t.column("valid_from").to_pylist()),
+                  key=lambda r: (r[0], str(r[2])))
+    return {sid: name for sid, name, _ in rows if name}
+
+
+def members_to_stocks(members: list, names: dict, fallback: dict = None) -> list:
+    """["KRX:005930", …] → [{"code", "name"}, …] (코드 오름차순).
+
+    이름은 종목 마스터 → 기존 파일 → 코드 순으로 채운다.
+    """
+    fallback = fallback or {}
+    out = []
+    for sid in sorted(members):
+        code = sid.split(":", 1)[-1]
+        out.append({"code": code, "name": names.get(sid) or fallback.get(code) or code})
+    return out
+
+
+def fetch_from_history(index_name: str, as_of: Optional[date] = None,
+                       repo=None, names: dict = None) -> tuple:
+    """유니버스 이력에서 구성종목. 반환 (stocks, meta) — 실패 시 ([], meta).
+
+    `as_of`를 비우면 이력의 **마지막 관측일**. 관측 구간 밖 날짜는 거부한다 —
+    가장 가까운 관측으로 대체하면 그 사실이 파일에 남지 않기 때문이다.
+    """
+    _src_path()
+    index_id = _INDEX_ID[index_name]
+    meta = {"source": "history", "index_id": index_id}
+    try:
+        if repo is None:
+            from cvd_obv.ingestion.universe_history import UniverseRepository
+            repo = UniverseRepository()
+        cov = repo.coverage(index_id)
+    except Exception as exc:                              # noqa: BLE001
+        meta["error"] = f"유니버스 이력을 읽지 못했다: {exc}"
+        return [], meta
+    start, end = cov["observed_start"], cov["observed_end"]
+    target = as_of or end
+    if not (start <= target <= end):
+        meta["error"] = (f"{target}는 {index_id} 이력 관측 구간({start} ~ {end}) 밖이다 "
+                         f"— 이력을 먼저 갱신하라")
+        return [], meta
+    got = repo.get_members(index_id, target)
+    if got.get("survivorship_status") != "HISTORICAL":
+        meta["error"] = f"{index_id} {target}: 이력이 아닌 대체 구성({got.get('survivorship_status')})"
+        return [], meta
+    if names is None:
+        names = _security_names()
+    old = {s["code"]: s.get("name") for s in
+           (_load_index_file().get(index_name) or {}).get("stocks", [])}
+    stocks = members_to_stocks(got["members"], names, old)
+    meta.update(as_of=target.isoformat(), observed_end=end.isoformat(),
+                universe_version=got.get("universe_version"),
+                stale_days=(date.today() - end).days)
+    return stocks, meta
+
+
+# ─────────────────────────────────────────────────────────────
+# 방법 1 — 키움 API로 구성종목 조회 (`--source kiwoom`, 근사)
 # ─────────────────────────────────────────────────────────────
 
 # 키움 업종 코드
@@ -286,10 +394,21 @@ def fetch_from_kiwoom(index_name: str, token: str) -> list:
             break
         time.sleep(0.25)
 
-    # 코스닥150: 전체 코스닥에서 상위 150개만 사용
+    # 코스닥150은 ka20002가 코스닥 "전체"를 주므로 150종목으로 줄여야 한다.
+    # 예전에는 `stocks[:limit]`로 잘랐는데 응답 순서가 **종목코드 오름차순**
+    # 이라 시총 상위가 아니라 코드가 작은 150종목이 뽑혔다. 2026-09-21 실측:
+    # 그 명단의 시총 합이 공식 코스닥150 지수의 **11%**밖에 안 됐고 알테오젠·
+    # 에코프로 같은 상위 종목이 전부 빠져 있었다. 코드 순서를 시총 순서로
+    # 착각한 것이다. 이제 자르지 않고 KRX 시총으로 다시 정렬한다.
     if index_name == "kosdaq150" and len(stocks) > limit:
-        stocks = stocks[:limit]
-        print(f"  코스닥150: 전체 {len(stocks)+limit-limit}개 중 상위 {limit}개 사용")
+        ranked = rank_by_krx_mktcap(stocks, limit)
+        if ranked:
+            print(f"  코스닥150: 전체 {len(stocks)}개 → KRX 시총 상위 {limit}개")
+            stocks = ranked
+        else:
+            print(f"  ⚠ 코스닥150: KRX 시총을 못 받았다. "
+                  f"코드순 절단은 틀린 명단을 만들므로 저장하지 않는다.")
+            return []
 
     return stocks
 
@@ -302,6 +421,101 @@ _KRX_INDEX_CODE = {
     "kospi200":  "1028",
     "kosdaq150": "2203",
 }
+
+def _krx_api():
+    """검산용 KRX Open API 어댑터. 없으면 None."""
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    src = os.path.join(root, "src")
+    if src not in sys.path:
+        sys.path.insert(0, src)
+    try:
+        from cvd_obv.ingestion.krx_openapi import KrxOpenApi, market_for
+    except Exception:                                     # noqa: BLE001
+        return None, None
+    try:
+        return KrxOpenApi(min_interval_sec=0.3), market_for
+    except Exception:                                     # noqa: BLE001
+        return None, None
+
+
+def _recent_bas_dd(api, market, back: int = 10):
+    """오늘부터 거꾸로 걸으며 응답이 있는 첫 거래일."""
+    from datetime import date, timedelta
+    # 오늘은 장 마감 전이면 빈 배열이 온다. 어제부터 걷는다.
+    day = date.today() - timedelta(days=1)
+    for _ in range(back):
+        bas = day.strftime("%Y%m%d")
+        try:
+            if api.fetch(market.stock_service, bas, retries=1):
+                return bas
+        except Exception:                                 # noqa: BLE001
+            pass
+        day -= timedelta(days=1)
+    return None
+
+
+def rank_by_krx_mktcap(stocks: list, limit: int) -> list:
+    """코스닥 종목들을 KRX 상장시가총액 순으로 정렬해 상위 `limit`개.
+
+    **이것은 근사다.** 코스닥150은 유동주식 비율과 산업군 배분을 반영하므로
+    단순 시총 상위와 다르다. 2026-09-18 실측으로 시총 상위 150종의 합은 공식
+    지수보다 **7.2% 크다.** 그래서 저장 후 `verify_index`로 오차를 찍어
+    "근사임을 아는 상태"로 쓴다. 공식 명단이 필요하면 KRX에서 CSV를 받아
+    `--csv`로 넣는다.
+    """
+    api, market_for = _krx_api()
+    if api is None:
+        return []
+    market = market_for("KOSDAQ150")
+    bas = _recent_bas_dd(api, market)
+    if not bas:
+        return []
+    try:
+        caps = api.stock_caps(bas, market)
+    except Exception:                                     # noqa: BLE001
+        return []
+    scored = [(caps.get(s["code"], 0), s) for s in stocks]
+    scored.sort(key=lambda x: (-x[0], x[1]["code"]))
+    return [s for _, s in scored[:limit]]
+
+
+def verify_index(index_name: str) -> Optional[dict]:
+    """저장된 명단을 KRX 공식 지수 시가총액과 대조한다.
+
+    명단을 **믿는 대신 확인하는** 경로다. `diff_pct`가 0에 가까우면 명단이
+    맞고, 크게 벌어지면 틀린 것이다(2026-09-21에 코스닥150 명단이 -88.8%로
+    틀렸다는 것을 이 대조로 찾았다).
+    """
+    api, market_for = _krx_api()
+    if api is None:
+        print("  ⚠ KRX 어댑터를 불러올 수 없어 검산을 건너뛴다")
+        return None
+    market = market_for("KOSPI200" if index_name == "kospi200" else "KOSDAQ150")
+    data = _load_index_file().get(index_name) or {}
+    codes = [s["code"] for s in data.get("stocks", [])]
+    if not codes:
+        print(f"  ⚠ {index_name}: 저장된 명단이 없다")
+        return None
+    bas = _recent_bas_dd(api, market)
+    if not bas:
+        print("  ⚠ 최근 거래일 응답을 못 받아 검산을 건너뛴다")
+        return None
+    try:
+        result = api.checksum(codes, bas, market=market)
+    except Exception as exc:                              # noqa: BLE001
+        print(f"  ⚠ 검산 실패: {exc}")
+        return None
+    target, ours = result["target"], result["ours"]
+    pct = None if not target else (ours - target) / target * 100.0
+    result["diff_pct"] = pct
+    mark = "✅" if pct is not None and abs(pct) < 1.0 else "⚠"
+    print(f"  {mark} 검산 {bas} [{market.index_name}] "
+          f"명단합 {ours:,} / 지수 {target:,}"
+          + (f" / 오차 {pct:+.2f}%" if pct is not None else ""))
+    if pct is not None and abs(pct) >= 1.0:
+        print("     → 근사이거나 명단이 틀렸다. 정확한 명단은 KRX CSV(--csv)로 넣는다.")
+    return result
+
 
 def fetch_from_krx(index_name: str) -> list:
     """KRX 대체 — 키움 API로 위임."""
@@ -360,35 +574,61 @@ def import_from_csv(csv_path: str, index_name: str) -> list:
 # ─────────────────────────────────────────────────────────────
 
 def update_index(index_name: str, token: Optional[str] = None,
-                 csv_path: str = None) -> bool:
-    """단일 인덱스 갱신."""
-    label  = "코스피200" if index_name == "kospi200" else "코스닥150"
-    stocks = []
+                 csv_path: str = None, source: str = "history",
+                 as_of: Optional[date] = None) -> bool:
+    """단일 인덱스 갱신.
 
-    # 방법 0: CSV 수동 임포트
+    source: history(기본, 유니버스 이력) / kiwoom(근사) — `csv_path`가 있으면 CSV.
+    키움으로 자동 대체하지 않는다: 이력이 없을 때 조용히 근사 명단을 쓰면
+    그것이 바로 이 도구가 고치려던 문제다.
+    """
+    label  = "코스피200" if index_name == "kospi200" else "코스닥150"
+    stocks, extra = [], {}
+
     if csv_path:
         stocks = import_from_csv(csv_path, index_name)
-
-    # 방법 1: 키움 ka20002 (업종별주가요청) — JSON 스펙 확인된 정식 방법
-    if not stocks and token:
-        stocks = fetch_from_kiwoom(index_name, token)
+        extra = {"source": f"KRX CSV {os.path.basename(csv_path)}"}
+    elif source == "history":
+        stocks, meta = fetch_from_history(index_name, as_of)
+        if stocks:
+            print(f"  ✅ {label}: 유니버스 이력 {meta['as_of']} 구성 {len(stocks)}개")
+            extra = {"as_of": meta["as_of"],
+                     "source": f"silver.universe_membership {meta['universe_version']} "
+                               f"(KRX 지수 공시 기반 구성 이력)"}
+            if not as_of and meta["stale_days"] > _HISTORY_STALE_DAYS:
+                print(f"  ⚠ 이력 마지막 관측이 {meta['observed_end']} — "
+                      f"{meta['stale_days']}일 전이다. 정기 변경을 놓쳤을 수 있다.")
+                print("    이력 갱신: daily-cache → calendar build → universe snapshot → "
+                      "krx-cache → notices → rebuild → verify "
+                      f"(--index {_INDEX_ID[index_name]}) — 순서는 이 파일 머리말 참고")
+        else:
+            print(f"  ❌ {label}: {meta.get('error', '이력 조회 실패')}")
+    elif source == "kiwoom":
+        if token:
+            stocks = fetch_from_kiwoom(index_name, token)
         if stocks:
             print(f"  ✅ {label}: 키움 ka20002로 {len(stocks)}개 조회")
+            if index_name == "kosdaq150":
+                print("  ⚠ 코스닥150은 시총 상위 근사다 — 실제 구성과 다를 수 있다")
+            extra = {"source": "kiwoom ka20002"
+                     + (" (코스닥 시총 상위 근사)" if index_name == "kosdaq150" else "")}
 
     if not stocks:
-        print(f"  ❌ {label}: 자동 조회 실패")
+        print(f"  ❌ {label}: 갱신 실패 — 기존 파일을 그대로 둔다")
         return False
 
-    # 저장
+    # 저장 — 이전 출처 표시가 남지 않도록 블록을 통째로 바꾼다
     all_data = _load_index_file()
     all_data[index_name] = {
         "updated": datetime.now().strftime("%Y-%m-%d %H:%M"),
         "count":   len(stocks),
+        **extra,
         "stocks":  stocks,
     }
     _save_index_file(all_data)
 
     print(f"  ✅ {label}: {len(stocks)}개 → {_INDEX_FILE}")
+    verify_index(index_name)
     return True
 
 
@@ -415,7 +655,10 @@ def show_index(index_name: str = None):
         count   = info.get("count", len(stocks))
 
         print(f"\n{'='*60}")
-        print(f"  {label}  |  {count}개  |  갱신: {updated}")
+        print(f"  {label}  |  {count}개  |  갱신: {updated}"
+              + (f"  |  기준일: {info['as_of']}" if info.get("as_of") else ""))
+        if info.get("source"):
+            print(f"  출처: {info['source']}")
         print(f"{'='*60}")
         print(f"  {'순':>3}  {'코드':6}  {'종목명'}")
         print(f"  {'─'*3}  {'─'*6}  {'─'*20}")
@@ -433,15 +676,18 @@ def main():
         description="코스피200 / 코스닥150 구성종목 목록 생성 및 관리",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""사용 예시:
-  python3 tools/update_index.py                          # 전체 갱신
-  python3 tools/update_index.py --index kospi200         # 코스피200만
+  python3 tools/update_index.py                          # 전체 갱신(유니버스 이력)
   python3 tools/update_index.py --index kosdaq150        # 코스닥150만
+  python3 tools/update_index.py --as-of 2026-06-12       # 특정 날짜 구성
   python3 tools/update_index.py --show                   # 저장 목록 확인
-  python3 tools/update_index.py --show --index kospi200  # 코스피200만 확인
+  python3 tools/update_index.py --verify                 # 명단을 KRX 지수와 대조
+  python3 tools/update_index.py --source kiwoom          # (근사) 키움 ka20002
   python3 tools/update_index.py --from-csv ~/Downloads/kospi200.csv --index kospi200
 
 저장 파일: data/index_stocks.json
-갱신 주기: 분기 1회 (3/6/9/12월 인덱스 정기 변경 후)"""
+갱신 주기: 6·12월 정기 변경 후, 또는 이력이 80일 넘게 오래됐을 때 (유니버스 이력을 먼저 갱신)
+  daily-cache → calendar build → universe snapshot → krx-cache → notices → rebuild → verify
+  (명령 전체는 python tools/update_index.py 머리말 docstring 참고)"""
     )
 
     parser.add_argument("--index",
@@ -455,6 +701,17 @@ def main():
                         default=None,
                         metavar="CSV_PATH",
                         help="KRX CSV 파일에서 직접 임포트")
+    parser.add_argument("--verify",
+                        action="store_true",
+                        help="저장된 목록을 KRX 공식 지수 시총과 대조만 (갱신 안 함)")
+    parser.add_argument("--source",
+                        choices=["history", "kiwoom"],
+                        default="history",
+                        help="history(기본, 유니버스 이력) / kiwoom(ka20002, 코스닥150은 시총 근사)")
+    parser.add_argument("--as-of",
+                        default=None,
+                        metavar="YYYY-MM-DD",
+                        help="이력의 이 날짜 구성 (기본: 이력 마지막 관측일)")
 
     args = parser.parse_args()
 
@@ -462,21 +719,33 @@ def main():
         show_index(args.index)
         return
 
+    if args.verify:
+        for idx in ([args.index] if args.index else ["kospi200", "kosdaq150"]):
+            print("\n  [%s]" % idx)
+            verify_index(idx)
+        print()
+        return
+
     print(f"\n{'='*60}")
     print(f"  구성종목 목록 갱신  |  {datetime.now().strftime('%Y-%m-%d %H:%M')}")
     print(f"{'='*60}\n")
 
-    # 키움 ka20002 (업종별주가요청) 으로 코스피200/코스닥150 구성종목 조회
-    # JSON 스펙 파일에서 확인된 정식 방법:
-    #   mrkt_tp=2, inds_cd=201 → 코스피200 구성종목
-    #   mrkt_tp=1, inds_cd=101 → 코스닥 전체 (상위 150개)
-    token = _get_token()
-    if token:
-        print(f"  ✅ 키움 API 연결됨 — ka20002 업종별주가요청으로 조회")
+    as_of = datetime.strptime(args.as_of, "%Y-%m-%d").date() if args.as_of else None
+    token = None
+    if args.from_csv:
+        print(f"  출처: KRX CSV {args.from_csv}")
+    elif args.source == "history":
+        print("  출처: 유니버스 이력(silver.universe_membership)")
     else:
-        print(f"  ❌ 키움 API 미연결")
-        print(f"  .env에 KIWOOM_APP_KEY / KIWOOM_APP_SECRET 설정 (.env.example 참고)")
-        if not args.from_csv:
+        # 키움 ka20002 (업종별주가요청):
+        #   mrkt_tp=2, inds_cd=201 → 코스피200 구성종목
+        #   mrkt_tp=1, inds_cd=101 → 코스닥 전체 (시총 상위 150개로 근사)
+        token = _get_token()
+        if token:
+            print(f"  ✅ 키움 API 연결됨 — ka20002 업종별주가요청으로 조회")
+        else:
+            print(f"  ❌ 키움 API 미연결")
+            print(f"  .env에 KIWOOM_APP_KEY / KIWOOM_APP_SECRET 설정 (.env.example 참고)")
             print_manual_guide()
             sys.exit(1)
 
@@ -485,7 +754,8 @@ def main():
 
     success = 0
     for idx in targets:
-        ok = update_index(idx, token=token, csv_path=args.from_csv)
+        ok = update_index(idx, token=token, csv_path=args.from_csv,
+                          source=args.source, as_of=as_of)
         if ok:
             success += 1
         print()

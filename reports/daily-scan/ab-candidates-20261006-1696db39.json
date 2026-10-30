@@ -1,0 +1,105 @@
+{
+  "design_version": "ab-draft-0.3",
+  "as_of": "2026-10-06",
+  "run_id": "1696db39",
+  "generated_at": "2026-10-07T13:33:15",
+  "universe": [
+    "KOSPI200",
+    "KOSDAQ150"
+  ],
+  "warnings": [
+    "KOSPI200: 2026-10-06는 구성종목 이력(2026-09-28) 밖 — index_stocks.json(as_of 2026-09-28) 명단 사용(8일 차이)",
+    "KOSDAQ150: 2026-10-06는 구성종목 이력(2026-09-28) 밖 — index_stocks.json(as_of 2026-09-28) 명단 사용(8일 차이)"
+  ],
+  "design": {
+    "B": {
+      "rvol": "5d/50d",
+      "rvol_min": 1.5,
+      "high_window": 252,
+      "prox_min": 0.9,
+      "liq_min_krw": 1000000000,
+      "hold_td": 20
+    },
+    "A_and_B": {
+      "definition": "B 통과 + 이미 접수된 최근 정기보고서 SUE ≥ AB_SUE_MIN, 접수 후 ≤ AB_RECENCY_TD거래일",
+      "sue_min": 1.0,
+      "recency_td": 60,
+      "prereg": "docs/PREREGISTRATION_AB.md"
+    },
+    "A": {
+      "account": "영업이익",
+      "sue_hist": 8,
+      "sue_min_hist": 4,
+      "sue_min": 1.0,
+      "event_window_td": 60,
+      "event_date": "잠정실적 공시일(분기말~정기보고서일 사이 최초, 없거나 월별 공시자면 정기보고서 접수일)",
+      "entry": "이벤트일 다음 거래일(백테스트 기준) — 실거래 목록은 정기보고서 접수 후에 나온다",
+      "prereg": "docs/PREREGISTRATION_A2.md",
+      "liq_min_krw": 1000000000,
+      "hold_td": [
+        20,
+        60
+      ]
+    }
+  },
+  "B": [
+    {
+      "as_of": "2026-10-06",
+      "close": 89000.0,
+      "rvol": 3.2830841844807144,
+      "vol_ratio_1d": 11.31127472642496,
+      "high_52w": 93100.0,
+      "prox_52w": 0.9559613319011815,
+      "history_days": 252,
+      "avg_value_20d": 8089849700.098801,
+      "ret_20d": 0.5641476274165202,
+      "ext_days_recent": 0,
+      "ext_days_base": 0,
+      "code": "053800",
+      "security_id": "KRX:053800",
+      "name": "안랩",
+      "index": "KOSDAQ150",
+      "score": 98.42,
+      "fails": [],
+      "passed": true,
+      "a_cond": {
+        "a_flag": false,
+        "status": "NEUTRAL",
+        "sue": 0.8589078593545132,
+        "age_td": 34,
+        "period": "2026Q2",
+        "rcept_date": "2026-08-13"
+      }
+    },
+    {
+      "as_of": "2026-10-06",
+      "close": 11730.0,
+      "rvol": 1.9288633161217852,
+      "vol_ratio_1d": 2.3818901129631973,
+      "high_52w": 12370.0,
+      "prox_52w": 0.9482619240097009,
+      "history_days": 252,
+      "avg_value_20d": 75585407889.9173,
+      "ret_20d": 1.0871886120996441,
+      "ext_days_recent": 0,
+      "ext_days_base": 0,
+      "code": "036540",
+      "security_id": "KRX:036540",
+      "name": "SFA반도체",
+      "index": "KOSDAQ150",
+      "score": 96.56,
+      "fails": [],
+      "passed": true,
+      "a_cond": {
+        "a_flag": false,
+        "status": "NEUTRAL",
+        "sue": 0.08776039524947914,
+        "age_td": 35,
+        "period": "2026Q2",
+        "rcept_date": "2026-08-12"
+      }
+    }
+  ],
+  "A_and_B": [],
+  "B_evaluated": 350
+}

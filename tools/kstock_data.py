@@ -16,6 +16,7 @@ Python >= 3.8, 외부 라이브러리 불필요.
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 import zipfile
@@ -129,32 +130,67 @@ def _load_corp_map(api_key: str) -> dict:
 # 네이버금융 실시간 시세 API
 # ---------------------------------------------------------------------------
 
+def _first(item: dict, *keys, default="-"):
+    """여러 후보 키 중 처음으로 값이 있는 것을 반환 (API 필드명 변경 대응)."""
+    for k in keys:
+        v = item.get(k)
+        if v not in (None, "", "-"):
+            return v
+    return default
+
+
+def _strip_unit(value: str) -> str:
+    """'116.52배', '2,330원', '7.85%' → '116.52', '2,330', '7.85'. N/A 등은 '-'."""
+    m = re.search(r"-?[\d,]+(?:\.\d+)?", str(value))
+    return m.group(0) if m else "-"
+
+
+def _naver_integration(code: str) -> dict:
+    """모바일 integration API의 totalInfos → {code: 단위 제거 값}.
+    실시간 polling API에서 빠진 PER/PBR/EPS/BPS/외국인소진율 보완용."""
+    url = f"https://m.stock.naver.com/api/stock/{code}/integration"
+    try:
+        data = _curl_json(url)
+    except Exception:
+        return {}
+    return {
+        info.get("code"): _strip_unit(info.get("value", ""))
+        for info in data.get("totalInfos", [])
+        if info.get("code")
+    }
+
+
 def _naver_quote(code: str) -> dict:
     url = f"https://polling.finance.naver.com/api/realtime/domestic/stock/{code}"
     try:
         data = _curl_json(url)
         item = data.get("datas", [{}])[0]
-        return {
-            "name":          item.get("stockName", ""),
-            "code":          code,
-            "price":         item.get("closePrice", "-"),
-            "change_pct":    item.get("fluctuationsRatio", "-"),
-            "change_amt":    item.get("compareToPreviousClosePrice", "-"),
-            "open":          item.get("openingPrice", "-"),
-            "high":          item.get("highPrice", "-"),
-            "low":           item.get("lowPrice", "-"),
-            "prev_close":    item.get("previousClosingPrice", "-"),
-            "volume":        item.get("accumulatedTradingVolume", "-"),
-            "turnover_amt":  item.get("accumulatedTradingValue", "-"),
-            "market_cap":    item.get("marketValue", "-"),
-            "per":           item.get("per", "-"),
-            "pbr":           item.get("pbr", "-"),
-            "eps":           item.get("eps", "-"),
-            "bps":           item.get("bps", "-"),
-            "foreign_ratio": item.get("foreignRatio", "-"),
-        }
     except Exception:
         return {}
+
+    # 2026년 API 변경: marketValue→marketValueFullRaw, openingPrice→openPrice,
+    # per/pbr/eps/bps/foreignRatio/previousClosingPrice 필드 제거 → integration API로 보완
+    extra = _naver_integration(code)
+    return {
+        "name":          item.get("stockName", ""),
+        "code":          code,
+        "price":         _first(item, "closePrice"),
+        "change_pct":    _first(item, "fluctuationsRatio"),
+        "change_amt":    _first(item, "compareToPreviousClosePrice"),
+        "open":          _first(item, "openPrice", "openingPrice"),
+        "high":          _first(item, "highPrice"),
+        "low":           _first(item, "lowPrice"),
+        "prev_close":    _first(item, "previousClosingPrice",
+                                default=extra.get("lastClosePrice", "-")),
+        "volume":        _first(item, "accumulatedTradingVolume"),
+        "turnover_amt":  _first(item, "accumulatedTradingValueRaw", "accumulatedTradingValue"),
+        "market_cap":    _first(item, "marketValueFullRaw", "marketValueFull", "marketValue"),
+        "per":           _first(item, "per", default=extra.get("per", "-")),
+        "pbr":           _first(item, "pbr", default=extra.get("pbr", "-")),
+        "eps":           _first(item, "eps", default=extra.get("eps", "-")),
+        "bps":           _first(item, "bps", default=extra.get("bps", "-")),
+        "foreign_ratio": _first(item, "foreignRatio", default=extra.get("foreignRate", "-")),
+    }
 
 
 def _fmt_krw(value) -> str:

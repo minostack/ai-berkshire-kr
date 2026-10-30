@@ -1,0 +1,16 @@
+{
+ "n_pairs": 101874,
+ "flow_pearson": 0.5290787203274647,
+ "flow_spearman": 0.5437244794810572,
+ "flow_sign_agree": 0.7002866285804032,
+ "accel_pearson": 0.5341735940595357,
+ "accel_spearman": 0.5276790027780287,
+ "accel_sign_agree": 0.6897404060610242,
+ "gate": {
+  "tt": 14765,
+  "tf": 13578,
+  "ft": 9740,
+  "ff": 48899
+ },
+ "top5_overlap_mean": 0.2272
+}

@@ -1,0 +1,35 @@
+{
+  "_note": "시장제도 버전. 코드 버전과 독립적으로 관리한다(아키텍처 §11).",
+  "after_market_start_date": "20260914",
+  "bar_timestamp_is_start": true,
+  "daily_close_semantics": {
+    "_note": "2026-09-16 ka10081 실측: 키움 일봉 종가는 애프터마켓 최종 체결가이며 제도상 공식 종가(15:30 확정)가 아니다.",
+    "confirmed_after_kst": "20:00",
+    "includes_after_market": true,
+    "official_close_is_1530": true
+  },
+  "daily_scope_default": "auto",
+  "effective_from": "2026-09-14",
+  "market": "KRX",
+  "market_rule_version": "KRX-2026-09-14-aftermarket",
+  "price_limit_pct": 30.0,
+  "session_complete_grace_min": 5,
+  "sessions": {
+    "AFTER": {
+      "continuous_minutes": 240,
+      "end": 2000,
+      "minutes": 240,
+      "start": 1600
+    },
+    "REGULAR": {
+      "continuous_minutes": 380,
+      "end": 1530,
+      "minutes": 390,
+      "start": 900
+    }
+  },
+  "timezone": "Asia/Seoul",
+  "unverified": [
+    "종목별 애프터마켓 대상 여부를 조회할 수단이 없어 무체결과 구분 불가"
+  ]
+}

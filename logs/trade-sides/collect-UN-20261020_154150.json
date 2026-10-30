@@ -1,0 +1,18 @@
+{
+ "run_id": "kis_sides_20261020063712",
+ "securities": 351,
+ "padding_rows": 706,
+ "rows": 138453,
+ "calls": 1402,
+ "failed_calls": 0,
+ "period": [
+  "2025-03-04",
+  "2026-10-19"
+ ],
+ "provisional_from": null,
+ "market_div": "UN",
+ "empty_securities": [],
+ "zero_only_securities": [],
+ "elapsed_sec": 278.0,
+ "codes_source": "universe_on(2026-10-19)"
+}

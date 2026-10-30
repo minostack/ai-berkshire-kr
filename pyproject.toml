@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cvd-obv"
+version = "2.0.0"
+description = "CVD/OBV 신호 검증 시스템 V2 — 재현 가능한 replay·백테스트·확률 모델"
+requires-python = ">=3.11"
+# Stage 0은 표준 라이브러리만 쓴다. Parquet 계층(Stage 1~)에서 pyarrow가
+# 필요해지면 그때 추가한다 — 쓰지 않는 의존성을 미리 박아 두지 않는다.
+dependencies = []
+
+[project.optional-dependencies]
+data = ["pyarrow>=15"]
+dev = ["pytest>=7"]
+
+[project.scripts]
+cvdobv = "cvd_obv.cli.main:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# `tests/conftest.py`가 src를 sys.path에 올린다. 설치 없이도 돌게 하기 위함이다.
+addopts = "-q"

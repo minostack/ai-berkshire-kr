@@ -1,0 +1,30 @@
+{
+  "alpha": 0.05,
+  "command": "power plan",
+  "days_per_year": 245,
+  "power": 0.8,
+  "results": [
+    {
+      "discovery_n": 4110,
+      "effect": 0.0002341775207787925,
+      "name": "PRICE+OBV vs PRICE h=5",
+      "note": "q=0.02378240004075538",
+      "required_new_one_sided": 4367,
+      "required_new_two_sided": 5544,
+      "standard_error": 9.707895016296194e-05,
+      "years_one_sided": 17.8,
+      "years_two_sided": 22.6
+    },
+    {
+      "discovery_n": 4094,
+      "effect": 0.0008015477257405188,
+      "name": "PRICE+OBV vs PRICE h=20",
+      "note": "q=0.02028883778424939",
+      "required_new_one_sided": 3451,
+      "required_new_two_sided": 4381,
+      "standard_error": 0.00029596004745213576,
+      "years_one_sided": 14.1,
+      "years_two_sided": 17.9
+    }
+  ]
+}

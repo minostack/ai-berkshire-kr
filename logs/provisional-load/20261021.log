@@ -1,0 +1,49 @@
+==== 2026-10-21  8:13:40.56 ==== 
+일일 적재 잠정(스케줄 16:10) — 봉 기준 bars-1.0, 2026-10-21 08:13 KST
+  확인 구간: 2026-10-19 ~ 2026-10-21 (장부 confirmed_through=2026-10-19)
+  [선행 점검] 지수 구성종목 351개 기준
+    날짜        1분봉  잠정  확정  상태
+    2026-10-19    351     0   351  확정 완료
+    2026-10-20    351     0     0  1분봉만
+    2026-10-21      0     0     0  미적재(또는 휴장) (오늘)
+  순서: 밀린 날 1분봉 → 빠진 잠정 봉 → 확정 봉 → 오늘 잠정 봉
+  · python cvdobv.py minute-cache catchup --period 1 --index KOSPI200,KOSDAQ150 --since 2026-10-19 --days 10
+  · python cvdobv.py minute-cache catchup --period 1 --venue NXT --index KOSPI200,KOSDAQ150 --since 2026-10-19 --days 10
+  · python cvdobv.py daily-cache provisional --start 2026-10-19 --end 2026-10-20 --missing-only --index KOSPI200,KOSDAQ150
+  · python cvdobv.py daily-cache build --index KOSPI200 --start 2026-10-19 --end 2026-10-21
+  · python cvdobv.py daily-cache build --index KOSDAQ150 --start 2026-10-19 --end 2026-10-21
+  · python cvdobv.py daily-cache regular-from-minute --start 2026-10-19 --end 2026-10-21
+  · python cvdobv.py daily-cache provisional --date 2026-10-21 --index KOSPI200,KOSDAQ150
+  · python cvdobv.py trade-sides daily --index KOSPI200,KOSDAQ150
+
+▶ minute-cache catchup --period 1 --index KOSPI200,KOSDAQ150 --since 2026-10-19 --days 10 --run-id topup_load_20261020231538_ce93a8a1
+분봉 일일 누적 — 1분봉 / 최근 10거래일 확인
+[ExternalApiError] 기준 종목 KRX:005930 분봉 응답이 비었다(status=FAILED, pages=1) — API 장애로 본다
+  detail_code: API_NO_RESPONSE
+  ❌ 종료 코드 5 — 이후 단계를 멈춘다. 장부는 그대로 두므로 다음 실행이 같은 구간을 다시 본다
+exit=5 
+==== 2026-10-21 16:10:00.78 ==== 
+일일 적재 잠정(스케줄 16:10) — 봉 기준 bars-1.0, 2026-10-21 16:10 KST
+  확인 구간: 2026-10-20 ~ 2026-10-21 (장부 confirmed_through=2026-10-20)
+  [선행 점검] 지수 구성종목 351개 기준
+    날짜        1분봉  잠정  확정  상태
+    2026-10-20    351     0   351  확정 완료
+    2026-10-21      0     0     0  미적재(또는 휴장) (오늘)
+  순서: 밀린 날 1분봉 → 빠진 잠정 봉 → 확정 봉 → 오늘 잠정 봉
+  · python cvdobv.py minute-cache catchup --period 1 --index KOSPI200,KOSDAQ150 --since 2026-10-20 --days 10
+  · python cvdobv.py minute-cache catchup --period 1 --venue NXT --index KOSPI200,KOSDAQ150 --since 2026-10-20 --days 10
+  · python cvdobv.py daily-cache provisional --start 2026-10-20 --end 2026-10-20 --missing-only --index KOSPI200,KOSDAQ150
+  · python cvdobv.py daily-cache build --index KOSPI200 --start 2026-10-20 --end 2026-10-21
+  · python cvdobv.py daily-cache build --index KOSDAQ150 --start 2026-10-20 --end 2026-10-21
+  · python cvdobv.py daily-cache readjust --since 2026-10-20
+  · python cvdobv.py daily-cache regular-from-minute --start 2026-10-20 --end 2026-10-21
+  · python cvdobv.py daily-cache provisional --date 2026-10-21 --index KOSPI200,KOSDAQ150
+  · python cvdobv.py trade-sides daily --index KOSPI200,KOSDAQ150
+
+▶ minute-cache catchup --period 1 --index KOSPI200,KOSDAQ150 --since 2026-10-20 --days 10 --run-id topup_load_20261021071112_087b4451
+분봉 일일 누적 — 1분봉 / 최근 10거래일 확인
+[ExternalApiError] 기준 종목 KRX:005930 분봉 응답이 비었다(status=FAILED, pages=1) — API 장애로 본다
+  detail_code: API_NO_RESPONSE
+  🔎 키움 진단: return_code=3 인증에 실패했습니다[8050:IP가 등록되지 않았습니다. 키움 REST API 홈페이지 > API 사용신청 화면에서 IP를 등록해주세요.]
+  ❌ 종료 코드 5 — 이후 단계를 멈춘다. 장부는 그대로 두므로 다음 실행이 같은 구간을 다시 본다
+exit=5 

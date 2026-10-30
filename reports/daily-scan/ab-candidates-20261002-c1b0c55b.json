@@ -1,0 +1,77 @@
+{
+  "design_version": "ab-draft-0.3",
+  "as_of": "2026-10-02",
+  "run_id": "c1b0c55b",
+  "generated_at": "2026-10-05T20:56:26",
+  "universe": [
+    "KOSPI200",
+    "KOSDAQ150"
+  ],
+  "warnings": [
+    "KOSPI200: 2026-10-02는 구성종목 이력(2026-09-28) 밖 — index_stocks.json(as_of 2026-09-28) 명단 사용(4일 차이)",
+    "KOSDAQ150: 2026-10-02는 구성종목 이력(2026-09-28) 밖 — index_stocks.json(as_of 2026-09-28) 명단 사용(4일 차이)"
+  ],
+  "design": {
+    "B": {
+      "rvol": "5d/50d",
+      "rvol_min": 1.5,
+      "high_window": 252,
+      "prox_min": 0.9,
+      "liq_min_krw": 1000000000,
+      "hold_td": 20
+    },
+    "A_and_B": {
+      "definition": "B 통과 + 이미 접수된 최근 정기보고서 SUE ≥ AB_SUE_MIN, 접수 후 ≤ AB_RECENCY_TD거래일",
+      "sue_min": 1.0,
+      "recency_td": 60,
+      "prereg": "docs/PREREGISTRATION_AB.md"
+    },
+    "A": {
+      "account": "영업이익",
+      "sue_hist": 8,
+      "sue_min_hist": 4,
+      "sue_min": 1.0,
+      "event_window_td": 60,
+      "event_date": "잠정실적 공시일(분기말~정기보고서일 사이 최초, 없거나 월별 공시자면 정기보고서 접수일)",
+      "entry": "이벤트일 다음 거래일(백테스트 기준) — 실거래 목록은 정기보고서 접수 후에 나온다",
+      "prereg": "docs/PREREGISTRATION_A2.md",
+      "liq_min_krw": 1000000000,
+      "hold_td": [
+        20,
+        60
+      ]
+    }
+  },
+  "B": [
+    {
+      "as_of": "2026-10-02",
+      "close": 11370.0,
+      "rvol": 1.64123334199216,
+      "vol_ratio_1d": 1.6693372631309695,
+      "high_52w": 11850.0,
+      "prox_52w": 0.959493670886076,
+      "history_days": 252,
+      "avg_value_20d": 70287072214.1827,
+      "ret_20d": 0.960344827586207,
+      "ext_days_recent": 0,
+      "ext_days_base": 0,
+      "code": "036540",
+      "security_id": "KRX:036540",
+      "name": "SFA반도체",
+      "index": "KOSDAQ150",
+      "score": 96.28,
+      "fails": [],
+      "passed": true,
+      "a_cond": {
+        "a_flag": false,
+        "status": "NEUTRAL",
+        "sue": 0.08776039524947914,
+        "age_td": 34,
+        "period": "2026Q2",
+        "rcept_date": "2026-08-12"
+      }
+    }
+  ],
+  "A_and_B": [],
+  "B_evaluated": 350
+}

@@ -1,0 +1,13 @@
+키움 현재 수정주가와 저장값 대조 — 351종목
+수정주가 소급 감지 — 2026-08-01 ~ 2026-10-21: 1종목
+  · KRX:207940 2026-09-14 EXTENDED 종가 1,402,000 → 1,391,205 (×0.99230)
+
+▶ daily-cache build --codes 207940 --start 2016-11-10 --end 2026-10-21 --run-id topup_load_20261021043749_0d31ff4a
+일봉 수집 시작 — 1종목 (--codes)
+  기간: 2016-11-10 ~ 2026-10-21 / 수정주가: 예 / dry-run: False
+  [1/1] KRX:207940 0행 None~None 페이지 1 0.66초 FAILED API_NO_RESPONSE (시도 3회, 미저장)
+완료: 0행 / 성공 0 부분 0 실패 1
+  소요 0.7초 (종목당 0.66초)
+  최초 거래일: None
+  manifest: manifests/bronze_ingest_runs_topup_load_20261021043749_0d31ff4a.json
+exit=9

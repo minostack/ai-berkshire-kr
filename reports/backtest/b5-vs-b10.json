@@ -1,0 +1,2145 @@
+{
+  "capital": 10000000.0,
+  "period": [
+    "2025-09-12",
+    "2026-09-22"
+  ],
+  "results": [
+    {
+      "final_nav": 6999729.254011178,
+      "max_drawdown": -0.4317879470389834,
+      "mean_net": -0.003244021587826802,
+      "mean_stop": -0.03692712741363405,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 1,
+      "name": "A_b5_KOSPI200",
+      "open_at_end": 5,
+      "stop_pct": 0.7006109979633401,
+      "total_return": -0.3000270745988821,
+      "trades": 491,
+      "trades_by_index": {
+        "KOSPI200": 491
+      },
+      "win_rate": 0.29938900203665986
+    },
+    {
+      "final_nav": 4580262.961564,
+      "max_drawdown": -0.5795313805477125,
+      "mean_net": -0.007036736948014385,
+      "mean_stop": -0.036736581842659835,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 1,
+      "name": "B_b10_KOSPI200",
+      "open_at_end": 5,
+      "stop_pct": 0.7355679702048417,
+      "total_return": -0.5419737038436,
+      "trades": 537,
+      "trades_by_index": {
+        "KOSPI200": 537
+      },
+      "win_rate": 0.2644320297951583
+    },
+    {
+      "final_nav": 3443221.7068404974,
+      "max_drawdown": -0.673758873456759,
+      "mean_net": -0.008439708438711247,
+      "mean_stop": -0.037115668750331475,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1,
+      "name": "C_b10_BOTH",
+      "open_at_end": 5,
+      "stop_pct": 0.7455429497568882,
+      "total_return": -0.6556778293159502,
+      "trades": 617,
+      "trades_by_index": {
+        "KOSDAQ150": 221,
+        "KOSPI200": 396
+      },
+      "win_rate": 0.2544570502431118
+    },
+    {
+      "final_nav": 10539810.222727422,
+      "max_drawdown": -0.32426181459072456,
+      "mean_net": 0.0009281850919914136,
+      "mean_stop": -0.03728593727213313,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2,
+      "name": "A_b5_KOSPI200|RANDOM_GATE#1",
+      "open_at_end": 5,
+      "stop_pct": 0.6614173228346457,
+      "total_return": 0.05398102227274215,
+      "trades": 381,
+      "trades_by_index": {
+        "KOSPI200": 381
+      },
+      "win_rate": 0.33858267716535434
+    },
+    {
+      "final_nav": 5703691.102476155,
+      "max_drawdown": -0.4934006326092676,
+      "mean_net": -0.006227725493321306,
+      "mean_stop": -0.0367758172789468,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "A_b5_KOSPI200|RANDOM_GATE#2",
+      "open_at_end": 5,
+      "stop_pct": 0.728110599078341,
+      "total_return": -0.4296308897523845,
+      "trades": 434,
+      "trades_by_index": {
+        "KOSPI200": 434
+      },
+      "win_rate": 0.271889400921659
+    },
+    {
+      "final_nav": 9032844.529284958,
+      "max_drawdown": -0.37227382440152434,
+      "mean_net": -0.0009210357425754464,
+      "mean_stop": -0.036502461101935495,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 1.0,
+      "name": "A_b5_KOSPI200|RANDOM_GATE#3",
+      "open_at_end": 5,
+      "stop_pct": 0.6825396825396826,
+      "total_return": -0.0967155470715042,
+      "trades": 378,
+      "trades_by_index": {
+        "KOSPI200": 378
+      },
+      "win_rate": 0.31746031746031744
+    },
+    {
+      "final_nav": 6295634.348210811,
+      "max_drawdown": -0.4014582464784394,
+      "mean_net": -0.005322377566175903,
+      "mean_stop": -0.03611710643344848,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "A_b5_KOSPI200|RANDOM_GATE#4",
+      "open_at_end": 5,
+      "stop_pct": 0.7242990654205608,
+      "total_return": -0.370436565178919,
+      "trades": 428,
+      "trades_by_index": {
+        "KOSPI200": 428
+      },
+      "win_rate": 0.2757009345794392
+    },
+    {
+      "final_nav": 9806265.128867453,
+      "max_drawdown": -0.23846597841844164,
+      "mean_net": 0.00028366744987475174,
+      "mean_stop": -0.036631568066086,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1,
+      "name": "A_b5_KOSPI200|RANDOM_GATE#5",
+      "open_at_end": 5,
+      "stop_pct": 0.6710182767624021,
+      "total_return": -0.019373487113254706,
+      "trades": 383,
+      "trades_by_index": {
+        "KOSPI200": 383
+      },
+      "win_rate": 0.3289817232375979
+    },
+    {
+      "final_nav": 7248986.8425677605,
+      "max_drawdown": -0.43411588369279774,
+      "mean_net": -0.003385709294656359,
+      "mean_stop": -0.036566332133864655,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "A_b5_KOSPI200|RANDOM_GATE#6",
+      "open_at_end": 5,
+      "stop_pct": 0.7041284403669725,
+      "total_return": -0.27510131574322394,
+      "trades": 436,
+      "trades_by_index": {
+        "KOSPI200": 436
+      },
+      "win_rate": 0.2958715596330275
+    },
+    {
+      "final_nav": 8266586.944030239,
+      "max_drawdown": -0.29243845528576273,
+      "mean_net": -0.002147414952639789,
+      "mean_stop": -0.03600552491195483,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 1,
+      "name": "A_b5_KOSPI200|RANDOM_GATE#7",
+      "open_at_end": 5,
+      "stop_pct": 0.6965699208443272,
+      "total_return": -0.17334130559697603,
+      "trades": 379,
+      "trades_by_index": {
+        "KOSPI200": 379
+      },
+      "win_rate": 0.3034300791556728
+    },
+    {
+      "final_nav": 8664183.007188912,
+      "max_drawdown": -0.28281392417009943,
+      "mean_net": -0.0012369603722512696,
+      "mean_stop": -0.03645584348539962,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2.0,
+      "name": "A_b5_KOSPI200|RANDOM_GATE#8",
+      "open_at_end": 5,
+      "stop_pct": 0.6856435643564357,
+      "total_return": -0.13358169928110875,
+      "trades": 404,
+      "trades_by_index": {
+        "KOSPI200": 404
+      },
+      "win_rate": 0.31435643564356436
+    },
+    {
+      "final_nav": 7167097.227210801,
+      "max_drawdown": -0.4350604782456884,
+      "mean_net": -0.003999541029460038,
+      "mean_stop": -0.037016181695107266,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1,
+      "name": "A_b5_KOSPI200|RANDOM_GATE#9",
+      "open_at_end": 5,
+      "stop_pct": 0.706766917293233,
+      "total_return": -0.28329027727891987,
+      "trades": 399,
+      "trades_by_index": {
+        "KOSPI200": 399
+      },
+      "win_rate": 0.2932330827067669
+    },
+    {
+      "final_nav": 7471428.792007459,
+      "max_drawdown": -0.3803254315093304,
+      "mean_net": -0.0032160059969096265,
+      "mean_stop": -0.03614527426190712,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "A_b5_KOSPI200|RANDOM_GATE#10",
+      "open_at_end": 5,
+      "stop_pct": 0.7052631578947368,
+      "total_return": -0.25285712079925404,
+      "trades": 380,
+      "trades_by_index": {
+        "KOSPI200": 380
+      },
+      "win_rate": 0.29473684210526313
+    },
+    {
+      "final_nav": 7263910.677229555,
+      "max_drawdown": -0.42707968851815203,
+      "mean_net": -0.0034890817464509655,
+      "mean_stop": -0.03697344172030668,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 1.0,
+      "name": "A_b5_KOSPI200|RANDOM_GATE#11",
+      "open_at_end": 5,
+      "stop_pct": 0.7025,
+      "total_return": -0.2736089322770444,
+      "trades": 400,
+      "trades_by_index": {
+        "KOSPI200": 400
+      },
+      "win_rate": 0.2975
+    },
+    {
+      "final_nav": 6758479.8604748435,
+      "max_drawdown": -0.48214996138330435,
+      "mean_net": -0.004337097369127748,
+      "mean_stop": -0.0366777370482259,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "A_b5_KOSPI200|RANDOM_GATE#12",
+      "open_at_end": 5,
+      "stop_pct": 0.7119047619047619,
+      "total_return": -0.3241520139525157,
+      "trades": 420,
+      "trades_by_index": {
+        "KOSPI200": 420
+      },
+      "win_rate": 0.28809523809523807
+    },
+    {
+      "final_nav": 6549376.839139786,
+      "max_drawdown": -0.38609236751050735,
+      "mean_net": -0.004630963079552914,
+      "mean_stop": -0.03639729648929611,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2,
+      "name": "A_b5_KOSPI200|RANDOM_GATE#13",
+      "open_at_end": 5,
+      "stop_pct": 0.7163120567375887,
+      "total_return": -0.34506231608602145,
+      "trades": 423,
+      "trades_by_index": {
+        "KOSPI200": 423
+      },
+      "win_rate": 0.28368794326241137
+    },
+    {
+      "final_nav": 7345535.551134763,
+      "max_drawdown": -0.33230174578666216,
+      "mean_net": -0.003416101062079958,
+      "mean_stop": -0.03676352611654256,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1,
+      "name": "A_b5_KOSPI200|RANDOM_GATE#14",
+      "open_at_end": 5,
+      "stop_pct": 0.7031630170316302,
+      "total_return": -0.2654464448865237,
+      "trades": 411,
+      "trades_by_index": {
+        "KOSPI200": 411
+      },
+      "win_rate": 0.29683698296836986
+    },
+    {
+      "final_nav": 6929624.106105063,
+      "max_drawdown": -0.453898333298834,
+      "mean_net": -0.004045764568189206,
+      "mean_stop": -0.036783484481401986,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 1,
+      "name": "A_b5_KOSPI200|RANDOM_GATE#15",
+      "open_at_end": 5,
+      "stop_pct": 0.7086419753086419,
+      "total_return": -0.30703758938949366,
+      "trades": 405,
+      "trades_by_index": {
+        "KOSPI200": 405
+      },
+      "win_rate": 0.291358024691358
+    },
+    {
+      "final_nav": 7943815.241335088,
+      "max_drawdown": -0.34827250528927844,
+      "mean_net": -0.0024407894176709526,
+      "mean_stop": -0.036960349267741145,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1,
+      "name": "A_b5_KOSPI200|RANDOM_GATE#16",
+      "open_at_end": 5,
+      "stop_pct": 0.6932668329177057,
+      "total_return": -0.20561847586649118,
+      "trades": 401,
+      "trades_by_index": {
+        "KOSPI200": 401
+      },
+      "win_rate": 0.30673316708229426
+    },
+    {
+      "final_nav": 6763031.50126769,
+      "max_drawdown": -0.37091212188620026,
+      "mean_net": -0.004485143600303803,
+      "mean_stop": -0.036051663176786854,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2,
+      "name": "A_b5_KOSPI200|RANDOM_GATE#17",
+      "open_at_end": 5,
+      "stop_pct": 0.7172236503856041,
+      "total_return": -0.323696849873231,
+      "trades": 389,
+      "trades_by_index": {
+        "KOSPI200": 389
+      },
+      "win_rate": 0.2827763496143959
+    },
+    {
+      "final_nav": 7878216.872389646,
+      "max_drawdown": -0.4084957949827104,
+      "mean_net": -0.002512091409574653,
+      "mean_stop": -0.036416421171617516,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2,
+      "name": "A_b5_KOSPI200|RANDOM_GATE#18",
+      "open_at_end": 5,
+      "stop_pct": 0.6972704714640199,
+      "total_return": -0.21217831276103538,
+      "trades": 403,
+      "trades_by_index": {
+        "KOSPI200": 403
+      },
+      "win_rate": 0.3027295285359802
+    },
+    {
+      "final_nav": 8210366.149219948,
+      "max_drawdown": -0.37340985831830353,
+      "mean_net": -0.002043630734054322,
+      "mean_stop": -0.03700135328118581,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1,
+      "name": "A_b5_KOSPI200|RANDOM_GATE#19",
+      "open_at_end": 5,
+      "stop_pct": 0.6894865525672371,
+      "total_return": -0.17896338507800524,
+      "trades": 409,
+      "trades_by_index": {
+        "KOSPI200": 409
+      },
+      "win_rate": 0.3105134474327628
+    },
+    {
+      "final_nav": 6716248.609750999,
+      "max_drawdown": -0.4877118699502324,
+      "mean_net": -0.004351999411700753,
+      "mean_stop": -0.036711619821509334,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2.0,
+      "name": "A_b5_KOSPI200|RANDOM_GATE#20",
+      "open_at_end": 5,
+      "stop_pct": 0.7118226600985221,
+      "total_return": -0.3283751390249001,
+      "trades": 406,
+      "trades_by_index": {
+        "KOSPI200": 406
+      },
+      "win_rate": 0.2881773399014778
+    },
+    {
+      "final_nav": 8271098.038970844,
+      "max_drawdown": -0.3160438014241854,
+      "mean_net": -0.002066535270014752,
+      "mean_stop": -0.03661088825555317,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2.0,
+      "name": "A_b5_KOSPI200|RANDOM_UNIV#1",
+      "open_at_end": 5,
+      "stop_pct": 0.692090395480226,
+      "total_return": -0.17289019610291556,
+      "trades": 354,
+      "trades_by_index": {
+        "KOSPI200": 354
+      },
+      "win_rate": 0.307909604519774
+    },
+    {
+      "final_nav": 9726448.392791884,
+      "max_drawdown": -0.1898660628469051,
+      "mean_net": -4.973485427505936e-05,
+      "mean_stop": -0.0359413514942931,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2,
+      "name": "A_b5_KOSPI200|RANDOM_UNIV#2",
+      "open_at_end": 5,
+      "stop_pct": 0.6781609195402298,
+      "total_return": -0.027355160720811567,
+      "trades": 261,
+      "trades_by_index": {
+        "KOSPI200": 261
+      },
+      "win_rate": 0.3218390804597701
+    },
+    {
+      "final_nav": 8420802.598731715,
+      "max_drawdown": -0.37590397879743687,
+      "mean_net": -0.002124019600756901,
+      "mean_stop": -0.03673411101928165,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2,
+      "name": "A_b5_KOSPI200|RANDOM_UNIV#3",
+      "open_at_end": 5,
+      "stop_pct": 0.6918429003021148,
+      "total_return": -0.15791974012682852,
+      "trades": 331,
+      "trades_by_index": {
+        "KOSPI200": 331
+      },
+      "win_rate": 0.3081570996978852
+    },
+    {
+      "final_nav": 10651055.595096473,
+      "max_drawdown": -0.16889251841988362,
+      "mean_net": 0.0018580246750684998,
+      "mean_stop": -0.036273529172335034,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2.0,
+      "name": "A_b5_KOSPI200|RANDOM_UNIV#4",
+      "open_at_end": 5,
+      "stop_pct": 0.6590909090909091,
+      "total_return": 0.06510555950964725,
+      "trades": 264,
+      "trades_by_index": {
+        "KOSPI200": 264
+      },
+      "win_rate": 0.3409090909090909
+    },
+    {
+      "final_nav": 10154426.78887012,
+      "max_drawdown": -0.21052031717964037,
+      "mean_net": 0.0005551673350483255,
+      "mean_stop": -0.03615863720186673,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2.0,
+      "name": "A_b5_KOSPI200|RANDOM_UNIV#5",
+      "open_at_end": 5,
+      "stop_pct": 0.6714285714285714,
+      "total_return": 0.015442678887012118,
+      "trades": 280,
+      "trades_by_index": {
+        "KOSPI200": 280
+      },
+      "win_rate": 0.32857142857142857
+    },
+    {
+      "final_nav": 9786110.033906782,
+      "max_drawdown": -0.20725852220395258,
+      "mean_net": 0.0003832830433826342,
+      "mean_stop": -0.036407768518762984,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2,
+      "name": "A_b5_KOSPI200|RANDOM_UNIV#6",
+      "open_at_end": 5,
+      "stop_pct": 0.6714697406340058,
+      "total_return": -0.02138899660932181,
+      "trades": 347,
+      "trades_by_index": {
+        "KOSPI200": 347
+      },
+      "win_rate": 0.3285302593659942
+    },
+    {
+      "final_nav": 7203679.712633686,
+      "max_drawdown": -0.37963854360871796,
+      "mean_net": -0.004437573556153421,
+      "mean_stop": -0.03744442201983678,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2,
+      "name": "A_b5_KOSPI200|RANDOM_UNIV#7",
+      "open_at_end": 5,
+      "stop_pct": 0.7079646017699115,
+      "total_return": -0.2796320287366314,
+      "trades": 339,
+      "trades_by_index": {
+        "KOSPI200": 339
+      },
+      "win_rate": 0.2920353982300885
+    },
+    {
+      "final_nav": 8434034.593776118,
+      "max_drawdown": -0.27191739277514293,
+      "mean_net": -0.0037796256533846172,
+      "mean_stop": -0.036432405342141025,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2,
+      "name": "A_b5_KOSPI200|RANDOM_UNIV#8",
+      "open_at_end": 5,
+      "stop_pct": 0.7084870848708487,
+      "total_return": -0.15659654062238815,
+      "trades": 271,
+      "trades_by_index": {
+        "KOSPI200": 271
+      },
+      "win_rate": 0.2915129151291513
+    },
+    {
+      "final_nav": 8550516.093834551,
+      "max_drawdown": -0.24663983173295867,
+      "mean_net": -0.0017223320505932594,
+      "mean_stop": -0.0359073960035863,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2.0,
+      "name": "A_b5_KOSPI200|RANDOM_UNIV#9",
+      "open_at_end": 5,
+      "stop_pct": 0.6933701657458563,
+      "total_return": -0.14494839061654485,
+      "trades": 362,
+      "trades_by_index": {
+        "KOSPI200": 362
+      },
+      "win_rate": 0.30662983425414364
+    },
+    {
+      "final_nav": 11438839.910573643,
+      "max_drawdown": -0.20280796921632605,
+      "mean_net": 0.002452012460483415,
+      "mean_stop": -0.036417302520186406,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2.0,
+      "name": "A_b5_KOSPI200|RANDOM_UNIV#10",
+      "open_at_end": 5,
+      "stop_pct": 0.6529411764705882,
+      "total_return": 0.14388399105736438,
+      "trades": 340,
+      "trades_by_index": {
+        "KOSPI200": 340
+      },
+      "win_rate": 0.34705882352941175
+    },
+    {
+      "final_nav": 7782755.957067076,
+      "max_drawdown": -0.295657865378131,
+      "mean_net": -0.0028183275633207393,
+      "mean_stop": -0.03650715137352366,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2.0,
+      "name": "A_b5_KOSPI200|RANDOM_UNIV#11",
+      "open_at_end": 5,
+      "stop_pct": 0.699438202247191,
+      "total_return": -0.22172440429329243,
+      "trades": 356,
+      "trades_by_index": {
+        "KOSPI200": 356
+      },
+      "win_rate": 0.300561797752809
+    },
+    {
+      "final_nav": 6873124.850901577,
+      "max_drawdown": -0.36469412805359014,
+      "mean_net": -0.004495350609630071,
+      "mean_stop": -0.03628517913137518,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2,
+      "name": "A_b5_KOSPI200|RANDOM_UNIV#12",
+      "open_at_end": 5,
+      "stop_pct": 0.7158176943699732,
+      "total_return": -0.31268751490984237,
+      "trades": 373,
+      "trades_by_index": {
+        "KOSPI200": 373
+      },
+      "win_rate": 0.28418230563002683
+    },
+    {
+      "final_nav": 9103550.62083261,
+      "max_drawdown": -0.22452787170665145,
+      "mean_net": -0.0009374531078331462,
+      "mean_stop": -0.03683407424041967,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2,
+      "name": "A_b5_KOSPI200|RANDOM_UNIV#13",
+      "open_at_end": 5,
+      "stop_pct": 0.680672268907563,
+      "total_return": -0.08964493791673889,
+      "trades": 357,
+      "trades_by_index": {
+        "KOSPI200": 357
+      },
+      "win_rate": 0.31932773109243695
+    },
+    {
+      "final_nav": 10530049.99353201,
+      "max_drawdown": -0.2621814441585235,
+      "mean_net": 0.0012159374331955207,
+      "mean_stop": -0.035801812884841515,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2.0,
+      "name": "A_b5_KOSPI200|RANDOM_UNIV#14",
+      "open_at_end": 5,
+      "stop_pct": 0.6676470588235294,
+      "total_return": 0.05300499935320091,
+      "trades": 340,
+      "trades_by_index": {
+        "KOSPI200": 340
+      },
+      "win_rate": 0.3323529411764706
+    },
+    {
+      "final_nav": 11581020.506141605,
+      "max_drawdown": -0.10156751602501424,
+      "mean_net": 0.0045891658610615295,
+      "mean_stop": -0.03686891408362697,
+      "mean_take": 0.07557902878004868,
+      "median_held_td": 2.0,
+      "name": "A_b5_KOSPI200|RANDOM_UNIV#15",
+      "open_at_end": 5,
+      "stop_pct": 0.6313131313131313,
+      "total_return": 0.15810205061416038,
+      "trades": 198,
+      "trades_by_index": {
+        "KOSPI200": 198
+      },
+      "win_rate": 0.3686868686868687
+    },
+    {
+      "final_nav": 11742486.692930423,
+      "max_drawdown": -0.19028687536044042,
+      "mean_net": 0.002824359626278127,
+      "mean_stop": -0.03659777387994996,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2.0,
+      "name": "A_b5_KOSPI200|RANDOM_UNIV#16",
+      "open_at_end": 5,
+      "stop_pct": 0.6485714285714286,
+      "total_return": 0.17424866929304228,
+      "trades": 350,
+      "trades_by_index": {
+        "KOSPI200": 350
+      },
+      "win_rate": 0.3514285714285714
+    },
+    {
+      "final_nav": 8067996.8870948525,
+      "max_drawdown": -0.28985096926145426,
+      "mean_net": -0.0023401854504746544,
+      "mean_stop": -0.036257961056702454,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2.0,
+      "name": "A_b5_KOSPI200|RANDOM_UNIV#17",
+      "open_at_end": 5,
+      "stop_pct": 0.6967213114754098,
+      "total_return": -0.19320031129051474,
+      "trades": 366,
+      "trades_by_index": {
+        "KOSPI200": 366
+      },
+      "win_rate": 0.30327868852459017
+    },
+    {
+      "final_nav": 9571455.546975544,
+      "max_drawdown": -0.3502583556244302,
+      "mean_net": -0.0002803442873639605,
+      "mean_stop": -0.03594331648638662,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2,
+      "name": "A_b5_KOSPI200|RANDOM_UNIV#18",
+      "open_at_end": 5,
+      "stop_pct": 0.6802168021680217,
+      "total_return": -0.04285444530244564,
+      "trades": 369,
+      "trades_by_index": {
+        "KOSPI200": 369
+      },
+      "win_rate": 0.31978319783197834
+    },
+    {
+      "final_nav": 10002042.004943896,
+      "max_drawdown": -0.2483225571507044,
+      "mean_net": 0.0002651980000182796,
+      "mean_stop": -0.037022531944996766,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2,
+      "name": "A_b5_KOSPI200|RANDOM_UNIV#19",
+      "open_at_end": 5,
+      "stop_pct": 0.6688524590163935,
+      "total_return": 0.00020420049438962806,
+      "trades": 305,
+      "trades_by_index": {
+        "KOSPI200": 305
+      },
+      "win_rate": 0.33114754098360655
+    },
+    {
+      "final_nav": 7959747.086989073,
+      "max_drawdown": -0.3096874235292275,
+      "mean_net": -0.004915637031962904,
+      "mean_stop": -0.037694392697678956,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2,
+      "name": "A_b5_KOSPI200|RANDOM_UNIV#20",
+      "open_at_end": 5,
+      "stop_pct": 0.7106227106227107,
+      "total_return": -0.2040252913010927,
+      "trades": 273,
+      "trades_by_index": {
+        "KOSPI200": 273
+      },
+      "win_rate": 0.2893772893772894
+    },
+    {
+      "final_nav": 4837915.105209117,
+      "max_drawdown": -0.5299033647364271,
+      "mean_net": -0.0077033387645489585,
+      "mean_stop": -0.03721480834491689,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1,
+      "name": "B_b10_KOSPI200|RANDOM_GATE#1",
+      "open_at_end": 5,
+      "stop_pct": 0.738359201773836,
+      "total_return": -0.5162084894790884,
+      "trades": 451,
+      "trades_by_index": {
+        "KOSPI200": 451
+      },
+      "win_rate": 0.2616407982261641
+    },
+    {
+      "final_nav": 7012912.398127649,
+      "max_drawdown": -0.4119334328983729,
+      "mean_net": -0.0033718152670947433,
+      "mean_stop": -0.036679202599483374,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1,
+      "name": "B_b10_KOSPI200|RANDOM_GATE#2",
+      "open_at_end": 5,
+      "stop_pct": 0.7032967032967034,
+      "total_return": -0.29870876018723513,
+      "trades": 455,
+      "trades_by_index": {
+        "KOSPI200": 455
+      },
+      "win_rate": 0.2967032967032967
+    },
+    {
+      "final_nav": 6291050.353102503,
+      "max_drawdown": -0.3939480448472803,
+      "mean_net": -0.004652513896933473,
+      "mean_stop": -0.03664668735707973,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "B_b10_KOSPI200|RANDOM_GATE#3",
+      "open_at_end": 5,
+      "stop_pct": 0.7149122807017544,
+      "total_return": -0.3708949646897497,
+      "trades": 456,
+      "trades_by_index": {
+        "KOSPI200": 456
+      },
+      "win_rate": 0.2850877192982456
+    },
+    {
+      "final_nav": 6872005.508309666,
+      "max_drawdown": -0.40629775960837056,
+      "mean_net": -0.003976853309693988,
+      "mean_stop": -0.03610519030747468,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "B_b10_KOSPI200|RANDOM_GATE#4",
+      "open_at_end": 5,
+      "stop_pct": 0.7123287671232876,
+      "total_return": -0.31279944916903335,
+      "trades": 438,
+      "trades_by_index": {
+        "KOSPI200": 438
+      },
+      "win_rate": 0.2876712328767123
+    },
+    {
+      "final_nav": 5553961.568809624,
+      "max_drawdown": -0.5405893384850611,
+      "mean_net": -0.006257265514716663,
+      "mean_stop": -0.03682262844408685,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "B_b10_KOSPI200|RANDOM_GATE#5",
+      "open_at_end": 5,
+      "stop_pct": 0.7280701754385965,
+      "total_return": -0.44460384311903767,
+      "trades": 456,
+      "trades_by_index": {
+        "KOSPI200": 456
+      },
+      "win_rate": 0.2719298245614035
+    },
+    {
+      "final_nav": 7852109.679084785,
+      "max_drawdown": -0.42640114779773985,
+      "mean_net": -0.002303295870658534,
+      "mean_stop": -0.036751247158471334,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "B_b10_KOSPI200|RANDOM_GATE#6",
+      "open_at_end": 5,
+      "stop_pct": 0.6933333333333334,
+      "total_return": -0.21478903209152145,
+      "trades": 450,
+      "trades_by_index": {
+        "KOSPI200": 450
+      },
+      "win_rate": 0.30666666666666664
+    },
+    {
+      "final_nav": 5145262.566822058,
+      "max_drawdown": -0.5229996327269344,
+      "mean_net": -0.007065960536833321,
+      "mean_stop": -0.037073962610225,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "B_b10_KOSPI200|RANDOM_GATE#7",
+      "open_at_end": 5,
+      "stop_pct": 0.7336244541484717,
+      "total_return": -0.48547374331779425,
+      "trades": 458,
+      "trades_by_index": {
+        "KOSPI200": 458
+      },
+      "win_rate": 0.2663755458515284
+    },
+    {
+      "final_nav": 8130892.135109132,
+      "max_drawdown": -0.2927585047027732,
+      "mean_net": -0.0018519103304369142,
+      "mean_stop": -0.036237360264369654,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1,
+      "name": "B_b10_KOSPI200|RANDOM_GATE#8",
+      "open_at_end": 5,
+      "stop_pct": 0.6924829157175398,
+      "total_return": -0.18691078648908677,
+      "trades": 439,
+      "trades_by_index": {
+        "KOSPI200": 439
+      },
+      "win_rate": 0.30751708428246016
+    },
+    {
+      "final_nav": 7032997.663528771,
+      "max_drawdown": -0.4134475665298458,
+      "mean_net": -0.0035998481703824643,
+      "mean_stop": -0.03749582224949679,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 1,
+      "name": "B_b10_KOSPI200|RANDOM_GATE#9",
+      "open_at_end": 5,
+      "stop_pct": 0.7002341920374707,
+      "total_return": -0.29670023364712284,
+      "trades": 427,
+      "trades_by_index": {
+        "KOSPI200": 427
+      },
+      "win_rate": 0.2997658079625293
+    },
+    {
+      "final_nav": 7384681.765803697,
+      "max_drawdown": -0.4531037563654945,
+      "mean_net": -0.0029204672349268474,
+      "mean_stop": -0.03687949685896014,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 1,
+      "name": "B_b10_KOSPI200|RANDOM_GATE#10",
+      "open_at_end": 5,
+      "stop_pct": 0.6980306345733042,
+      "total_return": -0.2615318234196303,
+      "trades": 457,
+      "trades_by_index": {
+        "KOSPI200": 457
+      },
+      "win_rate": 0.30196936542669583
+    },
+    {
+      "final_nav": 7460021.378708294,
+      "max_drawdown": -0.3726684131815813,
+      "mean_net": -0.0027334948025942753,
+      "mean_stop": -0.03739641507687885,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "B_b10_KOSPI200|RANDOM_GATE#11",
+      "open_at_end": 5,
+      "stop_pct": 0.6931818181818182,
+      "total_return": -0.25399786212917064,
+      "trades": 440,
+      "trades_by_index": {
+        "KOSPI200": 440
+      },
+      "win_rate": 0.3068181818181818
+    },
+    {
+      "final_nav": 7415738.712567255,
+      "max_drawdown": -0.30011370679193483,
+      "mean_net": -0.0029463084394364086,
+      "mean_stop": -0.036600024390644297,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "B_b10_KOSPI200|RANDOM_GATE#12",
+      "open_at_end": 5,
+      "stop_pct": 0.7,
+      "total_return": -0.25842612874327453,
+      "trades": 430,
+      "trades_by_index": {
+        "KOSPI200": 430
+      },
+      "win_rate": 0.3
+    },
+    {
+      "final_nav": 5908081.578385013,
+      "max_drawdown": -0.4995369210559345,
+      "mean_net": -0.005321273558023819,
+      "mean_stop": -0.03671542073399225,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1,
+      "name": "B_b10_KOSPI200|RANDOM_GATE#13",
+      "open_at_end": 5,
+      "stop_pct": 0.7204301075268817,
+      "total_return": -0.40919184216149873,
+      "trades": 465,
+      "trades_by_index": {
+        "KOSPI200": 465
+      },
+      "win_rate": 0.27956989247311825
+    },
+    {
+      "final_nav": 4888131.207518414,
+      "max_drawdown": -0.5952039735595149,
+      "mean_net": -0.007044634559946667,
+      "mean_stop": -0.03717520124803613,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 1,
+      "name": "B_b10_KOSPI200|RANDOM_GATE#14",
+      "open_at_end": 5,
+      "stop_pct": 0.732776617954071,
+      "total_return": -0.5111868792481586,
+      "trades": 479,
+      "trades_by_index": {
+        "KOSPI200": 479
+      },
+      "win_rate": 0.267223382045929
+    },
+    {
+      "final_nav": 8580366.606421573,
+      "max_drawdown": -0.31099812413510386,
+      "mean_net": -0.0012296165746301824,
+      "mean_stop": -0.03688222765826616,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "B_b10_KOSPI200|RANDOM_GATE#15",
+      "open_at_end": 5,
+      "stop_pct": 0.6829787234042554,
+      "total_return": -0.14196333935784267,
+      "trades": 470,
+      "trades_by_index": {
+        "KOSPI200": 470
+      },
+      "win_rate": 0.3170212765957447
+    },
+    {
+      "final_nav": 4544228.733069708,
+      "max_drawdown": -0.5481556705324003,
+      "mean_net": -0.008232340612986689,
+      "mean_stop": -0.03751583112380627,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "B_b10_KOSPI200|RANDOM_GATE#16",
+      "open_at_end": 5,
+      "stop_pct": 0.7410714285714286,
+      "total_return": -0.5455771266930292,
+      "trades": 448,
+      "trades_by_index": {
+        "KOSPI200": 448
+      },
+      "win_rate": 0.25892857142857145
+    },
+    {
+      "final_nav": 7747770.944548136,
+      "max_drawdown": -0.4243214888355272,
+      "mean_net": -0.0021804238798829676,
+      "mean_stop": -0.037087918108025655,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "B_b10_KOSPI200|RANDOM_GATE#17",
+      "open_at_end": 5,
+      "stop_pct": 0.6901709401709402,
+      "total_return": -0.22522290554518642,
+      "trades": 468,
+      "trades_by_index": {
+        "KOSPI200": 468
+      },
+      "win_rate": 0.30982905982905984
+    },
+    {
+      "final_nav": 5885639.465746306,
+      "max_drawdown": -0.47481957408398634,
+      "mean_net": -0.0057072541227582195,
+      "mean_stop": -0.0370309491267061,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1,
+      "name": "B_b10_KOSPI200|RANDOM_GATE#18",
+      "open_at_end": 5,
+      "stop_pct": 0.7218390804597701,
+      "total_return": -0.4114360534253694,
+      "trades": 435,
+      "trades_by_index": {
+        "KOSPI200": 435
+      },
+      "win_rate": 0.27816091954022987
+    },
+    {
+      "final_nav": 6097062.441451772,
+      "max_drawdown": -0.47095504377328756,
+      "mean_net": -0.005008176019248361,
+      "mean_stop": -0.03714712079039659,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "B_b10_KOSPI200|RANDOM_GATE#19",
+      "open_at_end": 5,
+      "stop_pct": 0.7148936170212766,
+      "total_return": -0.39029375585482284,
+      "trades": 470,
+      "trades_by_index": {
+        "KOSPI200": 470
+      },
+      "win_rate": 0.2851063829787234
+    },
+    {
+      "final_nav": 6940133.695452592,
+      "max_drawdown": -0.4285061232240044,
+      "mean_net": -0.004097667261214957,
+      "mean_stop": -0.03713434610759256,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "B_b10_KOSPI200|RANDOM_GATE#20",
+      "open_at_end": 5,
+      "stop_pct": 0.7068965517241379,
+      "total_return": -0.3059866304547407,
+      "trades": 406,
+      "trades_by_index": {
+        "KOSPI200": 406
+      },
+      "win_rate": 0.29310344827586204
+    },
+    {
+      "final_nav": 8271098.038970844,
+      "max_drawdown": -0.3160438014241854,
+      "mean_net": -0.002066535270014752,
+      "mean_stop": -0.03661088825555317,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2.0,
+      "name": "B_b10_KOSPI200|RANDOM_UNIV#1",
+      "open_at_end": 5,
+      "stop_pct": 0.692090395480226,
+      "total_return": -0.17289019610291556,
+      "trades": 354,
+      "trades_by_index": {
+        "KOSPI200": 354
+      },
+      "win_rate": 0.307909604519774
+    },
+    {
+      "final_nav": 9726448.392791884,
+      "max_drawdown": -0.1898660628469051,
+      "mean_net": -4.973485427505936e-05,
+      "mean_stop": -0.0359413514942931,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2,
+      "name": "B_b10_KOSPI200|RANDOM_UNIV#2",
+      "open_at_end": 5,
+      "stop_pct": 0.6781609195402298,
+      "total_return": -0.027355160720811567,
+      "trades": 261,
+      "trades_by_index": {
+        "KOSPI200": 261
+      },
+      "win_rate": 0.3218390804597701
+    },
+    {
+      "final_nav": 8420802.598731715,
+      "max_drawdown": -0.37590397879743687,
+      "mean_net": -0.002124019600756901,
+      "mean_stop": -0.03673411101928165,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2,
+      "name": "B_b10_KOSPI200|RANDOM_UNIV#3",
+      "open_at_end": 5,
+      "stop_pct": 0.6918429003021148,
+      "total_return": -0.15791974012682852,
+      "trades": 331,
+      "trades_by_index": {
+        "KOSPI200": 331
+      },
+      "win_rate": 0.3081570996978852
+    },
+    {
+      "final_nav": 10651055.595096473,
+      "max_drawdown": -0.16889251841988362,
+      "mean_net": 0.0018580246750684998,
+      "mean_stop": -0.036273529172335034,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2.0,
+      "name": "B_b10_KOSPI200|RANDOM_UNIV#4",
+      "open_at_end": 5,
+      "stop_pct": 0.6590909090909091,
+      "total_return": 0.06510555950964725,
+      "trades": 264,
+      "trades_by_index": {
+        "KOSPI200": 264
+      },
+      "win_rate": 0.3409090909090909
+    },
+    {
+      "final_nav": 10154426.78887012,
+      "max_drawdown": -0.21052031717964037,
+      "mean_net": 0.0005551673350483255,
+      "mean_stop": -0.03615863720186673,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2.0,
+      "name": "B_b10_KOSPI200|RANDOM_UNIV#5",
+      "open_at_end": 5,
+      "stop_pct": 0.6714285714285714,
+      "total_return": 0.015442678887012118,
+      "trades": 280,
+      "trades_by_index": {
+        "KOSPI200": 280
+      },
+      "win_rate": 0.32857142857142857
+    },
+    {
+      "final_nav": 9786110.033906782,
+      "max_drawdown": -0.20725852220395258,
+      "mean_net": 0.0003832830433826342,
+      "mean_stop": -0.036407768518762984,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2,
+      "name": "B_b10_KOSPI200|RANDOM_UNIV#6",
+      "open_at_end": 5,
+      "stop_pct": 0.6714697406340058,
+      "total_return": -0.02138899660932181,
+      "trades": 347,
+      "trades_by_index": {
+        "KOSPI200": 347
+      },
+      "win_rate": 0.3285302593659942
+    },
+    {
+      "final_nav": 7203679.712633686,
+      "max_drawdown": -0.37963854360871796,
+      "mean_net": -0.004437573556153421,
+      "mean_stop": -0.03744442201983678,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2,
+      "name": "B_b10_KOSPI200|RANDOM_UNIV#7",
+      "open_at_end": 5,
+      "stop_pct": 0.7079646017699115,
+      "total_return": -0.2796320287366314,
+      "trades": 339,
+      "trades_by_index": {
+        "KOSPI200": 339
+      },
+      "win_rate": 0.2920353982300885
+    },
+    {
+      "final_nav": 8434034.593776118,
+      "max_drawdown": -0.27191739277514293,
+      "mean_net": -0.0037796256533846172,
+      "mean_stop": -0.036432405342141025,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2,
+      "name": "B_b10_KOSPI200|RANDOM_UNIV#8",
+      "open_at_end": 5,
+      "stop_pct": 0.7084870848708487,
+      "total_return": -0.15659654062238815,
+      "trades": 271,
+      "trades_by_index": {
+        "KOSPI200": 271
+      },
+      "win_rate": 0.2915129151291513
+    },
+    {
+      "final_nav": 8550516.093834551,
+      "max_drawdown": -0.24663983173295867,
+      "mean_net": -0.0017223320505932594,
+      "mean_stop": -0.0359073960035863,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2.0,
+      "name": "B_b10_KOSPI200|RANDOM_UNIV#9",
+      "open_at_end": 5,
+      "stop_pct": 0.6933701657458563,
+      "total_return": -0.14494839061654485,
+      "trades": 362,
+      "trades_by_index": {
+        "KOSPI200": 362
+      },
+      "win_rate": 0.30662983425414364
+    },
+    {
+      "final_nav": 11438839.910573643,
+      "max_drawdown": -0.20280796921632605,
+      "mean_net": 0.002452012460483415,
+      "mean_stop": -0.036417302520186406,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2.0,
+      "name": "B_b10_KOSPI200|RANDOM_UNIV#10",
+      "open_at_end": 5,
+      "stop_pct": 0.6529411764705882,
+      "total_return": 0.14388399105736438,
+      "trades": 340,
+      "trades_by_index": {
+        "KOSPI200": 340
+      },
+      "win_rate": 0.34705882352941175
+    },
+    {
+      "final_nav": 7782755.957067076,
+      "max_drawdown": -0.295657865378131,
+      "mean_net": -0.0028183275633207393,
+      "mean_stop": -0.03650715137352366,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2.0,
+      "name": "B_b10_KOSPI200|RANDOM_UNIV#11",
+      "open_at_end": 5,
+      "stop_pct": 0.699438202247191,
+      "total_return": -0.22172440429329243,
+      "trades": 356,
+      "trades_by_index": {
+        "KOSPI200": 356
+      },
+      "win_rate": 0.300561797752809
+    },
+    {
+      "final_nav": 6873124.850901577,
+      "max_drawdown": -0.36469412805359014,
+      "mean_net": -0.004495350609630071,
+      "mean_stop": -0.03628517913137518,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2,
+      "name": "B_b10_KOSPI200|RANDOM_UNIV#12",
+      "open_at_end": 5,
+      "stop_pct": 0.7158176943699732,
+      "total_return": -0.31268751490984237,
+      "trades": 373,
+      "trades_by_index": {
+        "KOSPI200": 373
+      },
+      "win_rate": 0.28418230563002683
+    },
+    {
+      "final_nav": 9103550.62083261,
+      "max_drawdown": -0.22452787170665145,
+      "mean_net": -0.0009374531078331462,
+      "mean_stop": -0.03683407424041967,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2,
+      "name": "B_b10_KOSPI200|RANDOM_UNIV#13",
+      "open_at_end": 5,
+      "stop_pct": 0.680672268907563,
+      "total_return": -0.08964493791673889,
+      "trades": 357,
+      "trades_by_index": {
+        "KOSPI200": 357
+      },
+      "win_rate": 0.31932773109243695
+    },
+    {
+      "final_nav": 10530049.99353201,
+      "max_drawdown": -0.2621814441585235,
+      "mean_net": 0.0012159374331955207,
+      "mean_stop": -0.035801812884841515,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2.0,
+      "name": "B_b10_KOSPI200|RANDOM_UNIV#14",
+      "open_at_end": 5,
+      "stop_pct": 0.6676470588235294,
+      "total_return": 0.05300499935320091,
+      "trades": 340,
+      "trades_by_index": {
+        "KOSPI200": 340
+      },
+      "win_rate": 0.3323529411764706
+    },
+    {
+      "final_nav": 11581020.506141605,
+      "max_drawdown": -0.10156751602501424,
+      "mean_net": 0.0045891658610615295,
+      "mean_stop": -0.03686891408362697,
+      "mean_take": 0.07557902878004868,
+      "median_held_td": 2.0,
+      "name": "B_b10_KOSPI200|RANDOM_UNIV#15",
+      "open_at_end": 5,
+      "stop_pct": 0.6313131313131313,
+      "total_return": 0.15810205061416038,
+      "trades": 198,
+      "trades_by_index": {
+        "KOSPI200": 198
+      },
+      "win_rate": 0.3686868686868687
+    },
+    {
+      "final_nav": 11742486.692930423,
+      "max_drawdown": -0.19028687536044042,
+      "mean_net": 0.002824359626278127,
+      "mean_stop": -0.03659777387994996,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2.0,
+      "name": "B_b10_KOSPI200|RANDOM_UNIV#16",
+      "open_at_end": 5,
+      "stop_pct": 0.6485714285714286,
+      "total_return": 0.17424866929304228,
+      "trades": 350,
+      "trades_by_index": {
+        "KOSPI200": 350
+      },
+      "win_rate": 0.3514285714285714
+    },
+    {
+      "final_nav": 8067996.8870948525,
+      "max_drawdown": -0.28985096926145426,
+      "mean_net": -0.0023401854504746544,
+      "mean_stop": -0.036257961056702454,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2.0,
+      "name": "B_b10_KOSPI200|RANDOM_UNIV#17",
+      "open_at_end": 5,
+      "stop_pct": 0.6967213114754098,
+      "total_return": -0.19320031129051474,
+      "trades": 366,
+      "trades_by_index": {
+        "KOSPI200": 366
+      },
+      "win_rate": 0.30327868852459017
+    },
+    {
+      "final_nav": 9571455.546975544,
+      "max_drawdown": -0.3502583556244302,
+      "mean_net": -0.0002803442873639605,
+      "mean_stop": -0.03594331648638662,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2,
+      "name": "B_b10_KOSPI200|RANDOM_UNIV#18",
+      "open_at_end": 5,
+      "stop_pct": 0.6802168021680217,
+      "total_return": -0.04285444530244564,
+      "trades": 369,
+      "trades_by_index": {
+        "KOSPI200": 369
+      },
+      "win_rate": 0.31978319783197834
+    },
+    {
+      "final_nav": 10002042.004943896,
+      "max_drawdown": -0.2483225571507044,
+      "mean_net": 0.0002651980000182796,
+      "mean_stop": -0.037022531944996766,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2,
+      "name": "B_b10_KOSPI200|RANDOM_UNIV#19",
+      "open_at_end": 5,
+      "stop_pct": 0.6688524590163935,
+      "total_return": 0.00020420049438962806,
+      "trades": 305,
+      "trades_by_index": {
+        "KOSPI200": 305
+      },
+      "win_rate": 0.33114754098360655
+    },
+    {
+      "final_nav": 7959747.086989073,
+      "max_drawdown": -0.3096874235292275,
+      "mean_net": -0.004915637031962904,
+      "mean_stop": -0.037694392697678956,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2,
+      "name": "B_b10_KOSPI200|RANDOM_UNIV#20",
+      "open_at_end": 5,
+      "stop_pct": 0.7106227106227107,
+      "total_return": -0.2040252913010927,
+      "trades": 273,
+      "trades_by_index": {
+        "KOSPI200": 273
+      },
+      "win_rate": 0.2893772893772894
+    },
+    {
+      "final_nav": 7427229.170191027,
+      "max_drawdown": -0.39302276646739875,
+      "mean_net": -0.0025767996340787746,
+      "mean_stop": -0.03671382813680111,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "C_b10_BOTH|RANDOM_GATE#1",
+      "open_at_end": 5,
+      "stop_pct": 0.696,
+      "total_return": -0.25727708298089724,
+      "trades": 500,
+      "trades_by_index": {
+        "KOSDAQ150": 201,
+        "KOSPI200": 299
+      },
+      "win_rate": 0.304
+    },
+    {
+      "final_nav": 7068709.001748728,
+      "max_drawdown": -0.41015103620106774,
+      "mean_net": -0.0032909408920776158,
+      "mean_stop": -0.03644948670017875,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 1,
+      "name": "C_b10_BOTH|RANDOM_GATE#2",
+      "open_at_end": 5,
+      "stop_pct": 0.7040169133192389,
+      "total_return": -0.29312909982512725,
+      "trades": 473,
+      "trades_by_index": {
+        "KOSDAQ150": 187,
+        "KOSPI200": 286
+      },
+      "win_rate": 0.2959830866807611
+    },
+    {
+      "final_nav": 3829069.700259828,
+      "max_drawdown": -0.6387564432423843,
+      "mean_net": -0.009269788024294352,
+      "mean_stop": -0.0371073263459292,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 1.0,
+      "name": "C_b10_BOTH|RANDOM_GATE#3",
+      "open_at_end": 5,
+      "stop_pct": 0.7529644268774703,
+      "total_return": -0.6170930299740172,
+      "trades": 506,
+      "trades_by_index": {
+        "KOSDAQ150": 204,
+        "KOSPI200": 302
+      },
+      "win_rate": 0.24703557312252963
+    },
+    {
+      "final_nav": 5048961.799871406,
+      "max_drawdown": -0.5191069561141459,
+      "mean_net": -0.006515956426721774,
+      "mean_stop": -0.03812593688029821,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "C_b10_BOTH|RANDOM_GATE#4",
+      "open_at_end": 5,
+      "stop_pct": 0.722,
+      "total_return": -0.49510382001285946,
+      "trades": 500,
+      "trades_by_index": {
+        "KOSDAQ150": 206,
+        "KOSPI200": 294
+      },
+      "win_rate": 0.278
+    },
+    {
+      "final_nav": 4858281.023118388,
+      "max_drawdown": -0.5672678713062255,
+      "mean_net": -0.007319495129722645,
+      "mean_stop": -0.037355192198480366,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "C_b10_BOTH|RANDOM_GATE#5",
+      "open_at_end": 5,
+      "stop_pct": 0.7340425531914894,
+      "total_return": -0.5141718976881612,
+      "trades": 470,
+      "trades_by_index": {
+        "KOSDAQ150": 184,
+        "KOSPI200": 286
+      },
+      "win_rate": 0.26595744680851063
+    },
+    {
+      "final_nav": 5087717.811490899,
+      "max_drawdown": -0.5494223763398187,
+      "mean_net": -0.007046419813951568,
+      "mean_stop": -0.03746069537002527,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 1.0,
+      "name": "C_b10_BOTH|RANDOM_GATE#6",
+      "open_at_end": 5,
+      "stop_pct": 0.7309417040358744,
+      "total_return": -0.49122821885091006,
+      "trades": 446,
+      "trades_by_index": {
+        "KOSDAQ150": 185,
+        "KOSPI200": 261
+      },
+      "win_rate": 0.26905829596412556
+    },
+    {
+      "final_nav": 5362727.025345091,
+      "max_drawdown": -0.5140729461274007,
+      "mean_net": -0.0056122256938120115,
+      "mean_stop": -0.036822842332957385,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1,
+      "name": "C_b10_BOTH|RANDOM_GATE#7",
+      "open_at_end": 5,
+      "stop_pct": 0.7223300970873786,
+      "total_return": -0.4637272974654909,
+      "trades": 515,
+      "trades_by_index": {
+        "KOSDAQ150": 229,
+        "KOSPI200": 286
+      },
+      "win_rate": 0.27766990291262134
+    },
+    {
+      "final_nav": 5134430.688554307,
+      "max_drawdown": -0.5728300573074655,
+      "mean_net": -0.006381684388417793,
+      "mean_stop": -0.03740636112450397,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 1.0,
+      "name": "C_b10_BOTH|RANDOM_GATE#8",
+      "open_at_end": 5,
+      "stop_pct": 0.7254098360655737,
+      "total_return": -0.4865569311445692,
+      "trades": 488,
+      "trades_by_index": {
+        "KOSDAQ150": 185,
+        "KOSPI200": 303
+      },
+      "win_rate": 0.27459016393442626
+    },
+    {
+      "final_nav": 7606250.491190534,
+      "max_drawdown": -0.342770058698735,
+      "mean_net": -0.002264528804362333,
+      "mean_stop": -0.03884162212715787,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "C_b10_BOTH|RANDOM_GATE#9",
+      "open_at_end": 5,
+      "stop_pct": 0.680327868852459,
+      "total_return": -0.23937495088094662,
+      "trades": 488,
+      "trades_by_index": {
+        "KOSDAQ150": 212,
+        "KOSPI200": 276
+      },
+      "win_rate": 0.319672131147541
+    },
+    {
+      "final_nav": 3975928.6975205727,
+      "max_drawdown": -0.6536761639871278,
+      "mean_net": -0.008559959276404497,
+      "mean_stop": -0.03710711593841539,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1,
+      "name": "C_b10_BOTH|RANDOM_GATE#10",
+      "open_at_end": 5,
+      "stop_pct": 0.7466666666666667,
+      "total_return": -0.6024071302479428,
+      "trades": 525,
+      "trades_by_index": {
+        "KOSDAQ150": 211,
+        "KOSPI200": 314
+      },
+      "win_rate": 0.25333333333333335
+    },
+    {
+      "final_nav": 5136224.773619631,
+      "max_drawdown": -0.5878776455449196,
+      "mean_net": -0.006533076153691656,
+      "mean_stop": -0.038310924673246524,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 1,
+      "name": "C_b10_BOTH|RANDOM_GATE#11",
+      "open_at_end": 5,
+      "stop_pct": 0.7209775967413442,
+      "total_return": -0.4863775226380369,
+      "trades": 491,
+      "trades_by_index": {
+        "KOSDAQ150": 209,
+        "KOSPI200": 282
+      },
+      "win_rate": 0.2790224032586558
+    },
+    {
+      "final_nav": 5275213.417910705,
+      "max_drawdown": -0.479264565288277,
+      "mean_net": -0.00621371490793641,
+      "mean_stop": -0.0369437570279986,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 1,
+      "name": "C_b10_BOTH|RANDOM_GATE#12",
+      "open_at_end": 5,
+      "stop_pct": 0.7268993839835729,
+      "total_return": -0.4724786582089294,
+      "trades": 487,
+      "trades_by_index": {
+        "KOSDAQ150": 201,
+        "KOSPI200": 286
+      },
+      "win_rate": 0.2731006160164271
+    },
+    {
+      "final_nav": 4817995.784811586,
+      "max_drawdown": -0.5291977468500493,
+      "mean_net": -0.007597140958650164,
+      "mean_stop": -0.03812712233672748,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1,
+      "name": "C_b10_BOTH|RANDOM_GATE#13",
+      "open_at_end": 5,
+      "stop_pct": 0.7315010570824524,
+      "total_return": -0.5182004215188414,
+      "trades": 473,
+      "trades_by_index": {
+        "KOSDAQ150": 200,
+        "KOSPI200": 273
+      },
+      "win_rate": 0.26849894291754756
+    },
+    {
+      "final_nav": 4117642.740273636,
+      "max_drawdown": -0.6122346988461775,
+      "mean_net": -0.0077389774755038535,
+      "mean_stop": -0.03764271734445216,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 1,
+      "name": "C_b10_BOTH|RANDOM_GATE#14",
+      "open_at_end": 5,
+      "stop_pct": 0.7358834244080146,
+      "total_return": -0.5882357259726364,
+      "trades": 549,
+      "trades_by_index": {
+        "KOSDAQ150": 232,
+        "KOSPI200": 317
+      },
+      "win_rate": 0.2641165755919854
+    },
+    {
+      "final_nav": 5418342.91103433,
+      "max_drawdown": -0.5403303084097965,
+      "mean_net": -0.0058592679015447265,
+      "mean_stop": -0.03727118233587361,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1,
+      "name": "C_b10_BOTH|RANDOM_GATE#15",
+      "open_at_end": 5,
+      "stop_pct": 0.7216494845360825,
+      "total_return": -0.45816570889656705,
+      "trades": 485,
+      "trades_by_index": {
+        "KOSDAQ150": 200,
+        "KOSPI200": 285
+      },
+      "win_rate": 0.27835051546391754
+    },
+    {
+      "final_nav": 3958798.4359991373,
+      "max_drawdown": -0.6139959718606105,
+      "mean_net": -0.008923227824170635,
+      "mean_stop": -0.03792132124331292,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1,
+      "name": "C_b10_BOTH|RANDOM_GATE#16",
+      "open_at_end": 5,
+      "stop_pct": 0.7445109780439122,
+      "total_return": -0.6041201564000862,
+      "trades": 501,
+      "trades_by_index": {
+        "KOSDAQ150": 208,
+        "KOSPI200": 293
+      },
+      "win_rate": 0.2554890219560878
+    },
+    {
+      "final_nav": 5186343.714811323,
+      "max_drawdown": -0.5141210457839939,
+      "mean_net": -0.006490659700633795,
+      "mean_stop": -0.03709291642224421,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "C_b10_BOTH|RANDOM_GATE#17",
+      "open_at_end": 5,
+      "stop_pct": 0.7283950617283951,
+      "total_return": -0.48136562851886766,
+      "trades": 486,
+      "trades_by_index": {
+        "KOSDAQ150": 200,
+        "KOSPI200": 286
+      },
+      "win_rate": 0.2716049382716049
+    },
+    {
+      "final_nav": 4649309.321932131,
+      "max_drawdown": -0.598419333483424,
+      "mean_net": -0.006886783084574387,
+      "mean_stop": -0.037223947034772505,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "C_b10_BOTH|RANDOM_GATE#18",
+      "open_at_end": 5,
+      "stop_pct": 0.7310606060606061,
+      "total_return": -0.5350690678067869,
+      "trades": 528,
+      "trades_by_index": {
+        "KOSDAQ150": 219,
+        "KOSPI200": 309
+      },
+      "win_rate": 0.2689393939393939
+    },
+    {
+      "final_nav": 5575920.411317406,
+      "max_drawdown": -0.480268261364306,
+      "mean_net": -0.005631832407869171,
+      "mean_stop": -0.03797453003212715,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1,
+      "name": "C_b10_BOTH|RANDOM_GATE#19",
+      "open_at_end": 5,
+      "stop_pct": 0.7151767151767152,
+      "total_return": -0.44240795886825934,
+      "trades": 481,
+      "trades_by_index": {
+        "KOSDAQ150": 187,
+        "KOSPI200": 294
+      },
+      "win_rate": 0.28482328482328484
+    },
+    {
+      "final_nav": 5059013.443978384,
+      "max_drawdown": -0.5588085118277613,
+      "mean_net": -0.00632001150167916,
+      "mean_stop": -0.0360611264007348,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1,
+      "name": "C_b10_BOTH|RANDOM_GATE#20",
+      "open_at_end": 5,
+      "stop_pct": 0.7335984095427436,
+      "total_return": -0.4940986556021616,
+      "trades": 503,
+      "trades_by_index": {
+        "KOSDAQ150": 198,
+        "KOSPI200": 305
+      },
+      "win_rate": 0.2664015904572565
+    },
+    {
+      "final_nav": 7241915.535615115,
+      "max_drawdown": -0.37518191265777456,
+      "mean_net": -0.0032875386548234745,
+      "mean_stop": -0.035456796424310794,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.5,
+      "name": "C_b10_BOTH|RANDOM_UNIV#1",
+      "open_at_end": 5,
+      "stop_pct": 0.7102803738317757,
+      "total_return": -0.27580844643848845,
+      "trades": 428,
+      "trades_by_index": {
+        "KOSDAQ150": 189,
+        "KOSPI200": 239
+      },
+      "win_rate": 0.2897196261682243
+    },
+    {
+      "final_nav": 10011303.459524317,
+      "max_drawdown": -0.25645759850091354,
+      "mean_net": 0.0005063716445350106,
+      "mean_stop": -0.03598312704284613,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2,
+      "name": "C_b10_BOTH|RANDOM_UNIV#2",
+      "open_at_end": 5,
+      "stop_pct": 0.6729222520107239,
+      "total_return": 0.0011303459524316661,
+      "trades": 373,
+      "trades_by_index": {
+        "KOSDAQ150": 161,
+        "KOSPI200": 212
+      },
+      "win_rate": 0.32707774798927614
+    },
+    {
+      "final_nav": 5788802.479761271,
+      "max_drawdown": -0.464304345128714,
+      "mean_net": -0.005713678886718577,
+      "mean_stop": -0.03616698423556946,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 1.0,
+      "name": "C_b10_BOTH|RANDOM_UNIV#3",
+      "open_at_end": 5,
+      "stop_pct": 0.7274774774774775,
+      "total_return": -0.421119752023873,
+      "trades": 444,
+      "trades_by_index": {
+        "KOSDAQ150": 185,
+        "KOSPI200": 259
+      },
+      "win_rate": 0.2725225225225225
+    },
+    {
+      "final_nav": 9398439.50451895,
+      "max_drawdown": -0.31222309449989705,
+      "mean_net": -0.00038098683749016146,
+      "mean_stop": -0.03655242284584198,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2,
+      "name": "C_b10_BOTH|RANDOM_UNIV#4",
+      "open_at_end": 5,
+      "stop_pct": 0.6774193548387096,
+      "total_return": -0.06015604954810494,
+      "trades": 403,
+      "trades_by_index": {
+        "KOSDAQ150": 181,
+        "KOSPI200": 222
+      },
+      "win_rate": 0.3225806451612903
+    },
+    {
+      "final_nav": 10064505.80555124,
+      "max_drawdown": -0.2640250795707826,
+      "mean_net": 0.0007568645190531693,
+      "mean_stop": -0.03623069592694838,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2.0,
+      "name": "C_b10_BOTH|RANDOM_UNIV#5",
+      "open_at_end": 5,
+      "stop_pct": 0.6691919191919192,
+      "total_return": 0.006450580555124041,
+      "trades": 396,
+      "trades_by_index": {
+        "KOSDAQ150": 158,
+        "KOSPI200": 238
+      },
+      "win_rate": 0.33080808080808083
+    },
+    {
+      "final_nav": 6728984.138018707,
+      "max_drawdown": -0.37680782810233504,
+      "mean_net": -0.00451662210610159,
+      "mean_stop": -0.03633544232114758,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1.0,
+      "name": "C_b10_BOTH|RANDOM_UNIV#6",
+      "open_at_end": 5,
+      "stop_pct": 0.7156862745098039,
+      "total_return": -0.32710158619812935,
+      "trades": 408,
+      "trades_by_index": {
+        "KOSDAQ150": 179,
+        "KOSPI200": 229
+      },
+      "win_rate": 0.28431372549019607
+    },
+    {
+      "final_nav": 9074202.800811213,
+      "max_drawdown": -0.344965485879287,
+      "mean_net": -0.0006477091231359542,
+      "mean_stop": -0.03551110087730567,
+      "mean_take": 0.07557902878004868,
+      "median_held_td": 1.0,
+      "name": "C_b10_BOTH|RANDOM_UNIV#7",
+      "open_at_end": 5,
+      "stop_pct": 0.6861702127659575,
+      "total_return": -0.0925797199188787,
+      "trades": 376,
+      "trades_by_index": {
+        "KOSDAQ150": 169,
+        "KOSPI200": 207
+      },
+      "win_rate": 0.31382978723404253
+    },
+    {
+      "final_nav": 8037962.523947412,
+      "max_drawdown": -0.2956053275855657,
+      "mean_net": -0.0022491630379065162,
+      "mean_stop": -0.03617427229188698,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2.0,
+      "name": "C_b10_BOTH|RANDOM_UNIV#8",
+      "open_at_end": 5,
+      "stop_pct": 0.6964285714285714,
+      "total_return": -0.19620374760525883,
+      "trades": 392,
+      "trades_by_index": {
+        "KOSDAQ150": 180,
+        "KOSPI200": 212
+      },
+      "win_rate": 0.30357142857142855
+    },
+    {
+      "final_nav": 9356020.095623316,
+      "max_drawdown": -0.30108912399752985,
+      "mean_net": -0.0005543009788433113,
+      "mean_stop": -0.03641420267687214,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2.0,
+      "name": "C_b10_BOTH|RANDOM_UNIV#9",
+      "open_at_end": 5,
+      "stop_pct": 0.6798029556650246,
+      "total_return": -0.06439799043766836,
+      "trades": 406,
+      "trades_by_index": {
+        "KOSDAQ150": 164,
+        "KOSPI200": 242
+      },
+      "win_rate": 0.32019704433497537
+    },
+    {
+      "final_nav": 9565867.990314486,
+      "max_drawdown": -0.286485900091515,
+      "mean_net": -0.0001250313302691299,
+      "mean_stop": -0.03599971653180033,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2,
+      "name": "C_b10_BOTH|RANDOM_UNIV#10",
+      "open_at_end": 5,
+      "stop_pct": 0.6784810126582278,
+      "total_return": -0.0434132009685515,
+      "trades": 395,
+      "trades_by_index": {
+        "KOSDAQ150": 155,
+        "KOSPI200": 240
+      },
+      "win_rate": 0.32151898734177214
+    },
+    {
+      "final_nav": 7766628.5907802,
+      "max_drawdown": -0.32382063203242106,
+      "mean_net": -0.0028929112554447415,
+      "mean_stop": -0.03695824956542638,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2.0,
+      "name": "C_b10_BOTH|RANDOM_UNIV#11",
+      "open_at_end": 5,
+      "stop_pct": 0.6972972972972973,
+      "total_return": -0.22333714092197998,
+      "trades": 370,
+      "trades_by_index": {
+        "KOSDAQ150": 178,
+        "KOSPI200": 192
+      },
+      "win_rate": 0.3027027027027027
+    },
+    {
+      "final_nav": 6866848.356005294,
+      "max_drawdown": -0.4379081939046374,
+      "mean_net": -0.003948804451935322,
+      "mean_stop": -0.036679647380745056,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2,
+      "name": "C_b10_BOTH|RANDOM_UNIV#12",
+      "open_at_end": 5,
+      "stop_pct": 0.708433734939759,
+      "total_return": -0.3133151643994706,
+      "trades": 415,
+      "trades_by_index": {
+        "KOSDAQ150": 184,
+        "KOSPI200": 231
+      },
+      "win_rate": 0.29156626506024097
+    },
+    {
+      "final_nav": 7383515.092177045,
+      "max_drawdown": -0.44671844572575903,
+      "mean_net": -0.003462362560856456,
+      "mean_stop": -0.03654264856649453,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 2,
+      "name": "C_b10_BOTH|RANDOM_UNIV#13",
+      "open_at_end": 5,
+      "stop_pct": 0.7049608355091384,
+      "total_return": -0.2616484907822956,
+      "trades": 383,
+      "trades_by_index": {
+        "KOSDAQ150": 168,
+        "KOSPI200": 215
+      },
+      "win_rate": 0.2950391644908616
+    },
+    {
+      "final_nav": 10151896.861034304,
+      "max_drawdown": -0.3151006111539204,
+      "mean_net": 0.0008863527254067046,
+      "mean_stop": -0.0372159840474066,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2,
+      "name": "C_b10_BOTH|RANDOM_UNIV#14",
+      "open_at_end": 5,
+      "stop_pct": 0.6621983914209115,
+      "total_return": 0.015189686103430411,
+      "trades": 373,
+      "trades_by_index": {
+        "KOSDAQ150": 156,
+        "KOSPI200": 217
+      },
+      "win_rate": 0.3378016085790885
+    },
+    {
+      "final_nav": 8577604.683118865,
+      "max_drawdown": -0.1732158373541448,
+      "mean_net": -0.004131626823061072,
+      "mean_stop": -0.03751828885577719,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 1,
+      "name": "C_b10_BOTH|RANDOM_UNIV#15",
+      "open_at_end": 5,
+      "stop_pct": 0.7047970479704797,
+      "total_return": -0.14223953168811354,
+      "trades": 271,
+      "trades_by_index": {
+        "KOSDAQ150": 114,
+        "KOSPI200": 157
+      },
+      "win_rate": 0.2952029520295203
+    },
+    {
+      "final_nav": 9271268.657384949,
+      "max_drawdown": -0.38213187211256816,
+      "mean_net": -0.000722879319900675,
+      "mean_stop": -0.03620483658448617,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2.0,
+      "name": "C_b10_BOTH|RANDOM_UNIV#16",
+      "open_at_end": 5,
+      "stop_pct": 0.6825842696629213,
+      "total_return": -0.0728731342615051,
+      "trades": 356,
+      "trades_by_index": {
+        "KOSDAQ150": 138,
+        "KOSPI200": 218
+      },
+      "win_rate": 0.31741573033707865
+    },
+    {
+      "final_nav": 7443199.494174507,
+      "max_drawdown": -0.35968074436990527,
+      "mean_net": -0.0028934089518514684,
+      "mean_stop": -0.037140830230034685,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2.0,
+      "name": "C_b10_BOTH|RANDOM_UNIV#17",
+      "open_at_end": 5,
+      "stop_pct": 0.6961722488038278,
+      "total_return": -0.2556800505825493,
+      "trades": 418,
+      "trades_by_index": {
+        "KOSDAQ150": 201,
+        "KOSPI200": 217
+      },
+      "win_rate": 0.3038277511961722
+    },
+    {
+      "final_nav": 6679905.462847699,
+      "max_drawdown": -0.5044544351776215,
+      "mean_net": -0.004027229809888429,
+      "mean_stop": -0.03702192909387552,
+      "mean_take": 0.07557902878004868,
+      "median_held_td": 1.0,
+      "name": "C_b10_BOTH|RANDOM_UNIV#18",
+      "open_at_end": 5,
+      "stop_pct": 0.7069767441860465,
+      "total_return": -0.33200945371523005,
+      "trades": 430,
+      "trades_by_index": {
+        "KOSDAQ150": 187,
+        "KOSPI200": 243
+      },
+      "win_rate": 0.2930232558139535
+    },
+    {
+      "final_nav": 7716197.930436883,
+      "max_drawdown": -0.4084839042810968,
+      "mean_net": -0.002855633791128079,
+      "mean_stop": -0.03659733768967203,
+      "mean_take": 0.07557902878004866,
+      "median_held_td": 2,
+      "name": "C_b10_BOTH|RANDOM_UNIV#19",
+      "open_at_end": 5,
+      "stop_pct": 0.6992084432717678,
+      "total_return": -0.22838020695631167,
+      "trades": 379,
+      "trades_by_index": {
+        "KOSDAQ150": 146,
+        "KOSPI200": 233
+      },
+      "win_rate": 0.3007915567282322
+    },
+    {
+      "final_nav": 7934955.79308516,
+      "max_drawdown": -0.29290259585374845,
+      "mean_net": -0.0024671048594022095,
+      "mean_stop": -0.036702955303473596,
+      "mean_take": 0.07557902878004867,
+      "median_held_td": 1,
+      "name": "C_b10_BOTH|RANDOM_UNIV#20",
+      "open_at_end": 5,
+      "stop_pct": 0.6950904392764858,
+      "total_return": -0.206504420691484,
+      "trades": 387,
+      "trades_by_index": {
+        "KOSDAQ150": 175,
+        "KOSPI200": 212
+      },
+      "win_rate": 0.3049095607235142
+    }
+  ],
+  "slots": 5,
+  "stop": -0.03,
+  "take": 0.08,
+  "trading_days": 250
+}

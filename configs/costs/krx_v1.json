@@ -1,0 +1,9 @@
+{
+  "_note": "비용 구성값(검증 전 초기값). gross와 net을 항상 함께 저장한다(로드맵 §3).",
+  "applies_to": "KRX 주식 현물",
+  "commission_rate": 0.00015,
+  "cost_model_version": "krx_v1",
+  "slippage_rate": 0.001,
+  "source_note": "실제 계좌 수수료·세율로 교체해야 하는 자리표시 값이다(추정).",
+  "tax_rate_sell": 0.0018
+}

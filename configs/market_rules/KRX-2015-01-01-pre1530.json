@@ -1,0 +1,32 @@
+{
+  "_note": "2016-08-01 거래시간 연장 이전 구간. 일봉 검증(Stage 1~2)은 세션 경계값을 쓰지 않는다. 세션 경계가 실제로 영향을 주는 분봉 작업(Stage 4~)의 데이터는 ka10080 가용 범위상 2025년 이후뿐이므로, 아래 과거 규칙은 분봉 계산에 쓰이지 않는다.",
+  "after_market_start_date": "",
+  "bar_timestamp_is_start": true,
+  "daily_close_semantics": {
+    "_note": "정규장 종가가 곧 공식 종가다.",
+    "confirmed_after_kst": "15:00",
+    "includes_after_market": false,
+    "official_close_is_1530": false
+  },
+  "daily_scope_default": "regular",
+  "effective_from": "2015-01-01",
+  "market": "KRX",
+  "market_rule_version": "KRX-2015-01-01-pre1530",
+  "price_limit_pct": 30.0,
+  "session_complete_grace_min": 5,
+  "sessions": {
+    "REGULAR": {
+      "continuous_minutes": 350,
+      "end": 1500,
+      "minutes": 360,
+      "start": 900
+    }
+  },
+  "timezone": "Asia/Seoul",
+  "unverified": [
+    "effective_from 2015-01-01은 수집 범위 하한일 뿐 제도 시행일이 아니다",
+    "정규장 09:00~15:00은 2차 출처 기준이며 1차 공시로 확인하지 않았다",
+    "시간외단일가(16:00~18:00)는 세션으로 정의하지 않는다 — 접속매매가 아니다"
+  ],
+  "verification_status": "UNVERIFIED_SECONDARY"
+}

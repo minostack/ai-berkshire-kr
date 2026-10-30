@@ -1,0 +1,40 @@
+사전등록 sha256 87a373e7
+유니버스 이력 로드
+체결량 로드 J (2009-06-01~2026-10-09)
+  J 2,591,560행 (795종목) · 흐름없음 30,853
+일봉 로드 (2009-06-01~) — 797종목 (느림)
+  [주/J] 패널 w10 (최근3+이전7, 일반창10)
+C:\a-ai\ai-berkshire-kr\tools\truecvd_backtest.py:145: RuntimeWarning: invalid value encountered in divide
+  nd[sl] = np.where(ws > 0, ns / ws, np.nan)
+C:\a-ai\ai-berkshire-kr\tools\truecvd_backtest.py:146: RuntimeWarning: invalid value encountered in divide
+  bull[sl] = np.where(hs > 0, ps / hs, np.nan)
+      accel: 입력 갖춤 1,158,029 · 통과 270,442
+      v15daily: 입력 갖춤 1,158,029 · 통과 167,269
+  [주/J] 패널 w15 (최근5+이전10, 일반창15)
+      accel: 입력 갖춤 1,157,294 · 통과 237,828
+      v15daily: 입력 갖춤 1,157,294 · 통과 126,582
+  [주/J] 신호 구간 4015거래일
+      H1 SIGNIFICANT_EDGE       평균 +0.00027 n=4015 q=0.0070
+      H2 UNDERPOWERED           평균 +0.00006 n=4009 q=0.6180
+      H3 SIGNIFICANT_EDGE       평균 +0.00029 n=4015 q=0.0338
+      H4 SIGNIFICANT_NEGATIVE   평균 -0.00403 n=4015 q=0.0000
+      H5 UNDERPOWERED           평균 -0.00032 n=4009 q=0.2334
+      H6 SIGNIFICANT_NEGATIVE   평균 -0.00468 n=4009 q=0.0000
+보조 체결량 로드 sides-1.0 (2024-01-01~2026-10-09)
+  통합 482,610행 (744종목)
+  [보조/UN] 패널 w10 (최근3+이전7, 일반창10)
+      accel: 입력 갖춤 126,529 · 통과 25,100
+      v15daily: 입력 갖춤 126,529 · 통과 16,432
+  [보조/UN] 패널 w15 (최근5+이전10, 일반창15)
+      accel: 입력 갖춤 126,489 · 통과 20,857
+      v15daily: 입력 갖춤 126,489 · 통과 11,261
+  [보조/UN] 신호 구간 362거래일
+      H1 UNDERPOWERED           평균 -0.00005 n=362 q=0.9385
+      H2 SIGNIFICANT_EDGE       평균 +0.00157 n=362 q=0.0470
+      H3 UNDERPOWERED           평균 +0.00093 n=362 q=0.2093
+      H4 SIGNIFICANT_NEGATIVE   평균 -0.00670 n=362 q=0.0030
+      H5 UNDERPOWERED           평균 +0.00131 n=362 q=0.3120
+      H6 SIGNIFICANT_NEGATIVE   평균 -0.00632 n=362 q=0.0045
+C:\a-ai\ai-berkshire-kr\tools\window15_backtest.py:191: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "run_id": f"window15_{datetime.utcnow():%Y%m%d%H%M%S}_{uuid.uuid4().hex[:6]}",
+저장: reports\backtest\prereg-window15-87a373e7.json

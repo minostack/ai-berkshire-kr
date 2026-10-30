@@ -38,7 +38,8 @@
 ## ⚠️ 데이터 수집 규칙
 
 ```
-방법 1 (최우선): python3 tools/daily_scanner.py — 증권사 API 또는 Yahoo Finance
+방법 1 (최우선): python3 tools/daily_scanner.py — 일봉은 로컬 정규장 일봉(봉 기준 bars-1.0)
+                 + 당일 키움 API 봉, 로컬이 비면 키움 API(기준 밖) → Yahoo(기준 밖)
 방법 2 (보완):   WebSearch — 전일 특이 종목, 뉴스 기반 이슈
 방법 3 (최후):   URL 안내 후 수동 확인
 ❌ 금지: Fetch(finance.naver.com/...) 직접 접속
@@ -62,8 +63,8 @@ python3 tools/daily_scanner.py check-broker
 ```
 📅 날짜: 2026-08-10 (월요일)
 🏛️  장 상태: 정규장 운영 중 (09:00~15:30)
-🔑 KIS API: ✅ 연결됨
-🔑 키움 API: ❌ 미연결
+🔑 키움 API: ✅ 연결됨 (1순위 — 현재가·일봉·수급·순위 조회)
+🔑 KIS API(레거시): ❌ 미연결 (gap-up 대체 경로에서만 필요)
 ```
 
 ---
@@ -77,37 +78,41 @@ python3 tools/daily_scanner.py check-broker
 ```bash
 python3 tools/daily_scanner.py volume-surge \
   --ratio 3.0 \
-  --min-cap 500
+  --min-cap 500 \
+  --market all   # all/kospi/kosdaq
 ```
 
-기준:
-- 당일 거래량 ≥ 20일 평균 거래량 × 3배
+기준(가이드 7.1 정확한 공식 구현):
+- `ratio = 오늘 거래량 / (직전 20완료봉 평균 거래량)` ≥ 3.0
 - 시가총액 500억 이상 (소형주 노이즈 제거)
-- 주가 변동률 +3% 이상 동반 (매도 급증 제외)
+- 키움 ka10023 공식 랭킹을 후보 풀로 받아 종목별 일봉 재조회로 위 공식을 정확히 재계산함(coverage=rank_subset — 전체 시장이 아닌 상위 후보 한정)
+- 장중 실행 시 당일 거래량은 미완료(누적 중) 수치이며 결과에 🕐로 표시됨
 
 #### 1-2. 신고가 돌파 종목
 
 ```bash
 python3 tools/daily_scanner.py new-high \
   --period 52w \
-  --min-cap 1000
+  --market all   # all/kospi/kosdaq
 ```
 
-기준:
-- 52주 신고가 돌파
-- 또는 전일 종가 기준 20일/60일 고점 돌파
-- 거래량 평균 대비 1.5배 이상 동반
+기준(키움 ka10016 공식 TR, 전체 시장 커버):
+- 종가 기준 확정 돌파: `종가 > 직전 N거래일 중 최고가` (오늘 고가는 기준에서 제외, 동일가는 돌파 아님)
+- `--period`는 5d/10d/20d/60d/250d/52w만 지원(120d 요청 시 60d로 자동 대체)
+- 거래량 동반 조건은 구현되어 있지 않음(표시되는 거래량은 참고용)
 
 #### 1-3. 갭 상승 종목 (전일 종가 대비)
 
 ```bash
 python3 tools/daily_scanner.py gap-up \
-  --min-gap 3.0
+  --min-gap 3.0 \
+  --market all   # all/kospi/kosdaq
 ```
 
-기준:
-- 당일 시가 > 전일 종가 × 1.03 (3% 이상 갭 상승)
-- 갭 상승 후 유지 여부 (시가 = 고점 근처)
+기준(가이드 7.3 정확한 공식 구현):
+- `gap_pct = (오늘 시가 / 전일 종가 - 1) × 100` ≥ 3.0
+- 시장 전체 갭 랭킹에 해당하는 공식 키움 TR이 없어 `data/index_stocks.json`(코스피200+코스닥150) 유니버스를 종목별로 직접 조회함 — coverage=index_kospi200_kosdaq150(전체 시장 아님), 종목 수에 비례해 수십 초 소요
+- 갭 유지 여부(시가=고점 근처)는 판정하지 않음
 
 #### 1-4. 과매도 반등 후보
 
@@ -117,10 +122,10 @@ python3 tools/daily_scanner.py oversold \
   --days 5
 ```
 
-기준:
-- RSI(14) ≤ 30 (과매도 구간)
-- 5일 연속 하락 후 반등 시작 신호
-- 볼린저 밴드 하단 터치 후 반등
+기준(가이드 7.4 정확한 공식 구현, `data/watchlist.json`의 6자리 국내 종목 전체 대상 — 30개 제한 없음):
+- RSI(14, Wilder) ≤ 30
+- `days`일 연속 하락(보합 포함 시 하락으로 보지 않음, 기본 5일)
+- 볼린저 밴드 하단 터치 조건은 구현되어 있지 않음
 
 ---
 
@@ -129,22 +134,42 @@ python3 tools/daily_scanner.py oversold \
 1단계에서 수집한 후보 종목에 대해 핵심 기술적 지표를 계산합니다.
 
 ```bash
-python3 tools/daily_scanner.py indicators \
-  --tickers 005930 000660 035720 \
-  --indicators RSI,MACD,BB,MA,STOCH
+python3 tools/daily_scanner.py indicators 005930 000660 035720
 ```
+
+한 번에 모든 지표(RSI·MACD·볼린저밴드·이동평균·스토캐스틱·OBV·추정 매수/매도 압력·캔들 패턴)를 계산합니다. `--indicators` 옵션으로 선별 계산하는 기능은 없습니다.
 
 #### 계산 지표 목록
 
 | 지표 | 파라미터 | 매수 신호 조건 |
 |------|---------|------------|
-| **RSI** | 14일 | 30 이하 (과매도) 후 반등 / 50 상향 돌파 |
+| **RSI** | 14일, Wilder | 30 이하 (과매도) 후 반등 / 50 상향 돌파 |
 | **MACD** | 12,26,9 | 골든크로스 (MACD > Signal) |
 | **볼린저밴드** | 20일, 2σ | 하단 터치 후 중심선 회복 / 상단 돌파 |
-| **이동평균** | 5/20/60/120일 | 정배열 (5>20>60>120) |
-| **스토캐스틱** | 14,3,3 | %K가 %D 상향 돌파, 20 이하에서 |
+| **이동평균** | 5/20/60/120일 | 정배열 (5>20>60>120, 데이터 부족 시 "판정 불가"로 별도 표시) |
+| **Slow 스토캐스틱** | 14,3,3 (FastK→SlowK→SlowD 3단계 평활) | %K가 %D 상향 돌파, 20 이하에서 |
 | **OBV** | — | OBV 상승 + 주가 횡보 (매집 신호) |
+| **추정 매수/매도 압력** | 일봉 근사 | 압력 상승 + 가격 하락 다이버전스 (실제 체결 기반 CVD 아님) |
 | **거래량 이평** | 20일 | 당일 거래량 > 20일 평균 × 2 |
+
+장중 실행 시 당일(미완료) 봉은 지표 계산에서 제외되고, 실시간가는 별도로 표시됩니다.
+
+---
+
+### 2-1단계: 100점 스코어링 (선택)
+
+기술적 지표를 개별로 보는 대신 하나의 점수로 요약하고 싶을 때 사용합니다.
+
+```bash
+python3 tools/daily_scanner.py score 005930
+```
+
+Trend/Momentum/Volume·Liquidity/Foreign·Institution/Pattern·Breakout/Risk 6개
+영역, 100점 고정 배점(**검증 전 초기 가설 모델 — 매수 지시 아님**). 필요한
+원본 데이터(예: MA120, 외국인·기관 5일 수급)가 없으면 총점을 0점이나
+100점 환산으로 채우지 않고 `INCOMPLETE`로 표시하며 결측 항목을 그대로
+보여줍니다. 관리종목·ETF 여부를 확인할 공식 API 필드는 아직 찾지 못해
+1차 필터에 반영되어 있지 않습니다(가격·시가총액·추정 거래대금만 필터링).
 
 ---
 
@@ -174,49 +199,52 @@ python3 tools/daily_scanner.py patterns \
 
 ---
 
-### 4단계: 증권사 API 연동 (선택)
+### 4단계: 증권사 API 연동 (권장 — 2026-09 키움 전환 이후)
 
 DART나 Yahoo Finance보다 **실시간·정확한** 데이터가 필요할 때 사용합니다.
+키움 REST API가 1순위 데이터 소스이며, quote/indicators/oversold/volume-surge/
+new-high가 모두 키움을 우선 사용합니다.
 
-#### 한국투자증권 KIS API
+#### 키움증권 REST API (1순위)
 
 ```bash
-# API 키 환경변수 설정 (최초 1회)
+# .env 파일에 키 설정 (최초 1회, .env.example 참고)
+#   KIWOOM_APP_KEY=발급받은앱키
+#   KIWOOM_APP_SECRET=발급받은시크릿
+
+# 연결 테스트 (인증 + 시세 조회 확인)
+python3 tools/daily_scanner.py check-broker
+
+# 키움 API로 현재가·수급 조회
+python3 tools/daily_scanner.py quote 005930 000660 009150
+
+# 거래량 급증 / 신고가 (키움 공식 랭킹 TR 사용)
+python3 tools/daily_scanner.py volume-surge --market kospi
+python3 tools/daily_scanner.py new-high --period 20d --market kosdaq
+```
+
+키움 REST API로 전환된 기능(ka10001/ka10081/ka10059/ka10023/ka10016):
+```
+현재가·시가총액 조회         → quote / indicators
+일봉 조회 (지표 계산용)      → indicators / oversold
+외국인·기관 순매수(당일)     → quote
+거래량 급증 랭킹            → volume-surge
+신고가 랭킹                 → new-high
+```
+
+갭 상승(시가 대비 전일종가) 시장 전체 랭킹에 해당하는 공식 키움 TR은
+아직 확인되지 않아 `gap-up`은 WebSearch 안내로 남아 있습니다. 개별
+종목의 갭 여부는 `quote` 명령의 시가/전일종가로 확인할 수 있습니다.
+
+#### 한국투자증권 KIS API (레거시)
+
+신규 기능은 키움 쪽에만 추가되며, KIS는 `gap-up`의 대체 조회 경로로만
+남아 있습니다. 키움 미설정 시 `volume-surge`/`new-high`도 KIS로 폴백합니다.
+
+```bash
 export KIS_APP_KEY="발급받은앱키"
 export KIS_APP_SECRET="발급받은시크릿"
 export KIS_ACCOUNT_NO="계좌번호-상품코드"  # 예: 50123456-01
-
-# 연결 테스트
-python3 tools/daily_scanner.py check-broker --broker kis
-
-# KIS API로 실시간 체결 데이터 수집
-python3 tools/daily_scanner.py kis-realtime \
-  --tickers 005930 000660 009150
-```
-
-KIS API 주요 기능:
-```
-국내주식 현재가 조회     → /uapi/domestic-stock/v1/quotations/inquire-price
-국내주식 거래량 순위     → /uapi/domestic-stock/v1/quotations/volume-rank
-국내주식 등락률 순위     → /uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice
-프로그램매매 현황        → /uapi/domestic-stock/v1/quotations/program-trade-by-stock
-외국인/기관 순매수 현황  → /uapi/domestic-stock/v1/quotations/inquire-investor
-```
-
-#### 키움증권 OpenAPI
-
-```bash
-export KIWOOM_APP_KEY="발급받은키"
-
-python3 tools/daily_scanner.py kiwoom-screen \
-  --condition "거래량급증"
-```
-
-키움 OpenAPI 주요 기능:
-```
-조건검색 (사전 설정 조건 실행)  → 가장 강력한 기능
-실시간 데이터 구독              → 체결가, 호가, 잔량
-차트 데이터 조회 (분봉/일봉)    → 기술적 지표 계산용
 ```
 
 ---

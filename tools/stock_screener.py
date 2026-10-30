@@ -55,7 +55,23 @@ def _is_korean(ticker: str) -> bool:
 
 
 def fetch_prices_curl(ticker: str, days: int = 120):
-    """Yahoo Finance 일봉 데이터 수신 (한국주: .KS 접미사 자동 추가)."""
+    """일봉 수신.
+
+    한국주는 봉 기준 bars-1.0(`src/cvd_obv/bar_standard.py`)의 로컬 정규장·수정주가
+    일봉을 먼저 쓴다 — 다른 스캐너와 같은 봉이다. 로컬에 없을 때만 Yahoo
+    Finance(.KS — 세션 정의 미확인, 기준 밖)로 폴백한다. 해외주는 Yahoo.
+    """
+    if _is_korean(ticker):
+        try:
+            import daily_scanner as ds_
+            bars, _status = ds_.standard_daily_bars(ticker, days=days)
+            rows = [{"date": b["date"], "close": b["close"], "high": b["high"],
+                     "volume": b["volume"]} for b in bars]
+            if len(rows) > 60:
+                return rows
+        except Exception as e:      # 로컬 저장소·pyarrow 없음 → Yahoo 폴백
+            print(f"  ⚠️  {ticker}: 로컬 기준 일봉을 읽지 못함({type(e).__name__}) "
+                  "— Yahoo로 폴백(기준 밖)", file=sys.stderr)
     yf_ticker = f"{ticker}.KS" if _is_korean(ticker) else ticker
     end_ts   = int(datetime.now().timestamp())
     start_ts = int((datetime.now() - timedelta(days=days)).timestamp())

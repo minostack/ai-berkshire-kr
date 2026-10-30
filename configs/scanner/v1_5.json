@@ -1,0 +1,63 @@
+{
+  "_note": "V1.5 스캔 1회의 설정 계약. config_hash는 이 트리를 canonical_json()으로 직렬화해 만든다. YAML 대신 JSON을 쓰는 이유는 해시 대상 직렬화와 형식을 일치시키고 PyYAML 의존을 늘리지 않기 위해서다.",
+  "absolute_gate": {
+    "_note": "Absolute Gate 임계값(검증 전 초기 설계값). Stage 8 ablation 대상.",
+    "bull_ratio_gte": 0.5,
+    "min_completed_days_for_ratio": 2,
+    "normalized_delta_gt": 0.0,
+    "normalized_momentum_gt": 0.0,
+    "require_close_above_ma20": true,
+    "require_liquidity_present": true,
+    "require_obv_above_ma20": true,
+    "require_obv_slope_gt": 0.0
+  },
+  "bdays": 30,
+  "config_version": "1.5.0",
+  "daily_scope": "auto",
+  "index": "kospi200",
+  "market_rule_version": "KRX-2026-09-14-aftermarket",
+  "period": 5,
+  "rank_session": "REGULAR",
+  "scanner_version": "1.5",
+  "scoring": {
+    "_note": "검증 전 잠정 가중치(의견). 검증 전에 최적화하지 않는다(로드맵 §2 비범위).",
+    "cvd_bull_ratio": 10,
+    "cvd_normalized_delta": 20,
+    "cvd_normalized_momentum": 10,
+    "cvd_total": 40,
+    "liquidity_total": 10,
+    "obv_above_ma20": 15,
+    "obv_normalized_slope": 20,
+    "obv_total": 35,
+    "overheat_penalty": -5,
+    "price_above_ma20": 5,
+    "price_above_ma60": 3,
+    "price_ma20_above_ma60": 3,
+    "price_ma20_rising": 4,
+    "price_total": 15
+  },
+  "session_config": {
+    "after_market_start_date": "20260914",
+    "after_min_bars": 3,
+    "bar_timestamp_is_start": true,
+    "max_stale_calendar_days": 5,
+    "min_completed_days_for_ratio": 2,
+    "min_day_completeness": 0.5,
+    "momentum_minutes": 30,
+    "session_complete_grace_min": 5,
+    "sessions": {
+      "AFTER": {
+        "continuous_minutes": 240,
+        "end": 2000,
+        "minutes": 240,
+        "start": 1600
+      },
+      "REGULAR": {
+        "continuous_minutes": 380,
+        "end": 1530,
+        "minutes": 390,
+        "start": 900
+      }
+    }
+  }
+}

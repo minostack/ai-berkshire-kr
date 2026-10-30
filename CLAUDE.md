@@ -135,6 +135,27 @@ git push origin main
 - 통화 단위 명확히 표기 (원/달러/홍콩달러), 혼동 방지
 - PER/ROE 등 지표는 tools/financial_rigor.py로 정밀 계산
 
+## 봉 기준 (bars-1.0) — 모든 스캐너·백테스트 공통
+
+상세: `docs/BAR_STANDARD.md`, 코드: `src/cvd_obv/bar_standard.py`
+
+- 일봉 = **정규장·수정주가** 하루 한 행. 2026-09-14 이후 키움 일봉(EXTENDED, 종가 = 애프터마켓 최종가)은 판정에 쓰지 않는다
+- 일봉 거래량 = KRX 정규장 + 시간외 종가, **2026-08-03 이후는 NXT 메인마켓(09:00:30~15:20) 포함**(A안, 표시 `NXT_MAIN_VOLUME_INCLUDED` — 9/14 이후는 확정 복원, 8/3~9/11은 NXT 1분봉 소급 `nxt-history`). 가격은 KRX. 그 전 날은 KRX만 — 거래량 시계열 정의가 8/3에서 바뀐다(A·B 스캐너는 RVOL 창이 경계를 걸치면 경고하고 스냅샷 `volume_definition`에 남긴다)
+- 분봉 원천 = **1분봉 하나**. 5분·30분봉은 1분봉을 합성한다
+- 적재 원천 = **KIS**(2026-10-23부터, 일봉 `FHKST03010100`·1분봉 `FHKST03010230`·지수 일봉 `FHKUP03500100`). 키움은 `--source kiwoom`/`CVD_MARKET_SOURCE=kiwoom` 대체 원천. KIS 1분봉은 누적거래대금(`cum_traded_value`)을 준다. 스캐너 실행 중 1분봉(`live_feed`)도 지난 날 = 로컬, 오늘 = KIS(`live_minutes.py`). 구성종목 스냅샷도 KIS(`kis_universe.py`, 코스닥150 포함)
+- 일봉 reader는 `read_standard_daily()`만 쓴다 — `silver.daily_bars`를 직접 읽어 `price_scope`를 거르지 않으면 같은 날이 두 행이 된다
+- 적재 = 2단계. 16:10 `data-load provisional`(밀린 날 확정 → 오늘 1분봉 합 **잠정** 일봉, 거래량 근사) / 익일 08:30 `data-load daily`(정규장 **확정** 복원, 잠정 봉을 덮는다). 둘 다 마지막 확정일 이후를 스스로 찾는다
+- CVD/OBV 실행 입구는 `tools/cvd_obv_scan.py`. `tools/kiwoom_cvd_obv_scanner.py`(V1.5)는 해시 동결 — 수정 금지
+
+## 유니버스 기준 (universe-1.0) — 코스피200·코스닥150 명단
+
+상세: `docs/UNIVERSE_STANDARD.md`, 코드: `src/cvd_obv/universe.py`
+
+- 이력 갱신 = 16:10 잠정 적재 끝 `universe refresh`(선택 단계, 2026-10-24부터) — 이력·`index_stocks.json`을 KRX 자료가 있는 어제까지 늘린다. 미해결이 있으면 쓰지 않는다
+- 스캐너 명단은 `universe_on(기준일)` 하나 — 이력이 덮으면 이력, 이력 뒤면 `index_stocks.json`(경고), 이력 전이면 오류
+- 백테스트 모집단은 `membership_intervals()`/`flat_intervals()`(이력만), 수집 대상은 `current_universe()`
+- `data/index_stocks.json`을 직접 열지 않는다 — 해석은 `read_index_file()`, 쓰기는 `tools/update_index.py`만
+
 ## .gitignore 핵심 항목
 
 ```

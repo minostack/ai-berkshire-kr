@@ -1,0 +1,27 @@
+{
+  "_note": "2015-01-01 이전 구간. 이 시기의 정규장 시간·점심 휴장·토요장 여부를 1차 출처로 확인하지 않았으므로 세션을 정의하지 않는다. 세션이 없으면 session_bounds()가 None을 돌려주고, 분봉·세션 기반 계산은 조용히 틀린 값을 쓰는 대신 그 자리에서 실패한다. 일봉 전용(DAILY_ONLY_LONG) 증거 계층에서만 쓴다.",
+  "after_market_start_date": "",
+  "bar_timestamp_is_start": true,
+  "daily_close_semantics": {
+    "_note": "확정 시각은 보수적 가정값이다(실제 마감보다 늦게 잡아 look-ahead 위험을 줄이는 방향). 실측·1차 출처로 확인되지 않았다.",
+    "confirmed_after_kst": "18:00",
+    "includes_after_market": false,
+    "official_close_is_1530": false
+  },
+  "daily_confirmed_at_kst": "18:00",
+  "daily_only": true,
+  "daily_scope_default": "regular",
+  "effective_from": "1980-01-01",
+  "market": "KRX",
+  "market_rule_version": "KRX-1980-01-01-daily-only",
+  "price_limit_pct": null,
+  "session_complete_grace_min": 0,
+  "sessions": {},
+  "timezone": "Asia/Seoul",
+  "unverified": [
+    "정규장 시간(점심 휴장·토요장 포함)을 확인하지 않아 세션을 정의하지 않았다",
+    "가격제한폭이 시기별로 달랐으나 확인하지 않았다",
+    "effective_from 1980-01-01은 하한 표시일 뿐 제도 시행일이 아니다"
+  ],
+  "verification_status": "UNVERIFIED_SESSIONS_UNDEFINED"
+}

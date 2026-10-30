@@ -72,6 +72,8 @@ logs/.counter
 /tmp/ebest_token.json
 # 한국투자증권 KIS API 토큰 (프로젝트 루트 캐시, daily_scanner.py 생성)
 /.kis_token.json
+# 키움증권 REST API 토큰 (프로젝트 루트 캐시, daily_scanner.py/kiwoom_cvd_obv_scanner.py/update_index.py 공유)
+/.kiwoom_token.json
 
 # ────────────────────────────────────────
 # 로컬 전용 자료 (공개하지 않을 파일)
@@ -89,5 +91,40 @@ reports/portfolio-latest.md
 # 중간 과정 파일 (최종 리포트만 커밋)
 # ────────────────────────────────────────
 research/
+# 예외: CVD 선정 연구 코드는 추적한다(결과물 output/은 계속 무시)
+!cvd_selection/research/
+cvd_selection/research/output/
 *_data_collection.md
 *_draft.md
+
+# ────────────────────────────────────────
+# CVD/OBV V2 데이터 레이어 (용량·재생성 가능)
+# 원천에서 다시 만들 수 있고 수백 MB까지 커지므로 추적하지 않는다.
+# 재현에 필요한 것은 코드·설정·manifest이지 Parquet 파일 자체가 아니다.
+# ────────────────────────────────────────
+/data/bronze/
+/data/silver/
+/data/gold/
+# 수집 실행별 manifest는 재생성물 — 기준선 manifest만 추적한다
+/data/manifests/silver_*.json
+/data/manifests/bronze_*.json
+/data/manifests/gold_*.json
+
+# CVD/OBV V2 실행 로그 (재생성 가능)
+/logs/daily-cache-*.log
+/logs/forward-build*.log
+/logs/baserate*.log
+/logs/features-build.log
+/logs/daily-gate*.log
+/logs/minute-cache*.log
+
+# 운영 중 생기는 파일 — 이관은 scripts/migrate-export.ps1로
+/data/manifests/data_load.lock
+/data/manifests/data_load.lock.json
+# KRX 조회 캐시(2026-09-19 생성)
+/C83F901C09BC4A43BF0D43811169DB9A66EDA04F/
+# 일회성 점검 스크립트(저장된 신호·라벨 재고 세기)
+/scratchx.py
+# 적재 장부 — PC마다 다른 운영 상태(이관은 scripts/migrate-export.ps1이 복사)
+/data/manifests/data_load_state.json
+/data/manifests/minute_catchup_state.json

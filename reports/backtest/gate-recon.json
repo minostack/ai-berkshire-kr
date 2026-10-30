@@ -1,0 +1,22 @@
+{
+ "tag": "-p1b10-",
+ "recon_agree": 87232,
+ "recon_total": 87232,
+ "counts": {
+  "V0_기준": {
+   "BUY_CANDIDATE": 13060,
+   "WATCH": 71644,
+   "DATA_INSUFFICIENT": 2528
+  },
+  "V1_종가MA20_제거": {
+   "BUY_CANDIDATE": 15113,
+   "WATCH": 69591,
+   "DATA_INSUFFICIENT": 2528
+  },
+  "V2_MA20_전부_제거": {
+   "BUY_CANDIDATE": 16634,
+   "WATCH": 68070,
+   "DATA_INSUFFICIENT": 2528
+  }
+ }
+}

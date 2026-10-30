@@ -1,0 +1,13 @@
+  [디버그] 토큰 응답 (secretkey): {"return_msg":"인증에 실패했습니다[8050:IP가 등록되지 않았습니다. 키움 REST API 홈페이지 > API 사용신청 화면에서 IP를 등록해주세요.]","return_code":3}
+  ❌ 토큰 필드 없음 (응답 키: ['return_msg', 'return_code'])
+  [디버그] 토큰 응답 (appsecret): {"return_msg":"입력 값 오류입니다[8020:입력파라미터로 appkey 또는 secretkey가 들어오지 않았습니다.]","return_code":2}
+  ❌ 토큰 필드 없음 (응답 키: ['return_msg', 'return_code'])
+  [디버그] 토큰 응답 (appSecret): {"return_msg":"입력 값 오류입니다[8020:입력파라미터로 appkey 또는 secretkey가 들어오지 않았습니다.]","return_code":2}
+  ❌ 토큰 필드 없음 (응답 키: ['return_msg', 'return_code'])
+
+  ❌ 키움 API 미연결
+  .env 파일에 아래 항목을 설정하세요 (.env.example 참고):
+    KIWOOM_APP_KEY=앱키
+    KIWOOM_APP_SECRET=앱시크릿
+  키움 REST API 신청: https://openapi.kiwoom.com
+  [봉 기준 bars-1.0] 일봉 = 로컬 정규장·수정주가, 분봉 = 1분봉 합성, 일봉 완료 = 15:35

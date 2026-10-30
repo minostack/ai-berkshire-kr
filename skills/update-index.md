@@ -1,65 +1,97 @@
 # 코스피200/코스닥150 구성종목 목록 갱신
 
-키움증권 REST API(`ka20002` 업종별주가요청)로 코스피200 / 코스닥150 구성종목을
-조회해서 `data/index_stocks.json` 파일 하나에 저장합니다.
+**유니버스 이력**(`silver.universe_membership` — KRX 지수운영공지 첨부와 시총 항등식
+검산으로 복원한 구성종목 이력)에서 마지막 관측일의 구성을 꺼내
+`data/index_stocks.json` 파일 하나에 저장합니다.
 
-`/cvd-obv-scan` 스킬이 스캔 대상 종목 목록으로 이 파일을 사용하므로,
-코스피200/코스닥150이 정기 변경되는 **분기 1회(3·6·9·12월) 재실행**이 필요합니다.
+`/cvd-obv-scan`, `daily-cache build`(일봉 수집 대상), `daily_scanner` 등이 이 파일을
+대상 종목 목록으로 사용합니다. 백테스트·A/B 스캐너가 쓰는 유니버스와 **같은 원천**이라
+두 목록이 어긋나지 않습니다.
+
+> **2026-09-27 변경** — 예전 기본값(키움 ka20002)은 코스닥150 전용 코드가 없어 **코스닥
+> 시총 상위 150개로 근사**했습니다. 2026-09-23 명단이 실제 구성과 37종목 달랐고, 일봉
+> 수집에서 실제 구성종목 39개가 빠졌습니다. 키움 방식은 `--source kiwoom`으로만 씁니다.
 
 **지원 입력 형식**:
 
 ```
-/update-index                         # 코스피200 + 코스닥150 전체 갱신
+/update-index                         # 코스피200 + 코스닥150 전체 갱신 (유니버스 이력)
 /update-index kospi200                # 코스피200만 갱신
 /update-index kosdaq150               # 코스닥150만 갱신
+/update-index as-of 2026-06-12        # 이력의 특정 날짜 구성
 /update-index show                    # 저장된 목록 확인 (갱신 안 함)
 /update-index show kospi200           # 코스피200 저장 목록만 확인
+/update-index verify                  # 저장 목록을 KRX 지수 시총과 대조
+/update-index kiwoom                  # (근사) 키움 ka20002 — 이력을 쓸 수 없을 때만
 /update-index from-csv 파일경로.csv kospi200   # KRX CSV 수동 임포트
 ```
 
 ---
 
-## 사전 준비 (최초 1회)
-
-### 키움 API 키 등록
-
-`.env` 파일에 아래 항목을 설정합니다(.env.example 참고):
-
-```
-KIWOOM_APP_KEY=앱키
-KIWOOM_APP_SECRET=앱시크릿
-```
-
-키 발급: https://openapi.kiwoom.com
-
-키가 없으면 자동 조회가 모두 실패하고, 아래 수동 방법으로 안내됩니다.
-
----
-
 ## 실행 흐름
 
-### 1단계: 갱신 실행
+### 0단계: 정기 변경 후라면 — 유니버스 이력 먼저 갱신
+
+> **2026-10-24부터 16:10 잠정 적재(`data-load provisional`)가 매 거래일 아래 0·1단계를 대신 돈다** —
+> `python cvdobv.py universe refresh`(선택 단계). 이력 끝은 KRX 자료가 있는 어제, 복원에 미해결이
+> 있으면 아무것도 쓰지 않는다. 결과는 `logs/provisional-load/YYYYMMDD.log`의 "구성종목 이력 갱신" 줄.
+> 아래 수동 절차는 그 단계가 실패했거나 전 구간 `verify`(수십 분)가 필요할 때 쓴다.
+
+코스피200/코스닥150은 매년 **6·12월** 정기 변경됩니다(2026-09-29 KRX 공지 목록으로 확인 —
+9월 공지는 시가총액규모별·KRX100·KTOP30 등 다른 지수). 그 사이 합병·상장폐지 등 수시변경도
+있습니다. 변경이 반영되려면 이력이 먼저 갱신돼야 합니다. 이력 마지막 관측일이 80일 넘게
+지났으면 도구가 경고합니다.
+
+> **2026-11-02 시행 예정 — KRX 대표지수 방법론 개정**(공지 2026-09-28): KRICS 산업분류
+> 도입, 예비종목 제도 폐지. 대상 KOSPI 200·KOSDAQ 150·KRX 300·코리아밸류업. 12월
+> 정기변경은 새 방법론으로 나올 가능성이 크다(추정).
 
 ```bash
-python3 tools/update_index.py                     # 전체 갱신 (코스피200 + 코스닥150)
-python3 tools/update_index.py --index kospi200     # 코스피200만
-python3 tools/update_index.py --index kosdaq150    # 코스닥150만
+python cvdobv.py data-load daily                       # 일봉(+1분봉·정규장 복원) — run-id는 자동(topup_load_…)
+python cvdobv.py calendar build                        # 일봉에서 거래일 달력 연장 — rebuild가 달력 마지막 날에 씨앗을 놓는다
+python cvdobv.py universe snapshot --index KOSPI200    # 오늘 구성(KIS, 2026-10-23~) — 역행 복원의 출발점. KRX 시총 검산 차이 0원이어야 정상
+python cvdobv.py universe snapshot --index KOSDAQ150   # KIS는 코스닥150도 찍는다(키움은 불가)
+python cvdobv.py universe krx-cache --start {이력 마지막일} --market BOTH    # 검산 재료
+python cvdobv.py universe notices                      # 지수운영공지·첨부(정기변경 명단)
+python cvdobv.py universe rebuild --index KOSPI200     # 매 거래일 시총 항등식 검산하며 복원
+python cvdobv.py universe rebuild --index KOSDAQ150
+python cvdobv.py universe verify --index KOSPI200      # 독립 재검산(수십 분)
+python cvdobv.py universe verify --index KOSDAQ150
 ```
 
-내부 동작:
+| 단계 | 하는 일 |
+|---|---|
+| `data-load daily` + `calendar build` | 거래일 달력은 일봉에서 파생된다. 달력이 늘지 않으면 krx-cache·rebuild가 새 거래일을 보지 못한다. 일봉을 `daily-cache build`로 따로 받을 때는 `--run-id`를 주지 않거나 `topup_load_` 형식을 쓴다 — 같은 봉은 사전순으로 나중 run_id가 이기는데, `topup-{날짜}-…` 같은 예전 형식은 `data-load`가 받은 값보다 앞에 정렬돼 새로 받은 값이 무시된다(`docs/BAR_STANDARD.md` §4) |
+| `snapshot` | 키움 `ka20002`로 **오늘** 구성을 저장 — 복원의 출발점(씨앗). **코스피200만** 찍는다. 키움은 코스닥150 코드가 없어 코스닥 전체(2026-09-29: 1,823종목)를 주므로, 도구가 지수 크기의 1.2배를 넘는 응답은 저장을 거부한다. 코스닥150은 기존 스냅샷을 씨앗으로 쓰고, 복원이 씨앗을 검산해 틀리면 공지 명단으로 바로잡는다 |
+| `krx-cache` | KRX Open API 일별 응답(종목별 상장시가총액·지수 시가총액)을 캐시 — 검산 재료. `.env`의 `KRX_AUTH_KEY` 필요 |
+| `notices` | `index.krx.co.kr` 지수운영공지와 첨부 엑셀(편입·편출, 변경 후 전체 명단) 수집. 첨부는 캐시되어 전체 연도를 받아도 수 분. `--start-year`를 줘도 범위 밖 연도는 기존 파일에서 보존한다(2026-09-29 이전에는 덮어써서 이력이 사라졌다) |
+| `rebuild` | 매 거래일 **지수 시가총액 = 구성종목 상장시가총액 합**(오차 0원)을 검산하며 명단을 복원 |
+| `verify` | 적재된 이력을 다시 항등식에 넣어 독립 확인 |
 
-| 인덱스 | 키움 파라미터 | 방식 |
-|--------|--------------|------|
-| 코스피200 | `mrkt_tp=2, inds_cd=201` | ka20002로 직접 지원 — 200종목 그대로 저장 |
-| 코스닥150 | `mrkt_tp=1, inds_cd=101` | 코스닥 전체 조회 후 응답 순서 상위 150개로 근사 (코스닥150 전용 코드 없음) |
+### 1단계: 목록 갱신
 
-`next-key` / `cont-yn` 응답 헤더 기반으로 자동 페이지네이션(최대 20회)합니다.
+```bash
+python tools/update_index.py                       # 전체 (유니버스 이력 마지막 관측일)
+python tools/update_index.py --index kosdaq150      # 코스닥150만
+python tools/update_index.py --as-of 2026-06-12     # 특정 날짜 구성
+```
+
+| 출처 | 옵션 | 정확도 |
+|------|------|--------|
+| 유니버스 이력 | 기본 (`--source history`) | 실제 구성. 저장 직후 KRX 지수 시총 검산(2026-09-27: 두 지수 모두 오차 0.00%) |
+| KRX CSV | `--from-csv 파일 --index …` | 실제 구성(수동 다운로드) |
+| 키움 ka20002 | `--source kiwoom` | 코스피200은 직접 조회, **코스닥150은 시총 상위 근사**(2026-09-18 실측 시총합 +7.2%) |
+
+동작 규칙:
+- 이력 관측 구간 밖 날짜(`--as-of`)는 **거부**합니다 — 가까운 관측으로 조용히 대체하지 않습니다.
+- 이력 조회에 실패하면 **기존 파일을 그대로 둡니다**. 키움 근사로 자동 대체하지 않습니다.
+- 저장 후 자동으로 KRX 지수 시총과 대조합니다(`--verify`와 같은 검산). 오차 1% 이상이면 경고합니다.
 
 ### 2단계: 저장 확인
 
 ```bash
-python3 tools/update_index.py --show
-python3 tools/update_index.py --show --index kospi200
+python tools/update_index.py --show
+python tools/update_index.py --show --index kospi200
 ```
 
 저장 경로: `data/index_stocks.json`
@@ -67,25 +99,24 @@ python3 tools/update_index.py --show --index kospi200
 ```json
 {
   "kospi200": {
-    "updated": "2026-09-08 11:20",
-    "count":   200,
-    "stocks":  [{"code": "005930", "name": "삼성전자"}, ...]
+    "updated": "2026-09-27 19:23",
+    "count":   201,
+    "as_of":   "2026-09-22",
+    "source":  "silver.universe_membership uv_… (KRX 지수 공시 기반 구성 이력)",
+    "stocks":  [{"code": "000080", "name": "하이트진로"}, ...]
   },
-  "kosdaq150": {
-    "updated": "2026-09-08 11:20",
-    "count":   150,
-    "stocks":  [{"code": "247540", "name": "에코프로비엠"}, ...]
-  }
+  "kosdaq150": { ... }
 }
 ```
 
+`as_of`(이력 기준일)와 `source`(출처)는 추가 필드입니다. 기존 소비 코드는 `stocks`만
+읽으므로 영향이 없습니다. 종목은 코드 오름차순이며, 순서에 의미는 없습니다.
+
 ---
 
-## 키움 API 실패 시 — 수동 대체 경로
+## 이력을 쓸 수 없을 때 — 대체 경로
 
-키움 API 미연결이거나 조회에 실패하면 자동으로 아래 안내가 출력됩니다.
-
-**방법 A — KRX 정보데이터시스템 CSV 다운로드 후 임포트**
+**방법 A — KRX 정보데이터시스템 CSV 다운로드 후 임포트** (정확)
 
 1. https://data.krx.co.kr 접속
 2. 기본통계 → 주가 → 지수 → 구성종목
@@ -93,33 +124,32 @@ python3 tools/update_index.py --show --index kospi200
 4. 아래 명령으로 임포트:
 
 ```bash
-python3 tools/update_index.py --from-csv ~/Downloads/kospi200.csv --index kospi200
+python tools/update_index.py --from-csv ~/Downloads/kospi200.csv --index kospi200
 ```
 
-**방법 B — 네이버금융에서 수동 확인**
+**방법 B — 키움 ka20002** (코스닥150은 근사)
 
+```bash
+python tools/update_index.py --source kiwoom
 ```
-https://finance.naver.com/sise/sise_index.naver?code=KPI200
-https://finance.naver.com/sise/sise_index.naver?code=KSDAQ150
-```
+
+`.env`에 `KIWOOM_APP_KEY` / `KIWOOM_APP_SECRET`이 필요합니다(.env.example 참고).
 
 ---
 
 ## 다음 단계 연계
 
-목록 갱신 후 `/cvd-obv-scan`이 이 파일을 스캔 대상으로 사용합니다:
-
 ```
-/update-index                       # 분기 변경 후 목록 최신화
+/update-index                                 # 정기·수시 변경 후 목록 최신화
       ↓
-/cvd-obv-scan kospi200 --days 5      # 갱신된 목록으로 CVD/OBV 스캔
+python cvdobv.py data-load daily              # 갱신된 목록으로 1분봉·일봉·정규장 복원 적재
+/cvd-obv-scan kospi200 --days 5                # 갱신된 목록으로 스캔
 ```
 
 ---
 
 ## 주요 주의사항
 
-1. **분기별 정기 실행 필요**: 코스피200/코스닥150은 매년 3·6·9·12월 정기 변경 — 변경 시점마다 재실행
-2. **코스닥150은 근사값**: 키움 API가 코스닥150 전용 코드를 제공하지 않아 코스닥 전체 응답 순서 상위 150개를 사용 — 실제 지수 구성종목과 일부 다를 수 있음(공식 확정은 방법 A의 KRX CSV로 교차 확인 권장)
-3. **키움 API 키 필요**: 미설정 시 자동 조회 불가 → CSV 수동 임포트로 대체
-4. **API 호출 제한**: 키움 REST API 초당 5회 제한 — 페이지네이션으로 여러 번 호출되므로 완료까지 수 초~수십 초 소요
+1. **6·12월 정기 변경 후 실행** — **이력 → 목록** 순서로 갱신
+2. **이력이 오래되면 목록도 오래된다** — 도구는 이력에 없는 변경을 알 수 없다. 80일 경고를 무시하지 말 것
+3. **키움 방식은 근사** — 코스닥150을 시총 상위로 대신하므로 실제 구성과 다르다. 이력·CSV가 없을 때만

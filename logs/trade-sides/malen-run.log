@@ -1,0 +1,26 @@
+사전등록 sha256 1b4553f1
+유니버스 이력 로드
+체결량 로드 J (2009-06-01~2026-10-09)
+  J 2,591,560행 (795종목)
+일봉 로드 (2009-06-01~) — 797종목 (느림)
+패널 MA10
+C:\a-ai\ai-berkshire-kr\tools\truecvd_backtest.py:148: RuntimeWarning: invalid value encountered in divide
+  nd[sl] = np.where(ws > 0, ns / ws, np.nan)
+C:\a-ai\ai-berkshire-kr\tools\truecvd_backtest.py:149: RuntimeWarning: invalid value encountered in divide
+  bull[sl] = np.where(hs > 0, ps / hs, np.nan)
+    accel: 입력 갖춤 1,157,294 · 통과 253,250
+    v15daily: 입력 갖춤 1,157,294 · 통과 124,328
+패널 MA20
+    accel: 입력 갖춤 1,157,294 · 통과 237,828
+    v15daily: 입력 갖춤 1,157,294 · 통과 126,582
+패널 MA60
+    accel: 입력 갖춤 1,155,086 · 통과 210,823
+    v15daily: 입력 갖춤 1,155,086 · 통과 107,439
+신호 구간 4015거래일
+  H1 SIGNIFICANT_NEGATIVE   평균 -0.00009 n=4015 q=0.0580
+  H2 UNDERPOWERED           평균 +0.00003 n=4015 q=0.6630
+  H3 UNDERPOWERED           평균 -0.00007 n=4006 q=0.4427
+  H4 UNDERPOWERED           평균 +0.00013 n=4004 q=0.2950
+C:\a-ai\ai-berkshire-kr\tools\malen_backtest.py:169: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "run_id": f"malen_{datetime.utcnow():%Y%m%d%H%M%S}_{uuid.uuid4().hex[:6]}",
+저장: reports\backtest\prereg-malen-1b4553f1.json
