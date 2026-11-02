@@ -125,7 +125,7 @@ python cvdobv.py data-load daily --dry-run            # 실행할 명령만 출�
 | 과거 1분봉 누적거래대금 채우기 | `python cvdobv.py minute-cache cum-value --start YYYY-MM-DD [--end] [--venue KRX,NXT] [--workers 4]` (`src/cvd_obv/ingestion/cum_value_backfill.py`). 저장된 1분봉 중 `cum_traded_value`가 없는 (종목, 날)을 KIS로 다시 받아 새 run(`topup_load_<지금>`)으로 쓴다 — 같은 리비전이면 나중 run이 이기므로 덮인다. 옛 행은 남는다. **끊겨도 다시 돌리면 남은 것만** 받는다. 2026-10-23에 2026-09-01~10-22를 채웠다. 그 전(2025-10-15~2026-08-31)은 나중에 `--start 2025-10-15 --end 2026-08-31` — **KIS 지평이 약 1년이라 하루씩 앞으로 밀리므로 오래된 날부터 사라진다**. 다시 받은 봉은 시가·고가·저가·종가·거래량이 같지만(005930 9/1~10/22 가격 18,923/18,924·거래량 100%) 그 뒤 수정 이벤트가 있던 종목은 지금 기준 수정주가로 바뀐다(207940). 하루 봉 거래대금 합 = 마지막 누적값(005930 10/22 KRX·NXT 정확히 일치) |
 | 스캐너 1분봉 = 로컬 + KIS(2026-10-23) | CVD/OBV·CVD 가속(`live_feed`)은 1분봉을 **지난 날 = `silver.minute_bars` 로컬 저장분, 오늘 = KIS API**로 받는다(`src/cvd_obv/live_minutes.py`). 로컬에 빠진 날이 있으면 그 종목만 그날까지 KIS로 받고 실행 끝에 표시. 거래일 목록은 KIS 일봉(005930) 1회. 같은 기준시각에서 키움 경로와 결과 동일(005930 CVD/OBV detail, 000660 CVD 가속 detail) — 차이는 KIS에 없는 15:35 시간외 종가 봉 1개(지표 영향 없음). 실측: 장중 종목당 KIS 호출 약 4회. 16:03 실행 때 오늘 애프터마켓 첫 봉들이 아직 오지 않은 적이 한 번 있었다(16:06엔 옴, 추정 원인 공급 지연) |
 | 구성종목 스냅샷 = KIS(2026-10-23) | `universe snapshot`: KIS 종목 현재가 `rprs_mrkt_kor_name`(`KOSPI200`/`KSQ150`)으로 KRX 시총 상위 후보(350/400)+직전 명단 중 구성종목을 고른다(`kis_universe.py`). 실측: 현재 351/351 일치, 과거 편출 376종목 오표시 0, 2026-10-22 KRX 시총 검산 두 지수 모두 차이 **0원**. 코스닥150도 찍힌다(키움 `ka20002`는 불가) |
-| KIS 일봉의 9/14 이후 정의 | **가격은 정규장**(종가 15:30, 애프터마켓 고저 미포함), **거래량·거래대금은 애프터마켓 포함**(키움 EXTENDED와 같은 값). 거래량 기준으로 `price_scope=EXTENDED`로 저장하고 `KIS_PRICE_REGULAR_SESSION` 표시. 확정 봉은 그대로 `regular-from-minute`(거래량 = 이 값 − 애프터마켓 1분봉). 거래대금 단위는 원(키움은 백만원). 수정주가 소급 감지는 원천이 같은 수집끼리만 비교한다(9/14 이후 원천마다 종가 정의가 다르다) |
+| KIS 일봉의 9/14 이후 정의 | **가격은 정규장**(종가 15:30, 애프터마켓 고저 미포함) — **단, 최근 거래일은 다음 영업일 아침 전까지 애프터마켓 최종가·고저**(그날 뒤 첫 평일 09:00 전에 받은 행은 `KIS_LAST_DAY_UNSETTLED` 표시, 다음 적재가 정산 값으로 덮는다 — `adjustment_watch.settled`, `docs/KIS-일봉-최근일-애프터마켓가격-20261101.md`), **거래량·거래대금은 애프터마켓 포함**(키움 EXTENDED와 같은 값). 거래량 기준으로 `price_scope=EXTENDED`로 저장하고 `KIS_PRICE_REGULAR_SESSION` 표시. 확정 봉은 그대로 `regular-from-minute`(거래량 = 이 값 − 애프터마켓 1분봉). 거래대금 단위는 원(키움은 백만원). 수정주가 소급 감지는 원천이 같은 수집끼리만 비교한다(9/14 이후 원천마다 종가 정의가 다르다) |
 | KIS 1분봉 | 한 번 120봉, `FID_PW_DATA_INCU_YN=Y`로 날짜를 넘어 이어 받는다(커서 = 가장 오래된 봉 1분 전, 시작은 오늘 `235959`). 과거 약 1년. 수정주가 적용. **장후 시간외 종가 봉(키움 15:35 OTHER)이 없다** — 잠정 봉 거래량에서 그 몫이 빠진다(005930 10/20~22: 705~10,972주). 확정 봉 거래량에는 영향 없음. 누적거래대금 `cum_traded_value`(원)를 저장하고 봉 거래대금은 그 차이로 채운다. 호출 수는 키움의 약 7배(종목·하루 약 6~7회) |
 | 수집 시각 | 종목마다 잰다(`adjustment_as_of_utc`). 15:58에 시작한 수집이 16:00을 넘겨도 뒤 종목을 정규장으로 오인하지 않는다 |
 | 분봉 주기 | 1분만. `minute-cache build` 기본도 1로 바꿨다. 5분봉 저장분은 과거 재현용으로 남는다 |
@@ -141,7 +141,7 @@ python cvdobv.py data-load daily --dry-run            # 실행할 명령만 출�
 | CVD 가속 | `tools/cvd_accel_scanner.py` | 같음 | API 1분봉 |
 | 종가매수 | `tools/closing_bet_scanner.py`(closing-0.4 — 적재하지 않고 [데이터 기준] 알림만, 2026-10-05) | 로컬 정규장(저장 복원본) | — |
 | A·B 선정기 | `tools/ab_candidate_scanner.py` | 로컬 정규장, EXTENDED는 `--allow-extended`일 때만 | — |
-| 데일리 스캐너 | `tools/daily_scanner.py` | 로컬 정규장 + 당일 API 봉(15:35~16:00 확정값, `volume-surge`는 장중 누적) | — |
+| 데일리 스캐너 | `tools/daily_scanner.py` | 로컬 정규장 + 당일 KIS 일봉(15:35~16:00 확정값, `volume-surge`는 장중 누적), 로컬에 없으면 KIS 일봉(기준 밖). 2026-11-01 키움→KIS | — |
 | 종목 스크리너 | `tools/stock_screener.py` | 한국주: 로컬 정규장 / 해외주: Yahoo | — |
 | replay | `cvdobv.py replay run` | 로컬 정규장(`--daily-scope regular` 기본) | 1분봉 → `--period` 합성(`--minute-source standard` 기본) |
 | feature·label·백테스트 | `src/cvd_obv/` | `read_standard_daily` | — |

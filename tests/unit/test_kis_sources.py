@@ -3,7 +3,8 @@
 
 1. 1분봉: 날짜를 넘는 커서 페이지, `min_date`에서 멈춤, NXT는 시장 구분 NX.
 2. 누적거래대금 → 봉 거래대금(같은 날 직전 봉과 차이). 첫 봉을 받았는지 모르는 날은 비운다.
-3. 일봉: 100행 페이지를 뒤로 넘기고, 9/14 이후 행에 `KIS_PRICE_REGULAR_SESSION`.
+3. 일봉: 100행 페이지를 뒤로 넘기고, 9/14 이후 정산된 행에 `KIS_PRICE_REGULAR_SESSION`,
+   다음 거래일 09:00 전에 받은 행에 `KIS_LAST_DAY_UNSETTLED`.
 4. 옛 Parquet 파일에 없는 열(`cum_traded_value`)을 읽어도 null로 채운다.
 5. 수정주가 소급 감지는 원천이 다른 수집끼리 비교하지 않는다.
 """
@@ -159,6 +160,27 @@ def test_daily_paging_and_flags():
     assert FLAG_KIS_REGULAR_PRICE in by[date(2026, 9, 14)]["quality_flags"]
     assert FLAG_KIS_REGULAR_PRICE not in by[date(2026, 9, 11)]["quality_flags"]
     assert by[days[0]]["traded_value"] == Decimal(100 * 1000)    # 원 단위
+
+
+def test_daily_last_day_unsettled_before_next_weekday_9am():
+    """금요일 행을 토요일·월요일 08:59에 받으면 미정산, 월요일 09:00부터 정산(실측 10/23·10/30)."""
+    from cvd_obv.ingestion.kis_daily import FLAG_KIS_UNSETTLED
+
+    fri, thu = date(2026, 10, 30), date(2026, 10, 29)
+    rows = [_daily_row("20261030", 1000), _daily_row("20261029", 990)]
+
+    def fetch(at):
+        src = KisDailySource(client=FakeClient(lambda p: {"rt_cd": "0", "output2": rows}),
+                             clock=lambda: at)
+        return {r["trading_date"]: r["quality_flags"]
+                for r in src.fetch_security("005930", start=thu, end=fri).rows}
+
+    for at in (datetime(2026, 10, 31, 8, 47, tzinfo=KST), datetime(2026, 11, 2, 8, 59, tzinfo=KST)):
+        by = fetch(at)
+        assert FLAG_KIS_UNSETTLED in by[fri] and FLAG_KIS_REGULAR_PRICE not in by[fri]
+        assert FLAG_KIS_REGULAR_PRICE in by[thu]          # 금요일 09:00이 지났다
+    by = fetch(datetime(2026, 11, 2, 9, 0, tzinfo=KST))
+    assert FLAG_KIS_REGULAR_PRICE in by[fri] and FLAG_KIS_UNSETTLED not in by[fri]
 
 
 def _minute_row(sid, at, run_id, with_cum):

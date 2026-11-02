@@ -16,20 +16,30 @@
   → `price_scope`는 거래량 기준으로 키움과 같이 `EXTENDED`로 저장하고
   `KIS_PRICE_REGULAR_SESSION` 표시를 단다. 정규장 확정 봉은 여전히
   `regular_from_minute`가 만든다(거래량 = 이 값 − 애프터마켓 1분봉)
+- **단, 가장 최근 거래일은 다음 거래일 전까지 가격이 애프터마켓 최종가·고저다**
+  (`adjustment_watch` 머리말, 2026-10-26·11-01 실측). 053800 10/30을 10/31(토)·11/1(일)에
+  받으면 종가 121,100·고가 127,400(= 애프터마켓 19:59 종가·19:15 고가), 15:30 종가 단일가는
+  118,100. 10/23 행은 10/24(토) 수집 213,500 → 10/26(월) 08:34 수집 215,500(정규장)으로
+  바뀌었다(005930). 그래서 그날 뒤 첫 평일 09:00 전에 받은 행(`adjustment_watch.settled`가
+  거짓)에는 `KIS_PRICE_REGULAR_SESSION` 대신 `KIS_LAST_DAY_UNSETTLED`를 단다. 일일 적재가
+  매번 일봉을 며칠 앞부터 다시 받으므로 다음 적재가 정산된 값으로 덮는다
+  (`docs/KIS-일봉-최근일-애프터마켓가격-20261101.md`)
 - 거래대금 `acml_tr_pbmn`은 **원** 단위(키움은 백만원)
 - 한 번에 최대 100행. 날짜 구간을 뒤로 옮기며 받는다. 005930은 1980년대까지 있다
 """
 
 from __future__ import annotations
 
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal, InvalidOperation
 
+from .adjustment_watch import settled
 from .kis_client import KisClient
 from .kiwoom_daily import DailyFetchResult
 from ..domain.status import DetailCode, QualityStatus
 
-__all__ = ["KIS_DAILY_SOURCE", "KisDailySource", "FLAG_KIS_REGULAR_PRICE"]
+__all__ = ["KIS_DAILY_SOURCE", "KisDailySource", "FLAG_KIS_REGULAR_PRICE",
+           "FLAG_KIS_UNSETTLED"]
 
 KIS_DAILY_SOURCE = "KIS_FHKST03010100"
 _TR = "FHKST03010100"
@@ -41,6 +51,8 @@ _DEFAULT_MAX_PAGES = 130
 _EARLIEST = date(1980, 1, 1)
 #: 2026-09-14 이후 KIS 일봉은 가격이 정규장, 거래량이 애프터마켓 포함이다
 FLAG_KIS_REGULAR_PRICE = "KIS_PRICE_REGULAR_SESSION"
+#: 그날 뒤 첫 평일 09:00 전에 받은 행 — 가격이 애프터마켓 최종가·고저일 수 있다
+FLAG_KIS_UNSETTLED = "KIS_LAST_DAY_UNSETTLED"
 _AFTERMARKET_START = date(2026, 9, 14)
 
 #: 거래대금과 거래량×가격이 이 배수 밖으로 어긋나면 표시한다(키움 어댑터와 같은 기준)
@@ -63,11 +75,13 @@ class KisDailySource:
     SOURCE = KIS_DAILY_SOURCE
 
     def __init__(self, client: KisClient = None, max_pages: int = _DEFAULT_MAX_PAGES,
-                 adjusted: bool = True, market_div: str = "J"):
+                 adjusted: bool = True, market_div: str = "J", clock=None):
         self.client = client or KisClient()
         self.max_pages = int(max_pages or _DEFAULT_MAX_PAGES)
         self.adjusted = bool(adjusted)
         self.market_div = market_div
+        #: 수집 시각(미정산 판정) — 테스트에서 바꿔 끼운다
+        self.clock = clock or (lambda: datetime.now(timezone.utc))
 
     def token(self):
         return self.client.token()
@@ -89,6 +103,7 @@ class KisDailySource:
         pages = rows_received = 0
         stop_reason = "END_OF_DATA"
         cur_end = end
+        fetched_at = self.clock()
         for _page in range(cap):
             if cur_end < lo:
                 stop_reason = "REACHED_START"
@@ -114,7 +129,7 @@ class KisDailySource:
             rows_received += len(raw)
             oldest = None
             for item in raw:
-                row = self._normalize(item, flags)
+                row = self._normalize(item, flags, fetched_at)
                 if row is None:
                     continue
                 d = row["trading_date"]
@@ -157,7 +172,7 @@ class KisDailySource:
         return [by_date[k] for k in sorted(by_date)]
 
     @staticmethod
-    def _normalize(item, flags):
+    def _normalize(item, flags, fetched_at=None):
         dt = str(item.get("stck_bsop_date") or "").strip()
         if len(dt) != 8 or not dt.isdigit():
             flags.add("BAD_DATE_FIELD")
@@ -175,7 +190,9 @@ class KisDailySource:
         day = date(int(dt[:4]), int(dt[4:6]), int(dt[6:8]))
         row_flags = []
         if day >= _AFTERMARKET_START:
-            row_flags.append(FLAG_KIS_REGULAR_PRICE)
+            # 다음 거래일 전에 받은 최근 거래일 행은 가격이 애프터마켓 값일 수 있다
+            row_flags.append(FLAG_KIS_REGULAR_PRICE if settled(day, fetched_at)
+                             else FLAG_KIS_UNSETTLED)
         if value is not None and volume > 0:
             approx = volume * (high + low + close) / 3
             lo, hi = _TRADED_VALUE_TOLERANCE

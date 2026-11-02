@@ -1,0 +1,2 @@
+# V1.5 스캐너는 해시 동결 — 줄바꿈 변환 금지(autocrlf=true에서 CRLF로 받으면 해시가 달라진다)
+tools/kiwoom_cvd_obv_scanner.py -text

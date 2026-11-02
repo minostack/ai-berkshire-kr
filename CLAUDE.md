@@ -111,7 +111,7 @@ reports/삼성전기_20260701/   ← 7월 분석
 
 ## GitHub 운영
 
-- 로컬 클론 경로: `C:\myProject_room\agentic_AI\ai-berkshire-kr\`
+- 로컬 클론 경로: `C:\A-AI\ai-berkshire-kr\`
 - 원격 저장소: `https://github.com/(내 계정)/ai-berkshire-kr.git`
 - 푸시 전 반드시 `git pull --rebase origin main` (원격에 새 커밋이 있을 수 있음)
 - 커밋 메시지는 **한국어**로, 변경 내용을 명확히 기술
@@ -122,7 +122,7 @@ reports/삼성전기_20260701/   ← 7월 분석
 
 ```bash
 # 리포트를 GitHub에 푸시 (사용자가 직접 실행)
-cd C:\myProject_room\agentic_AI\ai-berkshire-kr
+cd C:\A-AI\ai-berkshire-kr
 git add reports/삼성전기_20260101/
 git commit -m "삼성전기 20260101 투자 리서치 리포트 추가"
 git pull --rebase origin main

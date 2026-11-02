@@ -59,10 +59,11 @@ RATIO_TOL = 1e-4
 UNSETTLED_RATIO_TOL = 0.105
 
 
-def _settled(trading_date: date, fetched_at) -> bool:
+def settled(trading_date: date, fetched_at) -> bool:
     """그날 뒤 첫 평일 09:00(KST)에 또는 그 뒤에 받았는가 — 그 전 종가는 바뀔 수 있다.
 
     휴장일은 모른다(평일로 본다). 수집 시각을 모르면 확정으로 본다(예전 행).
+    KIS 일봉 어댑터도 같은 규칙으로 미정산 행을 표시한다(`kis_daily.FLAG_KIS_UNSETTLED`).
     """
     from ..domain.ids import KST
 
@@ -72,6 +73,9 @@ def _settled(trading_date: date, fetched_at) -> bool:
     while nxt.weekday() >= 5:
         nxt += timedelta(days=1)
     return fetched_at.astimezone(KST) >= datetime.combine(nxt, time(9, 0), tzinfo=KST)
+
+
+_settled = settled          # 예전 이름
 
 
 def adjustment_events(store: ParquetStore, start: date, end: date,

@@ -507,13 +507,15 @@ ADJ_MISMATCH = 0.005
 
 
 def _fetch_kis(code: str, end: date, src=[]) -> list:
+    from cvd_obv.ingestion.kis_daily import FLAG_KIS_UNSETTLED, KisDailySource
     if not src:
-        from cvd_obv.ingestion.kis_daily import KisDailySource
         src.append(KisDailySource(max_pages=1))
     res = src[0].fetch_security(code, start=end - timedelta(days=API_RECENT_DAYS), end=end)
+    # unsettled: 다음 거래일 09:00 전에 받은 최근 거래일 — 가격이 애프터마켓 값일 수 있다
     return [{"date": r["trading_date"], "open": float(r["open"]), "high": float(r["high"]),
              "low": float(r["low"]), "close": float(r["close"]), "volume": int(r["volume"]),
-             "traded_value": None if r["traded_value"] is None else float(r["traded_value"])}
+             "traded_value": None if r["traded_value"] is None else float(r["traded_value"]),
+             "unsettled": FLAG_KIS_UNSETTLED in r["quality_flags"]}
             for r in res.rows]
 
 
@@ -533,7 +535,9 @@ def merge_api(local: dict, api_rows: dict, now: datetime, live: bool) -> tuple:
       (9/14 이후 API 일봉은 거래량에 애프터마켓이 섞여 EXTENDED)
     - 로컬에 없는 날(보통 오늘)만 API 봉을 쓴다. 성격은 `fetched_scope`
     - `--live`가 아니면 15:35 전 당일 봉(장중 미완료)은 버린다
-    - 직전 거래일 종가가 로컬과 `ADJ_MISMATCH` 넘게 다르면 코드를 돌려준다(수정주가 의심)
+    - 직전 거래일 종가가 로컬과 `ADJ_MISMATCH` 넘게 다르면 코드를 돌려준다(수정주가 의심).
+      API 봉이 미정산(`unsettled` — KIS 최근 거래일을 다음 거래일 09:00 전에 받음)이면
+      종가가 애프터마켓 값이라 대조하지 않는다(주말 실행 시 전 종목 오경보 방지)
 
     반환: (picked {(sid, date): bar}, mismatch [code…])
     """
@@ -546,7 +550,7 @@ def merge_api(local: dict, api_rows: dict, now: datetime, live: bool) -> tuple:
             key = (sid, d)
             mine = local.get(key)
             if mine is not None and mine["scope"] == SCOPE_REGULAR:
-                if d == prev and mine["close"] and                         abs(r["close"] / mine["close"] - 1) > ADJ_MISMATCH:
+                if d == prev and mine["close"] and not r.get("unsettled") and                         abs(r["close"] / mine["close"] - 1) > ADJ_MISMATCH:
                     mismatch.append(code)
                 continue
             if not live and d == now.date() and now.time() < REGULAR_FINAL_KST:

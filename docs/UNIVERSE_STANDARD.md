@@ -43,7 +43,7 @@
 | `tools/cvd_accel_scanner.py` | 같은 공급기로 명단을 만든다. 스냅샷에 `universe_standard` 기록 |
 | `tools/closing_bet_scanner.py` | `load_universe(day)` = `universe_on(기준일)`. **`--date` 과거 스캔이 그날의 구성종목으로 바뀐다** |
 | `tools/ab_candidate_scanner.py` | `load_universe` = `universe_on`. 이력 밖은 "가장 가까운 관측일" 대신 파일·이력 중 최근 것(지금은 둘 다 9/28 — 결과 동일) |
-| `tools/daily_scanner.py` | gap-up 명단 = `universe_on(오늘)`, 시장 접미사 = `current_universe` |
+| `tools/daily_scanner.py` | gap-up·new-high 명단 = `universe_on(오늘)`, 시장 접미사·종목명 = `current_universe` |
 | `src/.../daily_history.load_index_codes`, `live_feed.index_codes` | `read_index_file` / `current_universe`로 위임 |
 | `src/.../minute_catchup.resolve_members` | 날짜별 `universe_on` ∪ `current_universe` |
 | `tools/closing_bet_backtest.py`, `tools/ab_backtest_b.py` | `flat_intervals` / `membership_intervals` |

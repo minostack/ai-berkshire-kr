@@ -7,24 +7,26 @@ daily-scanner 스킬이 자동 호출합니다.
 사용법:
     python3 tools/daily_scanner.py check-market          # 장 운영 여부 확인
     python3 tools/daily_scanner.py check-broker          # API 연결 상태 확인
-    python3 tools/daily_scanner.py quote 005930          # 키움 현재가/기본정보 조회
+    python3 tools/daily_scanner.py quote 005930          # KIS 현재가/기본정보 조회
     python3 tools/daily_scanner.py volume-surge          # 거래량 급증 종목
     python3 tools/daily_scanner.py new-high              # 신고가 돌파 종목
     python3 tools/daily_scanner.py gap-up                # 갭 상승 종목
     python3 tools/daily_scanner.py oversold              # 과매도 반등 후보
     python3 tools/daily_scanner.py indicators 005930     # 기술적 지표 계산
     python3 tools/daily_scanner.py patterns 005930       # 캔들 패턴 인식
-    python3 tools/daily_scanner.py kis-realtime 005930   # (레거시) KIS API 실시간 — quote로 대체
+    python3 tools/daily_scanner.py kis-realtime 005930   # quote의 옛 이름
 
-데이터 우선순위 (2026-09 키움 전환):
-    1순위: 키움 REST API (현재가·일봉) — .env에 KIWOOM_APP_KEY / KIWOOM_APP_SECRET
-    2순위: Yahoo Finance (키움 미설정 시 폴백, 지연)
-    레거시: KIS API — volume-surge/new-high/kis-realtime의 실시간 순위 조회에서만
-            계속 쓰이며(키움 쪽 대응 TR 미확인), 신규 기능은 추가되지 않음
+데이터 원천 (2026-11-01 KIS 전환 — 적재 원천과 같은 KIS):
+    일봉:   로컬 정규장 일봉(봉 기준 bars-1.0) → KIS 일봉 FHKST03010100(기준 밖) → Yahoo(기준 밖)
+    시세:   KIS 현재가 FHKST01010100 / 수급: KIS 투자자 FHKST01010900(30일치 한 번에)
+    순위:   KIS 거래량순위 FHPST01710000(거래증가율) — volume-surge 후보 풀
+    신고가: 로컬 기준 일봉으로 직접 계산(코스피200·코스닥150) — KIS에 종가 기준 N일
+            신고가 순위 TR이 없다(FHPST01870000은 '근접' 순위라 정의가 다르다)
+    키움 함수(kiwoom_*)는 다른 도구(closing_bet_scanner --source kiwoom 등)용으로만 남는다
 
 증권사 API 키 설정 — 프로젝트 루트 .env 파일 (.env.example 참고):
-    키움:      KIWOOM_APP_KEY=... / KIWOOM_APP_SECRET=...
-    KIS(레거시): KIS_APP_KEY=... / KIS_APP_SECRET=... / KIS_ACCOUNT_NO=...
+    KIS:  KIS_APP_KEY=... / KIS_APP_SECRET=...
+    키움: KIWOOM_APP_KEY=... / KIWOOM_APP_SECRET=... (이 도구의 명령은 쓰지 않음)
 """
 
 import argparse
@@ -851,7 +853,7 @@ def _fetch_yahoo_chart(yf_ticker: str, days: int) -> Optional[dict]:
 
 
 def fetch_ohlcv_yahoo(ticker: str, days: int = 130) -> Optional[dict]:
-    """Yahoo Finance에서 OHLCV 데이터 수집 (키움 미설정 시 폴백).
+    """Yahoo Finance에서 OHLCV 데이터 수집 (로컬·KIS 일봉이 없을 때 폴백).
 
     시장 판정 우선순위(가이드 5.3 — 코드 패턴만으로 추측하지 않음):
       1) data/index_stocks.json 종목 마스터에 있으면 그 시장의 접미사 사용
@@ -877,7 +879,8 @@ def fetch_ohlcv_yahoo(ticker: str, days: int = 130) -> Optional[dict]:
 
 
 # ─────────────────────────────────────────────────────────────
-# 키움증권 REST API (1순위 데이터 소스, 2026-09 KIS→키움 전환)
+# 키움증권 REST API — 2026-11-01부터 이 도구의 명령은 쓰지 않는다(KIS로 전환).
+# closing_bet_scanner(--source kiwoom)·계약 테스트가 kiwoom_* 함수를 직접 부르므로 남긴다.
 #
 # 인증: POST /oauth2/token (api-id 없음), grant_type=client_credentials,
 #       appkey/secretkey. 조회: 모든 TR이 POST + JSON body + api-id 헤더.
@@ -1254,6 +1257,34 @@ def kiwoom_daily_bars(ticker: str, days: int = 460,
 _STD_CACHE = None
 
 
+def prime_standard_cache(codes, as_of: Optional[datetime] = None):
+    """로컬 기준 일봉 캐시가 `codes`를 덮게 한다. 저장소를 못 읽으면 None.
+
+    캐시 생성은 저장소 전체를 훑어 오래 걸린다(2026-11-01 실측: 351종목 63초,
+    1종목 43초 — 종목 수와 거의 무관). 그래서 없는 종목이 나올 때마다 다시
+    만들면 후보가 많은 명령(volume-surge 60종목)이 한 시간 가까이 걸린다.
+    여러 종목을 다룰 명령은 시작할 때 전부 넘겨 한 번만 만든다.
+    """
+    global _STD_CACHE
+    from cvd_obv.bar_standard import StandardDailyCache
+    from cvd_obv.live_feed import index_codes
+
+    as_of = as_of or datetime.now()
+    want = {str(c) for c in codes}
+    if (_STD_CACHE is not None and _STD_CACHE[1] == as_of.date()
+            and want <= _STD_CACHE[0]):
+        return _STD_CACHE[2]
+    known = _STD_CACHE[0] if _STD_CACHE is not None and _STD_CACHE[1] == as_of.date() else set()
+    all_codes = set(index_codes()) | known | want
+    try:
+        _STD_CACHE = (all_codes, as_of.date(), StandardDailyCache(sorted(all_codes), as_of))
+    except Exception as e:      # pyarrow 미설치·저장소 없음 → API 폴백
+        print(f"  ⚠️  로컬 일봉을 읽지 못함({type(e).__name__}) — API로 폴백",
+              file=sys.stderr)
+        return None
+    return _STD_CACHE[2]
+
+
 def _prev_weekday(d):
     d -= timedelta(days=1)
     while d.weekday() >= 5:
@@ -1274,22 +1305,12 @@ def standard_daily_bars(ticker: str, days: int = 460,
     로컬 최신일이 직전 평일보다 오래되면 STALE — 그래도 기준 일봉을 돌려준다(출처를
     섞지 않는다). 호출자는 경고만 낸다.
     """
-    global _STD_CACHE
-    from cvd_obv.bar_standard import (
-        FETCH_INCOMPLETE, FETCH_REGULAR, StandardDailyCache, classify_fetched_daily,
-    )
-    from cvd_obv.live_feed import index_codes
+    from cvd_obv.bar_standard import FETCH_INCOMPLETE, FETCH_REGULAR, classify_fetched_daily
 
     as_of = as_of or datetime.now()
-    if _STD_CACHE is None or ticker not in _STD_CACHE[0] or _STD_CACHE[1] != as_of.date():
-        codes = set(index_codes()) | {ticker}
-        try:
-            _STD_CACHE = (codes, as_of.date(), StandardDailyCache(sorted(codes), as_of))
-        except Exception as e:      # pyarrow 미설치·저장소 없음 → API 폴백
-            print(f"  ⚠️  로컬 일봉을 읽지 못함({type(e).__name__}) — API로 폴백",
-                  file=sys.stderr)
-            return [], "EMPTY"
-    cache = _STD_CACHE[2]
+    cache = prime_standard_cache([ticker], as_of)
+    if cache is None:
+        return [], "EMPTY"
     local = cache.bars(ticker, days=days)
     if not local:
         return [], "EMPTY"
@@ -1303,7 +1324,7 @@ def standard_daily_bars(ticker: str, days: int = 460,
                   or (include_incomplete and scope == FETCH_INCOMPLETE
                       and as_of.time() < datetime.strptime("15:35", "%H:%M").time()))
     if want_today and rows[-1]["date"] != today.isoformat() and today.weekday() < 5:
-        for r in kiwoom_daily_bars(ticker, days=10, as_of=as_of, include_incomplete=True):
+        for r in kis_daily_bars(ticker, days=10, as_of=as_of, include_incomplete=True):
             if r["date"] == today.isoformat():
                 rows.append(dict(r, intraday=scope != FETCH_REGULAR))
                 break
@@ -1318,9 +1339,10 @@ def fetch_ohlcv(ticker: str, days: int = 460) -> Optional[dict]:
     """OHLCV 조회 — 봉 기준 bars-1.0.
 
     1순위 로컬 기준 일봉(정규장·수정주가) + 당일 정규장 봉(`standard_daily_bars`).
-    오래됐으면 경고만 낸다. 로컬에 없으면 2순위 키움 API 일봉으로 폴백한다 — 2026-09-14
-    이후 봉이 애프터마켓 포함(EXTENDED)이라 **기준 밖**이며 `source`에 표시된다.
-    3순위 Yahoo Finance(세션 정의 미확인, 기준 밖).
+    오래됐으면 경고만 낸다. 로컬에 없으면 2순위 KIS API 일봉으로 폴백한다 — 2026-09-14
+    이후 봉은 거래량이 애프터마켓 포함이고 최근 거래일 가격은 다음 영업일 아침 전까지
+    애프터마켓 최종가라(docs/KIS-일봉-최근일-애프터마켓가격-20261101.md) **기준 밖**이며
+    `source`에 표시된다. 3순위 Yahoo Finance(세션 정의 미확인, 기준 밖).
 
     기본 460 캘린더일은 MA120(완료 봉 120개) 워밍업 여유다.
     """
@@ -1337,23 +1359,19 @@ def fetch_ohlcv(ticker: str, days: int = 460) -> Optional[dict]:
             "volumes": [r["volume"] for r in bars],
         }
 
-    has_kiwoom = bool(os.environ.get("KIWOOM_APP_KEY") and os.environ.get("KIWOOM_APP_SECRET"))
+    has_kis = _kis_enabled()
     bars, status = standard_daily_bars(ticker, days=days)
     if status == "STALE":
         print(f"  ⚠️  {ticker}: 로컬 일봉이 {bars[-1]['date']}까지 — "
               f"`python cvdobv.py data-load daily`로 갱신 필요(휴장일 직후면 정상)",
               file=sys.stderr)
     if len(bars) >= 20:
-        quote = kiwoom_quote(ticker) if has_kiwoom else None
-        return _pack(bars, "local_standard",
-                     quote["name"] if quote and quote.get("name") else None)
+        return _pack(bars, "local_standard", kis_name(ticker) if has_kis else None)
 
-    if has_kiwoom:
-        bars = kiwoom_daily_bars(ticker, days=days)
+    if has_kis:
+        bars = kis_daily_bars(ticker, days=days)
         if len(bars) >= 20:
-            quote = kiwoom_quote(ticker)
-            return _pack(bars, "kiwoom",
-                         quote["name"] if quote and quote.get("name") else None)
+            return _pack(bars, "kis", kis_name(ticker))
 
     d = fetch_ohlcv_yahoo(ticker, days=max(days, 130))
     if d:
@@ -1364,6 +1382,8 @@ def fetch_ohlcv(ticker: str, days: int = 460) -> Optional[dict]:
 #: fetch_ohlcv 출처 → 화면 표시. 기준 밖 출처는 이유를 함께 보여 준다.
 SOURCE_NOTE = {
     "local_standard": "로컬 정규장 일봉(봉 기준 bars-1.0)",
+    "kis": ("KIS API 일봉 — 2026-09-14 이후 거래량은 애프터마켓 포함, 최근 거래일 가격은 "
+            "다음 영업일 아침 전까지 애프터마켓 최종가, 기준 밖"),
     "kiwoom": "키움 API 일봉 — 2026-09-14 이후 애프터마켓 포함(EXTENDED), 기준 밖",
     "yahoo": "Yahoo Finance — 세션 정의 미확인, 기준 밖",
 }
@@ -1454,11 +1474,11 @@ def kiwoom_new_high(market: str = "all", period_days: int = 60,
 
 
 # ─────────────────────────────────────────────────────────────
-# KIS (한국투자증권) API — 레거시. quote/investor-flow/volume-surge/new-high는
-# 모두 키움으로 전환 완료(위 함수들, 2026-09-14 첨부 공식 스펙 기준). gap-up만
-# 시장 전체 갭 랭킹에 해당하는 공식 TR이 spec에서 확인되지 않아 KIS 경로를
-# 당분간 유지한다(개별 종목의 갭 여부 자체는 kiwoom_quote의 open/prev_close로
-# 계산 가능 — 시장 전체 랭킹 API가 없을 뿐).
+# KIS (한국투자증권) API — 이 도구의 데이터 원천(2026-11-01 키움에서 전환).
+# 적재(data-load)와 같은 원천이라 로컬 일봉과 정의를 맞추기 쉽다. 토큰 캐시
+# (`.kis_token.json`)와 `_kis_request`는 src/cvd_obv/ingestion(kis_client 등)도
+# 같이 쓴다 — 같은 자격증명으로 토큰을 두 군데서 발급하면 서로 무효화된다.
+# 호출 간격·재시도는 `KisClient`가 맡는다.
 # ─────────────────────────────────────────────────────────────
 
 _KIS_BASE = "https://openapi.koreainvestment.com:9443"
@@ -1530,59 +1550,232 @@ def _kis_request(path: str, params: dict, tr_id: str) -> Optional[dict]:
         return None
 
 
-def kis_volume_rank(market: str = "0") -> list:
-    """KIS: 거래량 순위 조회 (실시간)."""
-    data = _kis_request(
-        "/uapi/domestic-stock/v1/quotations/volume-rank",
-        {
+_KIS_QUOTATIONS = "/uapi/domestic-stock/v1/quotations"
+_KIS_CLIENT = None
+
+
+def _kis_enabled() -> bool:
+    return bool(os.environ.get("KIS_APP_KEY") and os.environ.get("KIS_APP_SECRET"))
+
+
+def _kis_client():
+    global _KIS_CLIENT
+    if _KIS_CLIENT is None:
+        from cvd_obv.ingestion.kis_client import KisClient
+        _KIS_CLIENT = KisClient(request=_kis_request)
+    return _KIS_CLIENT
+
+
+def _kis_get(path: str, params: dict, tr_id: str) -> Optional[dict]:
+    """성공(`rt_cd == "0"`) 응답만 돌려준다. 실패하면 사유를 stderr에 남기고 None."""
+    if not _kis_enabled():
+        return None
+    client = _kis_client()
+    res = client.get(path, params, tr_id)
+    if res is None:
+        target = params.get("FID_INPUT_ISCD") or params.get("PDNO") or ""
+        print(f"  ⚠️  KIS {tr_id} 실패({target}): {client.last_error}", file=sys.stderr)
+    return res
+
+
+def _kis_float(v) -> Optional[float]:
+    """KIS 숫자 필드(부호 포함 문자열). 빈 값이면 None — 0으로 채우지 않는다."""
+    s = str(v if v is not None else "").replace(",", "").strip()
+    if not s:
+        return None
+    try:
+        return float(s)
+    except ValueError:
+        return None
+
+
+_NAME_CACHE: dict = {}
+
+
+def kis_name(ticker: str) -> Optional[str]:
+    """종목명 — 지수 구성종목 명단에 있으면 그 이름, 없으면 KIS CTPF1002R(상품기본조회)
+    `prdt_abrv_name`. KIS 현재가(FHKST01010100) 응답에는 종목명이 없다."""
+    if ticker in _NAME_CACHE:
+        return _NAME_CACHE[ticker]
+    if not _NAME_CACHE:
+        try:
+            from cvd_obv.universe import current_universe
+            for m in current_universe().members():
+                _NAME_CACHE.setdefault(m.code, m.name)
+        except Exception:
+            pass
+        if ticker in _NAME_CACHE:
+            return _NAME_CACHE[ticker]
+    res = _kis_get(f"{_KIS_QUOTATIONS}/search-stock-info",
+                   {"PRDT_TYPE_CD": "300", "PDNO": ticker}, "CTPF1002R")
+    name = str(((res or {}).get("output") or {}).get("prdt_abrv_name") or "").strip() or None
+    _NAME_CACHE[ticker] = name
+    return name
+
+
+def kis_price_unsettled(now: Optional[datetime] = None) -> bool:
+    """지금 KIS 현재가·고저가 애프터마켓 값일 수 있는가 — 16:00부터 다음 평일 09:00 전.
+
+    실측(2026-11-01): 053800 10/30을 일요일에 조회하면 현재가 121,100·고가 127,400(애프터마켓
+    최종가·최고가), 정규장 종가는 118,100. 정산 기준은 `adjustment_watch.settled`와 같다.
+    """
+    now = now or datetime.now()
+    return now.weekday() >= 5 or now.hour >= 16 or now.hour < 9
+
+
+def kis_quote(ticker: str, name: Optional[str] = None) -> Optional[dict]:
+    """KIS FHKST01010100(주식현재가 시세) — 현재가·시가·고저·전일종가·거래량·시가총액.
+
+    필드(2026-11-01 실측, 053800): stck_sdpr(기준가 = 전일 정규장 종가), hts_avls(시가총액,
+    억원), acml_tr_pbmn(누적 거래대금, 원), w52_hgpr(52주 고가). 가격·등락은 부호가
+    붙은 값 그대로 온다. 16:00부터 다음 평일 09:00 전까지는 현재가·고저·등락률이
+    애프터마켓 값이다(`price_unsettled`). 시가·기준가는 정규장 값이다.
+    """
+    res = _kis_get(f"{_KIS_QUOTATIONS}/inquire-price",
+                   {"FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": ticker}, "FHKST01010100")
+    out = (res or {}).get("output") or {}
+    price = _kis_float(out.get("stck_prpr"))
+    if not price:
+        return None
+    cap_eok = _kis_float(out.get("hts_avls"))
+    return {
+        "symbol":      ticker,
+        "name":        name or kis_name(ticker) or ticker,
+        "price":       price,
+        "open":        _kis_float(out.get("stck_oprc")) or 0.0,
+        "high":        _kis_float(out.get("stck_hgpr")) or 0.0,
+        "low":         _kis_float(out.get("stck_lwpr")) or 0.0,
+        "prev_close":  _kis_float(out.get("stck_sdpr")) or 0.0,
+        "volume":      int(_kis_float(out.get("acml_vol")) or 0),
+        "traded_value": _kis_float(out.get("acml_tr_pbmn")),               # 원 단위
+        "change":      _kis_float(out.get("prdy_vrss")),
+        "change_pct":  _kis_float(out.get("prdy_ctrt")),
+        "market_cap_eok": cap_eok,                                          # 억원 단위 원본값
+        "market_cap_krw": cap_eok * 1e8 if cap_eok is not None else None,   # 원 단위 환산
+        "w52_high":    _kis_float(out.get("w52_hgpr")),
+        "price_unsettled": kis_price_unsettled(),      # 현재가·고저가 애프터마켓 값일 수 있음
+        "as_of":       datetime.now().isoformat(timespec="seconds"),
+        "source":      "kis",
+    }
+
+
+_INVESTOR_CACHE: dict = {}
+
+
+def kis_investor_history(ticker: str) -> list:
+    """KIS FHKST01010900(주식현재가 투자자) — 최근 30거래일 개인/외국인/기관 순매수(주),
+    최신일 먼저. 한 번 받은 종목은 다시 부르지 않는다."""
+    if ticker in _INVESTOR_CACHE:
+        return _INVESTOR_CACHE[ticker]
+    res = _kis_get(f"{_KIS_QUOTATIONS}/inquire-investor",
+                   {"FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": ticker}, "FHKST01010900")
+    rows = []
+    for r in (res or {}).get("output") or []:
+        dt = str(r.get("stck_bsop_date") or "")
+        foreign = _kis_float(r.get("frgn_ntby_qty"))
+        institution = _kis_float(r.get("orgn_ntby_qty"))
+        # 당일 행은 장중에 수량이 비어 올 수 있다 — 빈 값은 0으로 채우지 않고 버린다
+        if len(dt) != 8 or foreign is None or institution is None:
+            continue
+        rows.append({
+            "date":        dt,
+            "individual":  _kis_float(r.get("prsn_ntby_qty")),
+            "foreign":     foreign,
+            "institution": institution,
+            "unit":        "주",
+            "source":      "kis",
+        })
+    if res is not None:
+        _INVESTOR_CACHE[ticker] = rows
+    return rows
+
+
+def kis_investor_flow(ticker: str, date: Optional[str] = None) -> Optional[dict]:
+    """지정일(YYYYMMDD, 기본 오늘) 개인/외국인/기관 순매수(주). 그날 행이 없으면
+    None — 휴장일에 며칠 전 값을 대신 채우지 않는다."""
+    date = date or _today_str().replace("-", "")
+    for r in kis_investor_history(ticker):
+        if r["date"] == date:
+            return r
+    return None
+
+
+def kis_daily_bars(ticker: str, days: int = 460,
+                   as_of: Optional[datetime] = None,
+                   include_incomplete: bool = False) -> list:
+    """KIS FHKST03010100(기간별시세, 수정주가)로 최근 `days` 캘린더일 일봉, 오름차순.
+
+    적재 어댑터 `KisDailySource`(100행씩 날짜를 뒤로 옮기며 받기, OHLC 검증)를 그대로
+    쓴다. 2026-09-14 이후 봉은 거래량·거래대금이 애프터마켓 포함이고, 최근 거래일 가격은
+    다음 영업일 아침 전까지 애프터마켓 최종가다(그 뒤 정규장 값으로 바뀐다). 그래서
+    봉 기준(bars-1.0) 밖이다. include_incomplete=False면 당일 장중 미완료 봉을 뺀다.
+    """
+    if not _kis_enabled():
+        return []
+    from cvd_obv.ingestion.kis_daily import KisDailySource
+
+    as_of = as_of or datetime.now()
+    res = KisDailySource(client=_kis_client()).fetch_security(
+        ticker, start=(as_of - timedelta(days=days)).date(), end=as_of.date())
+    if res.error_message:
+        print(f"  ⚠️  {ticker}: KIS 일봉 — {res.error_message}", file=sys.stderr)
+    rows = [{
+        "date":   r["trading_date"].isoformat(),
+        "open":   float(r["open"]),
+        "high":   float(r["high"]),
+        "low":    float(r["low"]),
+        "close":  float(r["close"]),
+        "volume": int(r["volume"]),
+        "traded_value": float(r["traded_value"]) if r["traded_value"] is not None else None,
+    } for r in res.rows]
+    if not include_incomplete and rows and not _is_bar_date_complete(rows[-1]["date"], as_of):
+        rows = rows[:-1]
+    return rows
+
+
+#: --market → KIS 거래량순위 시장 코드(0001 거래소, 1001 코스닥). 전체(0000)는 한 번에
+#: 30종목뿐이라 코스닥이 거의 다 채운다 — 시장마다 따로 받아 합친다.
+_KIS_RANK_MARKETS = {"all": ("0001", "1001"), "kospi": ("0001",), "kosdaq": ("1001",)}
+
+
+def kis_volume_surge_pool(market: str = "all") -> list:
+    """KIS FHPST01710000(거래량순위) 거래증가율 순 — 시장마다 최대 30종목.
+
+    FID_BLNG_CLS_CODE=1(거래증가율). `vol_inrt`는 오늘 누적 거래량 ÷ 전일 거래량 × 100
+    (9999.99에서 잘린다) — **20일 평균 대비가 아니다**. FID_TRGT_EXLS_CLS_CODE의
+    7·8·10번째 자리 = ETF·ETN·스팩 제외(2026-11-01 실측: 0000000000이면 ETF·스팩이
+    상위를 채우고, 0000001101이면 사라진다).
+    """
+    out = []
+    for iscd in _KIS_RANK_MARKETS.get(market, _KIS_RANK_MARKETS["all"]):
+        res = _kis_get(f"{_KIS_QUOTATIONS}/volume-rank", {
             "FID_COND_MRKT_DIV_CODE": "J",
             "FID_COND_SCR_DIV_CODE":  "20171",
-            "FID_INPUT_ISCD":         "0000",
-            "FID_DIV_CLS_CODE":       "0",
-            "FID_BLNG_CLS_CODE":      market,
+            "FID_INPUT_ISCD":         iscd,
+            "FID_DIV_CLS_CODE":       "1",            # 1: 보통주
+            "FID_BLNG_CLS_CODE":      "1",            # 1: 거래증가율
             "FID_TRGT_CLS_CODE":      "111111111",
-            "FID_TRGT_EXLS_CLS_CODE": "000000",
-            "FID_INPUT_PRICE_1":      "1000",
-            "FID_INPUT_PRICE_2":      "0",
-            "FID_VOL_CNT":            "0",
+            "FID_TRGT_EXLS_CLS_CODE": "0000001101",   # ETF·ETN·스팩 제외
+            "FID_INPUT_PRICE_1":      "",
+            "FID_INPUT_PRICE_2":      "",
+            "FID_VOL_CNT":            "",
             "FID_INPUT_DATE_1":       "",
-        },
-        tr_id="FHPST01710000"
-    )
-    if not data:
-        return []
-    return data.get("output", [])[:30]
-
-
-def kis_price(ticker: str) -> Optional[dict]:
-    """KIS: 현재가 및 기본 정보 조회."""
-    data = _kis_request(
-        "/uapi/domestic-stock/v1/quotations/inquire-price",
-        {"FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": ticker},
-        tr_id="FHKST01010100"
-    )
-    if not data:
-        return None
-    return data.get("output", {})
-
-
-def kis_investor(ticker: str) -> Optional[dict]:
-    """KIS: 외국인·기관 순매수 조회."""
-    data = _kis_request(
-        "/uapi/domestic-stock/v1/quotations/inquire-investor",
-        {
-            "FID_COND_MRKT_DIV_CODE": "J",
-            "FID_INPUT_ISCD":         ticker,
-            "FID_INPUT_DATE_1":       _today_str().replace("-", ""),
-            "FID_INPUT_DATE_2":       _today_str().replace("-", ""),
-            "FID_PERIOD_DIV_CODE":    "D",
-        },
-        tr_id="FHKST01010900"
-    )
-    if not data:
-        return None
-    items = data.get("output2", [])
-    return items[0] if items else None
+        }, "FHPST01710000")
+        for r in (res or {}).get("output") or []:
+            code = str(r.get("mksc_shrn_iscd") or "").strip()
+            if not code:
+                continue
+            out.append({
+                "code":        code,
+                "name":        str(r.get("hts_kor_isnm") or "").strip(),
+                "price":       _kis_float(r.get("stck_prpr")) or 0.0,
+                "change_pct":  _kis_float(r.get("prdy_ctrt")),
+                "prev_volume": int(_kis_float(r.get("prdy_vol")) or 0),
+                "now_volume":  int(_kis_float(r.get("acml_vol")) or 0),
+                "surge_rt":    _kis_float(r.get("vol_inrt")),   # 전일 대비(%), 20일 평균 아님
+            })
+    out.sort(key=lambda x: -(x["surge_rt"] or 0))
+    return out
 
 
 # ─────────────────────────────────────────────────────────────
@@ -1621,19 +1814,17 @@ def cmd_check_market():
     kiwoom_secret = os.environ.get("KIWOOM_APP_SECRET")
     dart_key     = os.environ.get("DART_API_KEY")
 
-    print(f"  키움 API:    {'✅ 환경변수 설정됨' if kiwoom_key and kiwoom_secret else '❌ 미설정 — .env에 KIWOOM_APP_KEY / KIWOOM_APP_SECRET 설정'}")
-    print(f"  KIS API(레거시): {'✅ 환경변수 설정됨' if kis_key and kis_secret else '❌ 미설정 — .env에 KIS_APP_KEY / KIS_APP_SECRET 설정'}")
+    print(f"  KIS API:     {'✅ 환경변수 설정됨' if kis_key and kis_secret else '❌ 미설정 — .env에 KIS_APP_KEY / KIS_APP_SECRET 설정'}")
+    print(f"  키움 API:    {'설정됨' if kiwoom_key and kiwoom_secret else '미설정'} (이 도구의 명령은 쓰지 않음)")
     print(f"  DART API:    {'✅ 환경변수 설정됨' if dart_key else '❌ 미설정 — .env에 DART_API_KEY 설정'}")
     print(f"  Yahoo F.:    폴백 전용, 키 불필요 (실제 가용성은 확인 안 함 — check-broker는 이 값을 검사하지 않음)")
 
     print(f"\n  [데이터 우선순위]")
-    if kiwoom_key and kiwoom_secret:
-        print(f"  1순위: 키움 REST API (현재가·일봉·수급·순위) → 2순위: Yahoo Finance (폴백)")
-    elif kis_key and kis_secret:
-        print(f"  1순위: Yahoo Finance (폴백) — KIS API는 레거시 gap-up 경로에서만 사용됨")
-        print(f"  ⚠️  키움 미설정 — .env에 KIWOOM_APP_KEY / KIWOOM_APP_SECRET 설정 권장")
+    if kis_key and kis_secret:
+        print(f"  일봉: 로컬 정규장 일봉 → KIS 일봉(기준 밖) → Yahoo Finance(기준 밖)")
+        print(f"  현재가·수급·거래량순위: KIS REST API")
     else:
-        print(f"  1순위: Yahoo Finance (폴백) — 키움 API 설정 시 실시간·수급·순위 조회로 전환")
+        print(f"  일봉: 로컬 정규장 일봉 → Yahoo Finance(기준 밖) — 현재가·수급·순위는 KIS 설정 필요")
 
 
 def cmd_check_broker():
@@ -1642,40 +1833,23 @@ def cmd_check_broker():
     print("증권사 API 연결 테스트")
     print("=" * 60)
 
-    # 키움 API 테스트 (1순위)
-    kiwoom_key    = os.environ.get("KIWOOM_APP_KEY")
-    kiwoom_secret = os.environ.get("KIWOOM_APP_SECRET")
-    if kiwoom_key and kiwoom_secret:
-        print("\n  [키움 API 테스트] 인증 + 삼성전자(005930) 현재가 조회...")
-        token = _kiwoom_get_token()
-        if not token:
-            print(f"  ❌ 키움 인증 실패: appkey/secretkey 오류 가능성")
-            print(f"     키움 개발자 센터: https://openapi.kiwoom.com")
+    if _kis_enabled():
+        print("\n  [KIS API 테스트] 인증 + 삼성전자(005930) 현재가 조회...")
+        if not _kis_get_token(os.environ["KIS_APP_KEY"], os.environ["KIS_APP_SECRET"]):
+            print(f"  ❌ KIS 인증 실패: appkey/appsecret 오류 가능성")
+            print(f"     KIS 개발자 센터: https://apiportal.koreainvestment.com")
         else:
-            q = kiwoom_quote("005930")
+            q = kis_quote("005930")
             if q and q.get("price"):
-                print(f"  ✅ 키움 연결 성공: 삼성전자 현재가 {q['price']:,.0f}원 (as_of {q['as_of']})")
+                print(f"  ✅ KIS 연결 성공: 삼성전자 현재가 {q['price']:,.0f}원 (as_of {q['as_of']})")
             else:
-                print(f"  ❌ 키움 인증은 성공했으나 시세 조회 실패 (ka10001)")
+                print(f"  ❌ KIS 인증은 성공했으나 시세 조회 실패 (FHKST01010100)")
     else:
-        print("\n  [키움 API] 미설정")
-        print("  키움 API 키 발급: https://openapi.kiwoom.com")
+        print("\n  [KIS API] 미설정")
+        print("  KIS API 키 발급: https://apiportal.koreainvestment.com")
         print("  .env 파일에 아래 항목을 설정하세요 (.env.example 참고):")
-        print("    KIWOOM_APP_KEY=앱키")
-        print("    KIWOOM_APP_SECRET=앱시크릿")
-
-    # KIS API 테스트 (레거시 — gap-up에서만 사용)
-    kis_key    = os.environ.get("KIS_APP_KEY")
-    kis_secret = os.environ.get("KIS_APP_SECRET")
-    if kis_key and kis_secret:
-        print("\n  [KIS API 테스트 — 레거시] 삼성전자(005930) 현재가 조회...")
-        result = kis_price("005930")
-        if result and result.get("stck_prpr"):
-            print(f"  ✅ KIS 연결 성공: 삼성전자 현재가 {result['stck_prpr']}원")
-        else:
-            print(f"  ❌ KIS 연결 실패: 토큰 발급 오류 또는 키 오류")
-    else:
-        print("\n  [KIS API — 레거시] 미설정 (gap-up 실시간 대체 경로에서만 필요, 필수 아님)")
+        print("    KIS_APP_KEY=앱키")
+        print("    KIS_APP_SECRET=앱시크릿")
 
     print()
 
@@ -1735,7 +1909,7 @@ def cmd_indicators(ticker: str):
     d = fetch_ohlcv(ticker)
     if not d:
         print(f"\n  ❌ 데이터 수집 실패 ({ticker})")
-        print(f"  키움 미설정/실패, Yahoo Finance 한국주 코드({ticker}.KS)도 실패")
+        print(f"  로컬 일봉 없음, KIS 미설정/실패, Yahoo Finance 한국주 코드({ticker}.KS)도 실패")
         return
 
     closes  = d["closes"]
@@ -1745,19 +1919,22 @@ def cmd_indicators(ticker: str):
     volumes = d["volumes"]
     last    = closes[-1]  # 지표 계산 기준 — 완료 봉의 마지막 종가
 
-    # 화면에 보여줄 "현재가"는 가능하면 실시간 시세(키움 quote)를 쓴다.
+    # 화면에 보여줄 "현재가"는 가능하면 실시간 시세(KIS quote)를 쓴다.
     # closes[-1]은 완료 봉만 남긴 배열이라 장중에는 전일 종가가 되므로,
     # 두 값이 다를 수 있음을 명시적으로 구분해서 보여준다.
-    live_price = None
+    live_price, live_unsettled = None, False
     print(f"  일봉 출처: {SOURCE_NOTE.get(d.get('source'), d.get('source'))}")
-    if d.get("source") in ("kiwoom", "local_standard") and             os.environ.get("KIWOOM_APP_KEY") and os.environ.get("KIWOOM_APP_SECRET"):
-        q = kiwoom_quote(ticker)
+    if d.get("source") in ("kis", "local_standard") and _kis_enabled():
+        q = kis_quote(ticker, name=d.get("name"))
         if q and q.get("price"):
-            live_price = q["price"]
+            live_price, live_unsettled = q["price"], q.get("price_unsettled", False)
 
     print(f"\n  종목:    {d['name']} ({ticker})")
     if live_price is not None and abs(live_price - last) > 1e-9:
-        print(f"  실시간가: {live_price:,.0f}원  (지표 기준 종가: {last:,.0f}원 — 당일 미완료 봉 제외)")
+        if live_unsettled:
+            print(f"  최근 체결가: {live_price:,.0f}원  (애프터마켓 포함 — 지표 기준 정규장 종가: {last:,.0f}원)")
+        else:
+            print(f"  실시간가: {live_price:,.0f}원  (지표 기준 종가: {last:,.0f}원 — 당일 미완료 봉 제외)")
     else:
         print(f"  현재가:  {last:,.0f}원")
     print(f"  데이터:  {d['rows'][0]['date']} ~ {d['rows'][-1]['date']} ({len(d['rows'])}일, 출처: {d.get('source', '?')})")
@@ -1939,154 +2116,163 @@ def cmd_indicators(ticker: str):
 def cmd_volume_surge(ratio: float = 3.0, min_cap: float = 500, market: str = "all"):
     """거래량 급증 종목 스캔 (가이드 7.1: 직전 20일 평균 대비 배수).
 
-    키움 ka10023(거래량급증요청)을 "후보 풀"로 먼저 받아온 뒤(전일대비
-    기준 상위 종목이라 20일평균 기준 급증 종목을 놓칠 가능성은 있음 —
-    coverage=rank_subset), 후보별로 일봉을 다시 조회해 가이드 7.1의
-    정확한 공식(직전 20완료봉 평균 대비 오늘 거래량)으로 재계산한다.
+    KIS 거래량순위(FHPST01710000, 거래증가율 = 전일 대비)를 "후보 풀"로 먼저 받아온 뒤
+    (시장마다 30종목 — 20일평균 기준 급증 종목을 놓칠 가능성은 있음, coverage=rank_subset),
+    후보별로 일봉을 다시 조회해 가이드 7.1의 정확한 공식(직전 20완료봉 평균 대비 오늘
+    거래량)으로 재계산한다.
     """
     print("=" * 60)
     print(f"거래량 급증 종목 스캔 (직전 20일 평균 대비, 시장: {market})")
     print("=" * 60)
 
-    kiwoom_key = os.environ.get("KIWOOM_APP_KEY")
-    if kiwoom_key and os.environ.get("KIWOOM_APP_SECRET"):
-        pool_budget = 60
-        pool = kiwoom_volume_surge(market=market)[:pool_budget]
-        print(f"\n  ✅ 키움 ka10023 후보 풀 {len(pool)}개(전일대비 급증률 상위, coverage=rank_subset)")
-        print(f"     → 종목별 일봉 재조회로 20일평균 대비 배수를 정확히 계산합니다...")
-
-        as_of = datetime.now()
-        candidates, intraday_count, insufficient_count = [], 0, 0
-        for it in pool:
-            # 봉 기준 bars-1.0: 20일 평균은 로컬 정규장 일봉, 당일은 장중 누적(정규장).
-            # API 일봉만 쓰면 평균에 애프터마켓 거래량이 섞여 배수가 작게 나온다.
-            bars, status = standard_daily_bars(it["code"], days=40, as_of=as_of,
-                                               include_incomplete=True)
-            if status == "EMPTY":
-                bars = kiwoom_daily_bars(it["code"], days=40, as_of=as_of,
-                                         include_incomplete=True)
-            if len(bars) < 21:
-                insufficient_count += 1
-                continue
-            volumes = [b["volume"] for b in bars]
-            r = calc_volume_surge_ratio(volumes)
-            if r is None:
-                insufficient_count += 1
-                continue
-            is_intraday = not _is_bar_date_complete(bars[-1]["date"], as_of)
-            if is_intraday:
-                intraday_count += 1
-            if r >= ratio:
-                candidates.append({**it, "ratio": r, "intraday": is_intraday})
-            time.sleep(0.15)
-
-        print(f"  (데이터 부족으로 판정 불가 {insufficient_count}개, 장중 당일 거래량 기준 {intraday_count}개)")
-
-        if min_cap and min_cap > 0:
-            capped = []
-            for it in candidates:
-                q = kiwoom_quote(it["code"])
-                cap_eok = q.get("market_cap_eok") if q else None
-                if cap_eok is not None and cap_eok >= min_cap:
-                    it["market_cap_eok"] = cap_eok
-                    capped.append(it)
-                time.sleep(0.15)
-            candidates = capped
-
-        candidates.sort(key=lambda x: -x["ratio"])
-
-        if not candidates:
-            print("\n  조건을 충족하는 종목이 없습니다.")
-            return
-
-        print(f"\n  {'종목명':<15} {'코드':<8} {'현재가':>8} {'등락률':>7} {'20일평균배수':>10} {'시총(억)':>9}")
-        print(f"  {'─'*15} {'─'*8} {'─'*8} {'─'*7} {'─'*10} {'─'*9}")
-        for it in candidates[:20]:
-            cap_str = f"{it['market_cap_eok']:,.0f}" if it.get("market_cap_eok") is not None else "-"
-            chg = it["change_pct"]
-            chg_str = f"{chg:+.1f}%" if chg is not None else "-"
-            flag = "🕐" if it.get("intraday") else "  "
-            print(f"  {it['name'][:15]:<15} {it['code']:<8} {it['price']:>8,.0f}원 {chg_str:>7} {it['ratio']:>9.1f}배{flag} {cap_str:>9}")
-        print(f"\n  🕐 = 장중 당일 누적 거래량 기준(완료 봉 아님, 최종치와 다를 수 있음)")
-        return
-
-    kis_key = os.environ.get("KIS_APP_KEY")
-    if kis_key and os.environ.get("KIS_APP_SECRET"):
-        print("\n  ⚠️  키움 미설정 — KIS API(레거시)로 대체")
-        items = kis_volume_rank()
-        if items:
-            print(f"\n  {'종목명':<15} {'코드':<8} {'현재가':>8} {'등락률':>7} {'거래량':>10}")
-            print(f"  {'─'*15} {'─'*8} {'─'*8} {'─'*7} {'─'*10}")
-            for item in items[:20]:
-                name  = item.get("hts_kor_isnm", "")[:15]
-                code  = item.get("mksc_shrn_iscd", "")
-                price = item.get("stck_prpr", "")
-                chg   = item.get("prdy_ctrt", "")
-                vol   = item.get("acml_vol", "")
-                print(f"  {name:<15} {code:<8} {price:>8}원 {chg:>6}% {_fmt(vol):>10}주")
-        else:
-            print("  ❌ KIS API 조회 실패")
-    else:
-        print("\n  ⚠️  키움/KIS 모두 미연결")
-        print("  .env에 KIWOOM_APP_KEY / KIWOOM_APP_SECRET 설정 권장 (.env.example 참고)")
+    if not _kis_enabled():
+        print("\n  ⚠️  KIS 미연결")
+        print("  .env에 KIS_APP_KEY / KIS_APP_SECRET 설정 (.env.example 참고)")
         print()
         print("  대안 — WebSearch로 전일 거래량 급증 종목 확인:")
         print(f'  검색어: "오늘 거래량 급증 종목 {_today_str()}"')
         print(f'  검색어: "전일 특이 거래량 코스피 코스닥 {_today_str()}"')
+        return
+
+    pool = kis_volume_surge_pool(market=market)
+    print(f"\n  ✅ KIS 거래량순위 후보 풀 {len(pool)}개(전일 대비 거래증가율 상위, coverage=rank_subset)")
+    print(f"     → 종목별 일봉 재조회로 20일평균 대비 배수를 정확히 계산합니다...")
+
+    as_of = datetime.now()
+    # 후보 대부분이 지수 밖 종목이다 — 캐시를 한 번에 만든다(prime_standard_cache 설명)
+    prime_standard_cache([it["code"] for it in pool], as_of)
+    candidates, intraday_count, insufficient_count, api_count = [], 0, 0, 0
+    for it in pool:
+        # 봉 기준 bars-1.0: 20일 평균은 로컬 정규장 일봉, 당일은 장중 누적(정규장).
+        # API 일봉만 쓰면 평균에 애프터마켓 거래량이 섞여 배수가 작게 나온다.
+        bars, status = standard_daily_bars(it["code"], days=40, as_of=as_of,
+                                           include_incomplete=True)
+        if status != "OK":
+            # 로컬에 없거나(지수 밖) 끊긴 종목(편출 등) — 끊긴 로컬 봉으로 배수를 내면
+            # 몇 달 전 거래량과 비교하게 된다. KIS 일봉(기준 밖)으로 대신한다.
+            bars = kis_daily_bars(it["code"], days=40, as_of=as_of, include_incomplete=True)
+            api_count += 1
+        if len(bars) < 21:
+            insufficient_count += 1
+            continue
+        volumes = [b["volume"] for b in bars]
+        r = calc_volume_surge_ratio(volumes)
+        if r is None:
+            insufficient_count += 1
+            continue
+        is_intraday = not _is_bar_date_complete(bars[-1]["date"], as_of)
+        if is_intraday:
+            intraday_count += 1
+        if r >= ratio:
+            candidates.append({**it, "ratio": r, "intraday": is_intraday,
+                               "bar_date": bars[-1]["date"]})
+
+    print(f"  (데이터 부족으로 판정 불가 {insufficient_count}개, 장중 당일 거래량 기준 {intraday_count}개, "
+          f"KIS 일봉(기준 밖)으로 계산 {api_count}개)")
+
+    if min_cap and min_cap > 0:
+        capped = []
+        for it in candidates:
+            q = kis_quote(it["code"], name=it["name"])
+            cap_eok = q.get("market_cap_eok") if q else None
+            if cap_eok is not None and cap_eok >= min_cap:
+                it["market_cap_eok"] = cap_eok
+                capped.append(it)
+        candidates = capped
+
+    candidates.sort(key=lambda x: -x["ratio"])
+
+    if not candidates:
+        print("\n  조건을 충족하는 종목이 없습니다.")
+        return
+
+    print(f"\n  {'종목명':<15} {'코드':<8} {'현재가':>8} {'등락률':>7} {'20일평균배수':>10} {'시총(억)':>9} {'기준일':>10}")
+    print(f"  {'─'*15} {'─'*8} {'─'*8} {'─'*7} {'─'*10} {'─'*9} {'─'*10}")
+    for it in candidates[:20]:
+        cap_str = f"{it['market_cap_eok']:,.0f}" if it.get("market_cap_eok") is not None else "-"
+        chg = it["change_pct"]
+        chg_str = f"{chg:+.1f}%" if chg is not None else "-"
+        flag = "🕐" if it.get("intraday") else "  "
+        print(f"  {it['name'][:15]:<15} {it['code']:<8} {it['price']:>8,.0f}원 {chg_str:>7} "
+              f"{it['ratio']:>9.1f}배{flag} {cap_str:>9} {it['bar_date']:>10}")
+    print(f"\n  🕐 = 장중 당일 누적 거래량 기준(완료 봉 아님, 최종치와 다를 수 있음)")
 
 
-_NEW_HIGH_PERIOD_MAP = {  # --period → 키움 dt (5/10/20/60/250만 지원)
-    "5d": 5, "10d": 10, "20d": 20, "60d": 60, "120d": 60, "250d": 250, "52w": 250,
+_NEW_HIGH_PERIOD_MAP = {  # --period → 직전 거래일 수
+    "5d": 5, "10d": 10, "20d": 20, "60d": 60, "120d": 120, "250d": 250, "52w": 250,
 }
 
 
 def cmd_new_high(period: str = "52w", market: str = "all"):
-    """신고가 돌파 종목 스캔."""
+    """신고가 돌파 종목 스캔 (가이드 7.2: 종가 > 직전 N거래일 최고가, 오늘 고가 제외).
+
+    KIS에는 종가 기준 N일 신고가 순위 TR이 없다(FHPST01870000 '신고/신저근접'은 근접률
+    순위이고, 2026-11-01 실측에서 거래량 0인 종목이 상위를 채웠다). 그래서 로컬 기준 일봉
+    (bars-1.0)으로 코스피200+코스닥150 유니버스를 직접 판정한다 —
+    coverage=index_kospi200_kosdaq150(전체 시장 아님). 완료 봉만 쓴다.
+    """
     print("=" * 60)
     print(f"신고가 돌파 종목 스캔 ({period}, 시장: {market})")
     print("=" * 60)
 
-    kiwoom_key = os.environ.get("KIWOOM_APP_KEY")
-    if kiwoom_key and os.environ.get("KIWOOM_APP_SECRET"):
-        days = _NEW_HIGH_PERIOD_MAP.get(period)
-        if days is None:
-            print(f"\n  ⚠️  지원하지 않는 --period '{period}' — 5d/10d/20d/60d/120d/250d/52w 중 선택")
-            return
-        if period == "120d":
-            print(f"  ⚠️  키움 API는 dt=120을 지원하지 않아(5/10/20/60/250만 가능) 60일로 대체합니다.")
-        print(f"\n  ✅ 키움 ka10016(신고저가요청) — 종가 기준 {days}거래일 신고가")
-        items = kiwoom_new_high(market=market, period_days=days, by_close=True)
-        if not items:
-            print("\n  조건을 충족하는 종목이 없습니다.")
-            return
-        print(f"\n  {'종목명':<15} {'코드':<8} {'현재가':>8} {'등락률':>7} {'거래량':>10}")
-        print(f"  {'─'*15} {'─'*8} {'─'*8} {'─'*7} {'─'*10}")
-        for it in items[:20]:
-            chg = it["change_pct"]
-            chg_str = f"{chg:+.1f}%" if chg is not None else "-"
-            print(f"  {it['name'][:15]:<15} {it['code']:<8} {it['price']:>8,.0f}원 {chg_str:>7} {_fmt(it['volume']):>10}주")
+    lookback = _NEW_HIGH_PERIOD_MAP.get(period)
+    if lookback is None:
+        print(f"\n  ⚠️  지원하지 않는 --period '{period}' — {'/'.join(_NEW_HIGH_PERIOD_MAP)} 중 선택")
+        return
+    universe = _load_universe(market)
+    if not universe:
+        print("\n  ❌ 유니버스 명단을 만들지 못했습니다 — python3 tools/update_index.py 확인")
         return
 
-    print()
-    print("  신고가 종목은 WebSearch 또는 (레거시) KIS API로 확인합니다:")
-    print()
-    print(f'  WebSearch: "오늘 52주 신고가 코스피 코스닥 {_today_str()}"')
-    print(f'  WebSearch: "today 52-week high KOSPI KOSDAQ {_today_str()}"')
-    print()
+    as_of = datetime.now()
+    print(f"\n  ✅ 로컬 기준 일봉 — 종가 기준 {lookback}거래일 신고가, "
+          f"coverage=index_kospi200_kosdaq150 ({len(universe)}종목, 전체 시장 아님)")
+    if prime_standard_cache([s["code"] for s in universe], as_of) is None:
+        print("\n  ❌ 로컬 일봉을 읽지 못했습니다")
+        return
 
-    kis_key = os.environ.get("KIS_APP_KEY")
-    if kis_key and os.environ.get("KIS_APP_SECRET"):
-        print("  ✅ KIS API(레거시) 연결됨 — 등락률 상위 종목으로 대체 조회")
-        items = kis_volume_rank()
-        if items:
-            high_candidates = [i for i in items
-                               if float(i.get("prdy_ctrt", "0")) > 5.0]
-            if high_candidates:
-                print(f"  등락률 +5% 이상 종목 (신고가 후보):")
-                for item in high_candidates[:10]:
-                    print(f"  {item.get('hts_kor_isnm',''):<15} "
-                          f"{item.get('stck_prpr','')}원 "
-                          f"+{item.get('prdy_ctrt','')}%")
+    # 캐시 창이 400 캘린더일이라 250거래일 + 1봉까지 덮는다
+    window_days = 400
+    matched, undecided, last_dates = [], 0, {}
+    for s in universe:
+        bars, _status = standard_daily_bars(s["code"], days=window_days, as_of=as_of)
+        closes = [b["close"] for b in bars]
+        highs = [b["high"] for b in bars]
+        hit = calc_new_high_breakout(closes, highs, lookback)
+        if hit is None:
+            undecided += 1
+            continue
+        last_dates[bars[-1]["date"]] = last_dates.get(bars[-1]["date"], 0) + 1
+        if hit:
+            vols = [b["volume"] for b in bars]
+            matched.append({
+                "code": s["code"], "name": s["name"], "close": closes[-1],
+                "change_pct": (closes[-1] / closes[-2] - 1) * 100 if len(closes) >= 2 else None,
+                "prior_high": max(highs[-(lookback + 1):-1]),
+                "vol_ratio": calc_volume_surge_ratio(vols),
+                "date": bars[-1]["date"],
+            })
+
+    basis = ", ".join(f"{d} {n}종목" for d, n in sorted(last_dates.items(), reverse=True)[:3])
+    print(f"  판정 기준일: {basis or '-'} / 판정 불가(봉 부족) {undecided}종목")
+    if len(last_dates) > 1:
+        print(f"  ⚠️  종목마다 마지막 봉 날짜가 다릅니다 — 적재가 밀린 종목이 있을 수 있음")
+    if not matched:
+        print("\n  조건을 충족하는 종목이 없습니다.")
+        return
+
+    matched.sort(key=lambda x: -(x["change_pct"] or 0))
+    print(f"\n  {'종목명':<15} {'코드':<8} {'종가':>9} {'등락률':>7} {'직전최고가':>10} {'거래량배수':>8}")
+    print(f"  {'─'*15} {'─'*8} {'─'*9} {'─'*7} {'─'*10} {'─'*8}")
+    for it in matched[:40]:
+        chg = it["change_pct"]
+        chg_str = f"{chg:+.1f}%" if chg is not None else "-"
+        vr = f"{it['vol_ratio']:.1f}배" if it["vol_ratio"] is not None else "-"
+        print(f"  {it['name'][:15]:<15} {it['code']:<8} {it['close']:>8,.0f}원 {chg_str:>7} "
+              f"{it['prior_high']:>9,.0f}원 {vr:>8}")
+    if len(matched) > 40:
+        print(f"  … 외 {len(matched) - 40}종목")
+    print(f"\n  거래량배수 = 직전 20봉 평균 대비(참고용 — 거래량 동반은 판정 조건이 아님)")
 
 
 def _load_universe(market: str = "all") -> list:
@@ -2112,10 +2298,8 @@ def _load_universe(market: str = "all") -> list:
 def cmd_gap_up(min_gap: float = 3.0, market: str = "all"):
     """갭 상승 종목 스캔 (가이드 7.3: gap_pct = 시가/전일종가 - 1).
 
-    시장 전체를 "시가-전일종가 갭" 기준으로 랭킹하는 공식 키움 TR은
-    2026-09-14 첨부 스펙에서 확인되지 않았다(ka10028은 시가 '수준'으로
-    정렬할 뿐 갭 비율로 정렬하지 않음). 대신 data/index_stocks.json
-    (코스피200+코스닥150) 유니버스를 종목별로 quote(ka10001) 조회해
+    시장 전체를 "시가-전일종가 갭" 기준으로 랭킹하는 KIS TR은 없다. 대신
+    코스피200+코스닥150 유니버스를 종목별로 KIS 현재가(FHKST01010100) 조회해
     직접 계산한다 — coverage=index_kospi200_kosdaq150(전체 시장 아님).
     """
     print("=" * 60)
@@ -2127,22 +2311,21 @@ def cmd_gap_up(min_gap: float = 3.0, market: str = "all"):
         print("\n  ❌ data/index_stocks.json이 없습니다.")
         print("  먼저 실행: python3 tools/update_index.py")
         return
-    if not (os.environ.get("KIWOOM_APP_KEY") and os.environ.get("KIWOOM_APP_SECRET")):
-        print("\n  ⚠️  키움 미설정 — 종목별 시가/전일종가 조회에 키움 quote가 필요합니다.")
-        print("  .env에 KIWOOM_APP_KEY / KIWOOM_APP_SECRET 설정 (.env.example 참고)")
+    if not _kis_enabled():
+        print("\n  ⚠️  KIS 미설정 — 종목별 시가/전일종가 조회에 KIS 현재가가 필요합니다.")
+        print("  .env에 KIS_APP_KEY / KIS_APP_SECRET 설정 (.env.example 참고)")
         print()
         print(f'  대안 — WebSearch: "오늘 갭상승 종목 {_today_str()} 코스피 코스닥"')
         return
 
     print(f"\n  ✅ coverage=index_kospi200_kosdaq150 ({len(universe)}종목) — 전체 시장 아님")
-    print(f"  종목별 키움 quote(ka10001) 순차 조회 중... (약 {len(universe)*0.25:.0f}초 예상)")
+    print(f"  종목별 KIS 현재가(FHKST01010100) 순차 조회 중... (약 {len(universe)*0.15:.0f}초 예상)")
 
     matched, failed = [], 0
     for i, stock in enumerate(universe):
-        q = kiwoom_quote(stock["code"])
+        q = kis_quote(stock["code"], name=stock["name"])   # 호출 간격은 KisClient가 지킨다
         if not q or not q.get("open") or not q.get("prev_close"):
             failed += 1
-            time.sleep(0.2)
             continue
         gap = calc_gap_pct(q["open"], q["prev_close"])
         if gap is not None and gap >= min_gap:
@@ -2151,7 +2334,6 @@ def cmd_gap_up(min_gap: float = 3.0, market: str = "all"):
                 "price": q["price"], "open": q["open"], "prev_close": q["prev_close"],
                 "gap_pct": gap, "change_pct": q.get("change_pct"),
             })
-        time.sleep(0.2)  # 초당 요청 제한 준수
 
     matched.sort(key=lambda x: -x["gap_pct"])
 
@@ -2200,6 +2382,7 @@ def cmd_oversold(rsi_max: float = 30, days: int = 5):
         print("  국내(6자리 코드) 종목이 없습니다 — watchlist가 해외 종목 위주일 수 있습니다.")
         return
 
+    prime_standard_cache(tickers)
     oversold, failed = [], []
     for ticker in tickers:  # 전체 처리 — 30개 제한 없음
         d = fetch_ohlcv(ticker)
@@ -2251,12 +2434,12 @@ def score_stock(ticker: str) -> dict:
     거래대금. 관리종목/ETF 여부를 확인할 공식 필드는 아직 찾지 못해
     필터링하지 않고 "미검증"으로만 표시한다(추측 금지 원칙).
     """
-    if not (os.environ.get("KIWOOM_APP_KEY") and os.environ.get("KIWOOM_APP_SECRET")):
-        return {"status": "ERROR", "reason": "키움 API 미설정"}
+    if not _kis_enabled():
+        return {"status": "ERROR", "reason": "KIS API 미설정"}
 
-    quote = kiwoom_quote(ticker)
+    quote = kis_quote(ticker)
     if not quote or not quote.get("price"):
-        return {"status": "ERROR", "reason": "시세 조회 실패(ka10001)"}
+        return {"status": "ERROR", "reason": "시세 조회 실패(FHKST01010100)"}
 
     d = fetch_ohlcv(ticker)
     if not d or len(d["closes"]) < 21:
@@ -2272,29 +2455,38 @@ def score_stock(ticker: str) -> dict:
         prefilter_reasons.append("시가총액 미확인")
     elif quote["market_cap_krw"] < 100_000_000_000:
         prefilter_reasons.append(f"시가총액 {quote['market_cap_krw']/1e8:,.0f}억원 < 1,000억원")
-    turnover_est = quote["price"] * quote["volume"]  # 실제 거래대금 필드 미확인 — 추정치
-    if turnover_est < 5_000_000_000:
-        prefilter_reasons.append(f"추정 거래대금 {turnover_est/1e8:,.0f}억원 < 50억원")
+    # KIS 현재가의 누적 거래대금(acml_tr_pbmn)이 있으면 그 값, 없으면 가격×거래량 추정
+    turnover = quote.get("traded_value")
+    turnover_is_estimate = turnover is None
+    if turnover_is_estimate:
+        turnover = quote["price"] * quote["volume"]
+    if turnover < 5_000_000_000:
+        label = "추정 거래대금" if turnover_is_estimate else "거래대금"
+        prefilter_reasons.append(f"{label} {turnover/1e8:,.0f}억원 < 50억원")
 
-    # 외국인/기관 5일 합 + 당일 — 최근 4완료거래일 + 오늘(장중이면 당일 집계치)
-    trading_dates = [r["date"] for r in d["rows"][-4:]]
-    today_str = datetime.now().strftime("%Y-%m-%d")
-    dates_for_sum = trading_dates + [today_str] if (not trading_dates or trading_dates[-1] != today_str) else trading_dates
+    # 외국인/기관 5일 합 + 당일 — 최근 4완료거래일 + 오늘(장중이면 당일 집계치).
+    # 주말에는 "오늘"이 거래일이 아니므로 최근 5완료거래일을 쓴다.
+    now = datetime.now()
+    today_str = now.strftime("%Y-%m-%d")
+    if now.weekday() >= 5:
+        dates_for_sum = [r["date"] for r in d["rows"][-5:]]
+    else:
+        trading_dates = [r["date"] for r in d["rows"][-4:]]
+        dates_for_sum = trading_dates + [today_str] if (not trading_dates or trading_dates[-1] != today_str) else trading_dates
 
     foreign_sum = institution_sum = 0.0
     foreign_today = institution_today = None
     all_days_ok = True
     for dt_str in dates_for_sum:
-        inv = kiwoom_investor_flow(ticker, date=dt_str.replace("-", ""))
+        inv = kis_investor_flow(ticker, date=dt_str.replace("-", ""))
         if not inv:
             all_days_ok = False
         else:
             foreign_sum += inv["foreign"] or 0.0
             institution_sum += inv["institution"] or 0.0
-            if dt_str == today_str:
+            if dt_str == dates_for_sum[-1]:     # 평일 = 오늘, 주말 = 마지막 거래일
                 foreign_today = inv["foreign"]
                 institution_today = inv["institution"]
-        time.sleep(0.15)
 
     foreign_5d = foreign_sum if all_days_ok else None
     institution_5d = institution_sum if all_days_ok else None
@@ -2302,7 +2494,7 @@ def score_stock(ticker: str) -> dict:
     areas = [
         score_trend(closes),
         score_momentum(closes, highs, lows),
-        score_volume_liquidity(volumes, turnover_est, turnover_is_estimate=True),
+        score_volume_liquidity(volumes, turnover, turnover_is_estimate=turnover_is_estimate),
         score_foreign_institution(foreign_5d, institution_5d, foreign_today, institution_today),
         score_pattern_breakout(closes, highs, opens, lows),
         score_risk(closes, highs, lows),
@@ -2338,7 +2530,7 @@ def cmd_score(ticker: str) -> bool:
     print(f"\n  종목: {result['name']} ({ticker})  as_of {result['as_of']}")
 
     if result["prefilter_passed"]:
-        print(f"  1차 필터: ✅ 통과 (가격/시총/추정거래대금 확인됨 — 관리종목·ETF 여부는 미검증)")
+        print(f"  1차 필터: ✅ 통과 (가격/시총/거래대금 확인됨 — 관리종목·ETF 여부는 미검증)")
     else:
         print(f"  1차 필터: ❌ 미통과 — {'; '.join(result['prefilter_reasons'])}")
         print(f"            (아래 점수는 참고용 — 필터 통과 종목과 동일 기준으로 비교하지 말 것)")
@@ -2369,75 +2561,63 @@ def cmd_score(ticker: str) -> bool:
 
 
 def cmd_quote(*tickers) -> bool:
-    """키움 API로 현재가·수급 조회 (kis-realtime을 대체).
+    """KIS API로 현재가·수급 조회.
 
-    종료 코드: 키움 미설정이거나 요청한 종목 중 하나라도 시세 조회에
+    종료 코드: KIS 미설정이거나 요청한 종목 중 하나라도 시세 조회에
     실패하면 False(exit code 1) — 여러 종목을 한 번에 조회할 때 일부만
     실패해도 전체 호출이 조용히 "성공"으로 보이지 않게 한다.
     """
-    kiwoom_key = os.environ.get("KIWOOM_APP_KEY")
-    if not kiwoom_key or not os.environ.get("KIWOOM_APP_SECRET"):
-        print("❌ 키움 API 미연결")
+    if not _kis_enabled():
+        print("❌ KIS API 미연결")
         print("   .env 파일에 설정 (.env.example 참고):")
-        print("     KIWOOM_APP_KEY=앱키")
-        print("     KIWOOM_APP_SECRET=앱시크릿")
-        print("   발급: https://openapi.kiwoom.com")
+        print("     KIS_APP_KEY=앱키")
+        print("     KIS_APP_SECRET=앱시크릿")
+        print("   발급: https://apiportal.koreainvestment.com")
         return False
 
     all_ok = True
     for ticker in tickers:
-        print(f"\n  [{ticker}] 현재가 (키움 ka10001)")
-        q = kiwoom_quote(ticker)
+        print(f"\n  [{ticker}] 현재가 (KIS FHKST01010100)")
+        q = kis_quote(ticker)
         if q:
             chg_str = f"{q['change_pct']:+.2f}%" if q['change_pct'] is not None else "-"
             print(f"  종목명:  {q['name']}")
             print(f"  현재가:  {q['price']:,.0f}원 ({chg_str})")
             print(f"  시가/고가/저가: {q['open']:,.0f} / {q['high']:,.0f} / {q['low']:,.0f}원")
+            if q.get("price_unsettled"):
+                print(f"  ⚠️  16:00~다음 평일 09:00 — 현재가·고가·저가·등락률은 애프터마켓 값일 수 있음"
+                      f"(정규장 종가는 indicators의 지표 기준 종가)")
             print(f"  전일종가: {q['prev_close']:,.0f}원")
             print(f"  거래량:  {_fmt(q['volume'])}주")
+            if q.get("traded_value") is not None:
+                print(f"  거래대금: {q['traded_value']/1e8:,.0f}억원")
             if q.get("market_cap_eok") is not None:
                 print(f"  시가총액: {q['market_cap_eok']:,.0f}억원")
         else:
             print(f"  ❌ 조회 실패")
             all_ok = False
 
-        inv = kiwoom_investor_flow(ticker)
+        # 오늘 행이 없으면(휴장일·장중 집계 전) 가장 최근 거래일 행을 날짜와 함께 보여 준다
+        inv = kis_investor_flow(ticker)
+        if not inv:
+            history = kis_investor_history(ticker)
+            inv = history[0] if history else None
         if inv:
             print(f"  [수급 — {inv['date']}, 단위: {inv['unit']}]")
             print(f"  개인:    {_fmt(inv['individual'])}")
             print(f"  외국인:  {_fmt(inv['foreign'])}")
             print(f"  기관:    {_fmt(inv['institution'])}")
         else:
-            # 수급 데이터 결측은 휴장일/장 시작 전 등 정상 상황일 수 있어
-            # 종료 코드에는 반영하지 않는다(시세 조회 실패와는 구분).
-            print(f"  [수급] 당일 데이터 없음 (휴장일이거나 장 시작 전일 수 있음)")
+            # 수급 데이터 결측은 종료 코드에는 반영하지 않는다(시세 조회 실패와는 구분).
+            print(f"  [수급] 데이터 없음")
 
     return all_ok
 
 
-def cmd_kis_realtime(*tickers):
-    """(레거시) KIS API로 실시간 데이터 조회 — quote 명령으로 대체됨."""
-    print("⚠️  kis-realtime은 레거시 명령입니다. 대신 'quote'를 사용하세요:")
-    print(f"   python3 tools/daily_scanner.py quote {' '.join(tickers)}")
-    print()
-
-    kis_key = os.environ.get("KIS_APP_KEY")
-    if not kis_key or not os.environ.get("KIS_APP_SECRET"):
-        print("❌ KIS API 미연결 (레거시 경로) — quote 명령을 사용하세요.")
-        return
-
-    for ticker in tickers:
-        print(f"\n  [{ticker}] 실시간 데이터 (KIS, 레거시)")
-        price = kis_price(ticker)
-        if price:
-            print(f"  현재가:  {price.get('stck_prpr','?')}원")
-            print(f"  등락률:  {price.get('prdy_ctrt','?')}%")
-            print(f"  거래량:  {_fmt(price.get('acml_vol','?'))}주")
-            print(f"  시가총액: {_fmt(price.get('hts_avls','?'))}억")
-        investor = kis_investor(ticker)
-        if investor:
-            print(f"  외국인:  {_fmt(investor.get('frgn_ntby_qty','?'))}주")
-            print(f"  기관:    {_fmt(investor.get('orgn_ntby_qty','?'))}주")
+def cmd_kis_realtime(*tickers) -> bool:
+    """quote의 옛 이름 — 이제 quote도 KIS를 쓴다."""
+    print("⚠️  kis-realtime은 quote의 옛 이름입니다 — quote로 실행합니다.")
+    return cmd_quote(*tickers)
 
 
 # ─────────────────────────────────────────────────────────────
@@ -2467,11 +2647,11 @@ def main():
   python3 daily_scanner.py new-high --period 20d --market kosdaq
   python3 daily_scanner.py gap-up --min-gap 5.0
   python3 daily_scanner.py oversold --rsi-max 25
-  python3 daily_scanner.py kis-realtime 005930 000660   # 레거시 — quote로 대체
+  python3 daily_scanner.py kis-realtime 005930 000660   # quote의 옛 이름
 
 종료 코드(quote/score만 해당 — 그 외 명령은 항상 0):
   0: 정상 (score의 INCOMPLETE 포함 — 데이터 부족은 도구 실패가 아님)
-  1: 요청한 종목 중 하나라도 조회 자체가 실패했거나(quote), 키움 미설정
+  1: 요청한 종목 중 하나라도 조회 자체가 실패했거나(quote), KIS 미설정
      /시세·일봉 조회 실패로 점수를 낼 수 없었을 때(score)
 """
     )
@@ -2480,7 +2660,7 @@ def main():
     sub.add_parser("check-market",  help="장 운영 여부 및 API 상태 확인")
     sub.add_parser("check-broker",  help="증권사 API 연결 테스트")
 
-    p_q = sub.add_parser("quote", help="키움 현재가·수급 조회 (여러 종목 동시 가능)")
+    p_q = sub.add_parser("quote", help="KIS 현재가·수급 조회 (여러 종목 동시 가능)")
     p_q.add_argument("tickers", nargs="+", help="종목 코드 1개 이상")
 
     p_score = sub.add_parser("score", help="100점 고정 배점 scoring (V1 검증 전 초기안)")
@@ -2490,13 +2670,13 @@ def main():
     p_ind.add_argument("tickers", nargs="+", help="종목 코드 1개 이상 (예: 005930 000660 009150)")
 
     p_vol = sub.add_parser("volume-surge", help="거래량 급증 종목")
-    p_vol.add_argument("--ratio",  type=float, default=3.0, help="전일 대비 배수 최소값 (기본 3.0; 키움 API 기준, 20일 평균 대비 아님)")
+    p_vol.add_argument("--ratio",  type=float, default=3.0, help="직전 20일 평균 대비 배수 최소값 (기본 3.0)")
     p_vol.add_argument("--min-cap",type=float, default=500, help="최소 시총 억원 (기본 500)")
     p_vol.add_argument("--market", choices=["all", "kospi", "kosdaq"], default="all", help="시장 구분 (기본 all)")
 
     p_nh  = sub.add_parser("new-high",   help="신고가 돌파 종목")
     p_nh.add_argument("--period", default="52w", choices=list(_NEW_HIGH_PERIOD_MAP.keys()),
-                       help="기간 (기본 52w; 키움 API는 5d/10d/20d/60d/250d만 지원, 120d는 60d로 대체)")
+                       help="직전 N거래일 (기본 52w = 250거래일)")
     p_nh.add_argument("--market", choices=["all", "kospi", "kosdaq"], default="all", help="시장 구분 (기본 all)")
 
     p_gap = sub.add_parser("gap-up",     help="갭 상승 종목")
@@ -2507,7 +2687,7 @@ def main():
     p_os.add_argument("--rsi-max", type=float, default=30,  help="RSI 최대값 (기본 30)")
     p_os.add_argument("--days",    type=int,   default=5,   help="연속 하락일 (기본 5)")
 
-    p_kis = sub.add_parser("kis-realtime", help="(레거시) KIS API 실시간 데이터 — quote로 대체됨")
+    p_kis = sub.add_parser("kis-realtime", help="quote의 옛 이름")
     p_kis.add_argument("tickers", nargs="+",   help="종목 코드 목록")
 
     args = parser.parse_args()
@@ -2526,6 +2706,7 @@ def main():
         if not cmd_score(args.ticker):
             sys.exit(1)
     elif args.command == "indicators":
+        prime_standard_cache(args.tickers)
         for ticker in args.tickers:
             cmd_indicators(ticker)
             if len(args.tickers) > 1:

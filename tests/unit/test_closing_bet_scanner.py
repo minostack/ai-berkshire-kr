@@ -488,6 +488,14 @@ def test_API_직전_거래일_종가가_로컬과_다르면_수정주가_불일�
     assert mm == ["000001"]
 
 
+def test_API_미정산_직전일은_수정주가_대조에서_뺀다():
+    # 금요일(D2) 행을 토요일에 받으면 KIS 종가가 애프터마켓 최종가 — 오경보를 내지 않는다
+    local = {("KRX:000001", D2): _local_bar(D2, 100)}
+    api = {"000001": [dict(_api_row(D2, close=97), unsettled=True)]}
+    _, mm = s.merge_api(local, api, datetime(2026, 10, 24, 10, 0), live=False)
+    assert mm == []
+
+
 def test_live는_API_원천에서만():
     with pytest.raises(SystemExit):
         s.main(["--live"])

@@ -11,8 +11,7 @@
 /daily-scanner gap                      # 갭 상승/하락 종목
 /daily-scanner oversold                 # 과매도 반등 후보
 /daily-scanner sector 반도체            # 특정 섹터 기술적 스캔
-/daily-scanner broker 한국투자          # 증권사 API 연동 (KIS)
-/daily-scanner broker 키움              # 키움 OpenAPI 연동
+/daily-scanner broker 한국투자          # 증권사 API 연동 (KIS — 데이터 원천)
 ```
 
 ---
@@ -39,7 +38,8 @@
 
 ```
 방법 1 (최우선): python3 tools/daily_scanner.py — 일봉은 로컬 정규장 일봉(봉 기준 bars-1.0)
-                 + 당일 키움 API 봉, 로컬이 비면 키움 API(기준 밖) → Yahoo(기준 밖)
+                 + 당일 KIS API 봉, 로컬이 비면 KIS API(기준 밖) → Yahoo(기준 밖).
+                 현재가·수급·거래량순위도 KIS(2026-11-01 키움에서 전환)
 방법 2 (보완):   WebSearch — 전일 특이 종목, 뉴스 기반 이슈
 방법 3 (최후):   URL 안내 후 수동 확인
 ❌ 금지: Fetch(finance.naver.com/...) 직접 접속
@@ -63,8 +63,10 @@ python3 tools/daily_scanner.py check-broker
 ```
 📅 날짜: 2026-08-10 (월요일)
 🏛️  장 상태: 정규장 운영 중 (09:00~15:30)
-🔑 키움 API: ✅ 연결됨 (1순위 — 현재가·일봉·수급·순위 조회)
-🔑 KIS API(레거시): ❌ 미연결 (gap-up 대체 경로에서만 필요)
+KIS API:     ✅ 환경변수 설정됨
+키움 API:    설정됨 (이 도구의 명령은 쓰지 않음)
+일봉: 로컬 정규장 일봉 → KIS 일봉(기준 밖) → Yahoo Finance(기준 밖)
+현재가·수급·거래량순위: KIS REST API
 ```
 
 ---
@@ -85,7 +87,8 @@ python3 tools/daily_scanner.py volume-surge \
 기준(가이드 7.1 정확한 공식 구현):
 - `ratio = 오늘 거래량 / (직전 20완료봉 평균 거래량)` ≥ 3.0
 - 시가총액 500억 이상 (소형주 노이즈 제거)
-- 키움 ka10023 공식 랭킹을 후보 풀로 받아 종목별 일봉 재조회로 위 공식을 정확히 재계산함(coverage=rank_subset — 전체 시장이 아닌 상위 후보 한정)
+- KIS 거래량순위(FHPST01710000, 거래증가율 = 전일 대비, ETF·ETN·스팩 제외)를 코스피·코스닥 각 30종목씩 후보 풀로 받아 종목별 일봉 재조회로 위 공식을 정확히 재계산함(coverage=rank_subset — 전체 시장이 아닌 상위 후보 한정)
+- 후보의 로컬 일봉이 없거나 끊겼으면(지수 밖·편출 종목) KIS 일봉(기준 밖)으로 계산하고 그 개수를 표시함
 - 장중 실행 시 당일 거래량은 미완료(누적 중) 수치이며 결과에 🕐로 표시됨
 
 #### 1-2. 신고가 돌파 종목
@@ -96,10 +99,11 @@ python3 tools/daily_scanner.py new-high \
   --market all   # all/kospi/kosdaq
 ```
 
-기준(키움 ka10016 공식 TR, 전체 시장 커버):
-- 종가 기준 확정 돌파: `종가 > 직전 N거래일 중 최고가` (오늘 고가는 기준에서 제외, 동일가는 돌파 아님)
-- `--period`는 5d/10d/20d/60d/250d/52w만 지원(120d 요청 시 60d로 자동 대체)
-- 거래량 동반 조건은 구현되어 있지 않음(표시되는 거래량은 참고용)
+기준(로컬 기준 일봉으로 직접 판정 — coverage=index_kospi200_kosdaq150, 전체 시장 아님):
+- 종가 기준 확정 돌파: `종가 > 직전 N거래일 중 최고가` (오늘 고가는 기준에서 제외, 동일가는 돌파 아님), 완료 봉만 사용
+- KIS에는 종가 기준 N일 신고가 순위 TR이 없음(FHPST01870000은 '근접' 순위라 정의가 다름) — 그래서 지수 구성종목만 봄
+- `--period`는 5d/10d/20d/60d/120d/250d/52w(=250거래일)
+- 거래량 동반 조건은 구현되어 있지 않음(표시되는 20일 평균 대비 거래량 배수는 참고용)
 
 #### 1-3. 갭 상승 종목 (전일 종가 대비)
 
@@ -111,7 +115,7 @@ python3 tools/daily_scanner.py gap-up \
 
 기준(가이드 7.3 정확한 공식 구현):
 - `gap_pct = (오늘 시가 / 전일 종가 - 1) × 100` ≥ 3.0
-- 시장 전체 갭 랭킹에 해당하는 공식 키움 TR이 없어 `data/index_stocks.json`(코스피200+코스닥150) 유니버스를 종목별로 직접 조회함 — coverage=index_kospi200_kosdaq150(전체 시장 아님), 종목 수에 비례해 수십 초 소요
+- 시장 전체 갭 랭킹에 해당하는 KIS TR이 없어 코스피200+코스닥150 유니버스를 종목별로 KIS 현재가(FHKST01010100) 조회함 — coverage=index_kospi200_kosdaq150(전체 시장 아님), 종목 수에 비례해 수십 초 소요
 - 갭 유지 여부(시가=고점 근처)는 판정하지 않음
 
 #### 1-4. 과매도 반등 후보
@@ -169,7 +173,7 @@ Trend/Momentum/Volume·Liquidity/Foreign·Institution/Pattern·Breakout/Risk 6�
 원본 데이터(예: MA120, 외국인·기관 5일 수급)가 없으면 총점을 0점이나
 100점 환산으로 채우지 않고 `INCOMPLETE`로 표시하며 결측 항목을 그대로
 보여줍니다. 관리종목·ETF 여부를 확인할 공식 API 필드는 아직 찾지 못해
-1차 필터에 반영되어 있지 않습니다(가격·시가총액·추정 거래대금만 필터링).
+1차 필터에 반영되어 있지 않습니다(가격·시가총액·거래대금만 필터링 — 거래대금은 KIS 누적 거래대금, 없으면 가격×거래량 추정). 주말에는 외국인·기관 수급을 최근 5완료거래일로 계산합니다.
 
 ---
 
@@ -199,53 +203,40 @@ python3 tools/daily_scanner.py patterns \
 
 ---
 
-### 4단계: 증권사 API 연동 (권장 — 2026-09 키움 전환 이후)
+### 4단계: 증권사 API 연동 (KIS — 2026-11-01 키움에서 전환)
 
 DART나 Yahoo Finance보다 **실시간·정확한** 데이터가 필요할 때 사용합니다.
-키움 REST API가 1순위 데이터 소스이며, quote/indicators/oversold/volume-surge/
-new-high가 모두 키움을 우선 사용합니다.
-
-#### 키움증권 REST API (1순위)
+KIS REST API가 데이터 원천이며(적재 `data-load`와 같은 원천), 모든 명령이 KIS를
+씁니다. 키움 키는 이 도구에서 쓰지 않습니다.
 
 ```bash
 # .env 파일에 키 설정 (최초 1회, .env.example 참고)
-#   KIWOOM_APP_KEY=발급받은앱키
-#   KIWOOM_APP_SECRET=발급받은시크릿
+#   KIS_APP_KEY=발급받은앱키
+#   KIS_APP_SECRET=발급받은시크릿
 
 # 연결 테스트 (인증 + 시세 조회 확인)
 python3 tools/daily_scanner.py check-broker
 
-# 키움 API로 현재가·수급 조회
+# KIS로 현재가·수급 조회
 python3 tools/daily_scanner.py quote 005930 000660 009150
 
-# 거래량 급증 / 신고가 (키움 공식 랭킹 TR 사용)
+# 거래량 급증 / 신고가
 python3 tools/daily_scanner.py volume-surge --market kospi
 python3 tools/daily_scanner.py new-high --period 20d --market kosdaq
 ```
 
-키움 REST API로 전환된 기능(ka10001/ka10081/ka10059/ka10023/ka10016):
+명령별 KIS TR:
 ```
-현재가·시가총액 조회         → quote / indicators
-일봉 조회 (지표 계산용)      → indicators / oversold
-외국인·기관 순매수(당일)     → quote
-거래량 급증 랭킹            → volume-surge
-신고가 랭킹                 → new-high
+현재가·시가총액·거래대금 (FHKST01010100)   → quote / indicators / gap-up / score / volume-surge 시총 필터
+일봉 (FHKST03010100, 로컬에 없을 때만)      → indicators / oversold / volume-surge / 당일 봉
+외국인·기관 순매수 30일 (FHKST01010900)     → quote / score(5일 합, 한 번 호출)
+거래량 급증 후보 풀 (FHPST01710000)         → volume-surge
+종목명 (CTPF1002R, 지수 밖 종목만)          → 이름 표시
+신고가                                      → KIS 순위 없음 — 로컬 기준 일봉으로 직접 계산
 ```
 
-갭 상승(시가 대비 전일종가) 시장 전체 랭킹에 해당하는 공식 키움 TR은
-아직 확인되지 않아 `gap-up`은 WebSearch 안내로 남아 있습니다. 개별
-종목의 갭 여부는 `quote` 명령의 시가/전일종가로 확인할 수 있습니다.
-
-#### 한국투자증권 KIS API (레거시)
-
-신규 기능은 키움 쪽에만 추가되며, KIS는 `gap-up`의 대체 조회 경로로만
-남아 있습니다. 키움 미설정 시 `volume-surge`/`new-high`도 KIS로 폴백합니다.
-
-```bash
-export KIS_APP_KEY="발급받은앱키"
-export KIS_APP_SECRET="발급받은시크릿"
-export KIS_ACCOUNT_NO="계좌번호-상품코드"  # 예: 50123456-01
-```
+KIS 일봉은 2026-09-14 이후 거래량이 애프터마켓까지 포함이고, 최근 거래일 가격은 다음 영업일 아침 전까지 애프터마켓 최종가라(`docs/KIS-일봉-최근일-애프터마켓가격-20261101.md`)
+봉 기준(bars-1.0) 밖입니다 — 로컬 일봉이 없을 때만 쓰이고 출력에 출처가 표시됩니다.
 
 ---
 

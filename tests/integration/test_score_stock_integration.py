@@ -4,7 +4,7 @@
 score_stock() 통합 테스트 — 가이드 10단계("통합" 테스트 계층: fake provider
 + 고정 데이터 → 옵션 → 필터 → 점수 → CLI/JSON).
 
-실제 네트워크를 타는 kiwoom_quote/fetch_ohlcv/kiwoom_investor_flow를
+실제 네트워크를 타는 kis_quote/fetch_ohlcv/kis_investor_flow를
 고정 데이터를 반환하는 가짜 함수로 교체해, score_stock()의 오케스트레이션
 로직(1차 필터 → 6개 영역 점수 계산 → combine_score) 전체를 오프라인으로
 검증한다. 개별 score_* 순수 함수는 tests/unit/test_scoring.py에서 이미
@@ -37,7 +37,7 @@ def _make_fake_bars(n=130, start_price=100.0):
         opens.append(o); highs.append(h); lows.append(l); closes.append(c); volumes.append(v)
         price = c
     return {
-        "ticker": "005930", "name": "가짜종목", "source": "kiwoom",
+        "ticker": "005930", "name": "가짜종목", "source": "kis",
         "rows": rows, "opens": opens, "highs": highs, "lows": lows,
         "closes": closes, "volumes": volumes,
     }
@@ -50,7 +50,7 @@ def _fake_quote(price=50000.0, market_cap_krw=500_000_000_000, volume=10_000_000
         "prev_close": price - 200, "volume": volume,
         "change": 200.0, "change_pct": 0.4,
         "market_cap_eok": market_cap_krw / 1e8, "market_cap_krw": market_cap_krw,
-        "as_of": "2026-09-15T10:00:00", "source": "kiwoom",
+        "as_of": "2026-09-15T10:00:00", "source": "kis",
     }
 
 
@@ -58,14 +58,14 @@ def _fake_investor_flow_factory(foreign=100.0, institution=50.0):
     def _fn(ticker, date=None):
         return {"date": date or "20260915", "individual": -150.0,
                 "foreign": foreign, "institution": institution,
-                "unit": "주", "source": "kiwoom"}
+                "unit": "주", "source": "kis"}
     return _fn
 
 
 @pytest.fixture(autouse=True)
-def _kiwoom_configured(monkeypatch):
-    monkeypatch.setenv("KIWOOM_APP_KEY", "fake-key")
-    monkeypatch.setenv("KIWOOM_APP_SECRET", "fake-secret")
+def _kis_configured(monkeypatch):
+    monkeypatch.setenv("KIS_APP_KEY", "fake-key")
+    monkeypatch.setenv("KIS_APP_SECRET", "fake-secret")
 
 
 @pytest.fixture(autouse=True)
@@ -75,9 +75,9 @@ def _no_real_sleep(monkeypatch):
 
 def test_score_stock_success_end_to_end(monkeypatch):
     bars = _make_fake_bars(n=130)
-    monkeypatch.setattr(ds, "kiwoom_quote", lambda ticker: _fake_quote())
+    monkeypatch.setattr(ds, "kis_quote", lambda ticker: _fake_quote())
     monkeypatch.setattr(ds, "fetch_ohlcv", lambda ticker, days=460: bars)
-    monkeypatch.setattr(ds, "kiwoom_investor_flow", _fake_investor_flow_factory())
+    monkeypatch.setattr(ds, "kis_investor_flow", _fake_investor_flow_factory())
 
     result = ds.score_stock("005930")
 
@@ -91,7 +91,7 @@ def test_score_stock_success_end_to_end(monkeypatch):
 
 def test_score_stock_incomplete_when_investor_flow_partially_missing(monkeypatch):
     bars = _make_fake_bars(n=130)
-    monkeypatch.setattr(ds, "kiwoom_quote", lambda ticker: _fake_quote())
+    monkeypatch.setattr(ds, "kis_quote", lambda ticker: _fake_quote())
     monkeypatch.setattr(ds, "fetch_ohlcv", lambda ticker, days=460: bars)
 
     call_count = {"n": 0}
@@ -101,9 +101,9 @@ def test_score_stock_incomplete_when_investor_flow_partially_missing(monkeypatch
         if call_count["n"] == 2:  # 5번 중 1번만 실패해도 5일 합 전체를 결측 처리해야 함
             return None
         return {"date": date, "individual": 0.0, "foreign": 10.0,
-                "institution": 5.0, "unit": "주", "source": "kiwoom"}
+                "institution": 5.0, "unit": "주", "source": "kis"}
 
-    monkeypatch.setattr(ds, "kiwoom_investor_flow", flaky_investor_flow)
+    monkeypatch.setattr(ds, "kis_investor_flow", flaky_investor_flow)
 
     result = ds.score_stock("005930")
 
@@ -117,9 +117,9 @@ def test_score_stock_incomplete_when_investor_flow_partially_missing(monkeypatch
 def test_score_stock_prefilter_fails_but_score_still_computed(monkeypatch):
     bars = _make_fake_bars(n=130)
     # 가격 500원 < 1,000원 -> 1차 필터 미통과
-    monkeypatch.setattr(ds, "kiwoom_quote", lambda ticker: _fake_quote(price=500.0, volume=1000))
+    monkeypatch.setattr(ds, "kis_quote", lambda ticker: _fake_quote(price=500.0, volume=1000))
     monkeypatch.setattr(ds, "fetch_ohlcv", lambda ticker, days=460: bars)
-    monkeypatch.setattr(ds, "kiwoom_investor_flow", _fake_investor_flow_factory())
+    monkeypatch.setattr(ds, "kis_investor_flow", _fake_investor_flow_factory())
 
     result = ds.score_stock("005930")
 
@@ -129,16 +129,16 @@ def test_score_stock_prefilter_fails_but_score_still_computed(monkeypatch):
     assert result["status"] in ("SUCCESS", "INCOMPLETE")
 
 
-def test_score_stock_error_when_kiwoom_not_configured(monkeypatch):
-    monkeypatch.delenv("KIWOOM_APP_KEY", raising=False)
-    monkeypatch.delenv("KIWOOM_APP_SECRET", raising=False)
+def test_score_stock_error_when_kis_not_configured(monkeypatch):
+    monkeypatch.delenv("KIS_APP_KEY", raising=False)
+    monkeypatch.delenv("KIS_APP_SECRET", raising=False)
 
     result = ds.score_stock("005930")
     assert result["status"] == "ERROR"
 
 
 def test_score_stock_error_when_quote_fails(monkeypatch):
-    monkeypatch.setattr(ds, "kiwoom_quote", lambda ticker: None)
+    monkeypatch.setattr(ds, "kis_quote", lambda ticker: None)
 
     result = ds.score_stock("005930")
     assert result["status"] == "ERROR"
@@ -146,7 +146,7 @@ def test_score_stock_error_when_quote_fails(monkeypatch):
 
 
 def test_score_stock_error_when_insufficient_bars(monkeypatch):
-    monkeypatch.setattr(ds, "kiwoom_quote", lambda ticker: _fake_quote())
+    monkeypatch.setattr(ds, "kis_quote", lambda ticker: _fake_quote())
     monkeypatch.setattr(ds, "fetch_ohlcv", lambda ticker, days=460: _make_fake_bars(n=5))
 
     result = ds.score_stock("005930")
@@ -161,35 +161,35 @@ def test_score_stock_error_when_insufficient_bars(monkeypatch):
 # ─────────────────────────────────────────────────────────────
 
 def test_cmd_score_returns_false_on_error(monkeypatch, capsys):
-    monkeypatch.delenv("KIWOOM_APP_KEY", raising=False)
+    monkeypatch.delenv("KIS_APP_KEY", raising=False)
     assert ds.cmd_score("005930") is False
 
 
 def test_cmd_score_returns_true_on_incomplete_not_just_success(monkeypatch, capsys):
     # INCOMPLETE는 도구 실패가 아니라 정직한 결과 — exit code 0(True)이어야 함
     bars = _make_fake_bars(n=130)
-    monkeypatch.setattr(ds, "kiwoom_quote", lambda ticker: _fake_quote())
+    monkeypatch.setattr(ds, "kis_quote", lambda ticker: _fake_quote())
     monkeypatch.setattr(ds, "fetch_ohlcv", lambda ticker, days=460: bars)
-    monkeypatch.setattr(ds, "kiwoom_investor_flow", lambda ticker, date=None: None)
+    monkeypatch.setattr(ds, "kis_investor_flow", lambda ticker, date=None: None)
 
     assert ds.cmd_score("005930") is True
 
 
 def test_cmd_quote_returns_false_when_any_ticker_fails(monkeypatch, capsys):
-    monkeypatch.setenv("KIWOOM_APP_KEY", "k")
-    monkeypatch.setenv("KIWOOM_APP_SECRET", "s")
+    monkeypatch.setenv("KIS_APP_KEY", "k")
+    monkeypatch.setenv("KIS_APP_SECRET", "s")
     responses = {"005930": _fake_quote(), "000660": None}
-    monkeypatch.setattr(ds, "kiwoom_quote", lambda ticker: responses[ticker])
-    monkeypatch.setattr(ds, "kiwoom_investor_flow", lambda ticker, date=None: None)
+    monkeypatch.setattr(ds, "kis_quote", lambda ticker: responses[ticker])
+    monkeypatch.setattr(ds, "kis_investor_flow", lambda ticker, date=None: None)
 
     assert ds.cmd_quote("005930", "000660") is False
 
 
 def test_cmd_quote_returns_true_when_all_succeed(monkeypatch, capsys):
-    monkeypatch.setenv("KIWOOM_APP_KEY", "k")
-    monkeypatch.setenv("KIWOOM_APP_SECRET", "s")
-    monkeypatch.setattr(ds, "kiwoom_quote", lambda ticker: _fake_quote())
+    monkeypatch.setenv("KIS_APP_KEY", "k")
+    monkeypatch.setenv("KIS_APP_SECRET", "s")
+    monkeypatch.setattr(ds, "kis_quote", lambda ticker: _fake_quote())
     # 수급 데이터 결측은 정상 상황일 수 있으므로 종료 코드에 영향을 주면 안 됨
-    monkeypatch.setattr(ds, "kiwoom_investor_flow", lambda ticker, date=None: None)
+    monkeypatch.setattr(ds, "kis_investor_flow", lambda ticker, date=None: None)
 
     assert ds.cmd_quote("005930", "000660") is True
