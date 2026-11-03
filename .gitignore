@@ -128,3 +128,9 @@ cvd_selection/research/output/
 # 적재 장부 — PC마다 다른 운영 상태(이관은 scripts/migrate-export.ps1이 복사)
 /data/manifests/data_load_state.json
 /data/manifests/minute_catchup_state.json
+
+# ────────────────────────────────────────
+# PC 간 데이터 이관 묶음 (data_transfer/) — 수집 데이터라 추적하지 않는다
+# ────────────────────────────────────────
+data_transfer/DOWNLOAD/*
+!data_transfer/DOWNLOAD/.gitkeep
