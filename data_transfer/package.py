@@ -12,8 +12,13 @@
 | `benchmark_bars` | 지수 일봉 |
 
 옮기지 않는 것: `market_calendar`(일봉에서 파생 — 가져온 뒤 `calendar build`로 다시
-만든다), 구성종목 이력·`index_stocks.json`(쓰기 경로가 따로 정해져 있다), 적재 장부
-(PC마다 다른 운영 상태), bronze 원천 응답.
+만든다), 구성종목 이력·`index_stocks.json`(쓰기 경로가 따로 정해져 있다), bronze 원천
+응답.
+
+적재 장부(`data_load_state.json`)는 값을 복사하지 않는다. 가져온 뒤 **받는 PC에 실제로
+있는 확정 봉**으로 `confirmed_through`를 계산해 옮긴다(`update_ledger`). 보낸 PC의 값을
+그대로 쓰면, 일부 구간만 가져왔을 때 받지 않은 날까지 확정으로 적혀 그 뒤 적재가 그 날을
+다시 보지 않는다.
 
 규칙
 ----
@@ -53,7 +58,7 @@ from cvd_obv.domain.ids import KST
 from cvd_obv.storage.parquet_store import ParquetStore, arrow_schema, require_pyarrow
 
 __all__ = ["TABLES", "PackageError", "collect_status", "export_package",
-           "read_package", "import_package", "find_packages"]
+           "read_package", "import_package", "find_packages", "update_ledger"]
 
 #: 테이블 → (열 계약, 저장 PK). PK에는 data_revision이 들어 있다.
 TABLES = {
@@ -271,7 +276,7 @@ def collect_status(start: date, end: date, store: ParquetStore = None,
         row["nxt_minutes_all"] = minutes.get(d, {}).get("NXT", 0)
         row["sides_un"] = sides.get(d, {}).get("UN", 0)
         row["benchmarks"] = bench.get(d, {}).get("all", 0)
-    ledger_path = os.path.join(store.manifest_dir, "data_load_state.json")
+    ledger_path = _ledger_path(store)
     return {
         "host": socket.gethostname(),
         "checked_at": datetime.now(tz=KST).strftime("%Y-%m-%d %H:%M:%S"),
@@ -467,11 +472,102 @@ def import_manifest_path(store: ParquetStore, package_id: str) -> str:
     return os.path.join(store.manifest_dir, f"silver_transfer_import_{package_id}.json")
 
 
+def _ledger_path(store: ParquetStore) -> str:
+    return os.path.join(store.manifest_dir, "data_load_state.json")
+
+
+def _walk_confirmed(rows, package_start: date, package_days) -> tuple:
+    """날짜별 상태를 앞에서부터 보며 (연속으로 확정된 마지막 날, 멈춘 날, 멈춘 까닭).
+
+    묶음 구간 안에서 행이 하나도 없는 평일은 보낸 PC에도 없는 날, 곧 휴장으로 보고
+    넘어간다. 묶음 앞쪽의 빈 평일은 휴장인지 받지 않은 날인지 알 수 없어 멈춘다.
+    """
+    from cvd_obv.ingestion import load_state as L
+
+    last = None
+    for row in rows:
+        d = row["date"]
+        if row["status"] == L.STATUS_FINAL:
+            last = d
+            continue
+        empty = row["final"] + row["provisional"] == 0
+        if empty and d >= package_start and d.isoformat() not in package_days:
+            continue
+        if empty and d < package_start:
+            return last, d, "묶음 앞쪽의 빈 평일 — 휴장인지 받지 않은 날인지 알 수 없다"
+        return last, d, f"확정 봉 부족({row['status']})"
+    return last, None, None
+
+
+def update_ledger(store: ParquetStore, manifest: dict, codes=None, now: datetime = None) -> dict:
+    """받는 PC의 적재 장부를 가져온 데이터까지 옮긴다. 되돌리지 않는다.
+
+    - `confirmed_through`: 지금 장부 다음 날(장부가 없으면 묶음 시작일)부터 확정 봉이
+      구성종목의 90% 이상인 날이 이어지는 마지막 날. 적재와 같은 판정이다.
+    - `last_final_run`: 보낸 PC의 확정까지 이 PC에 들어왔을 때만 가져온다.
+    - `last_provisional_run`: 그 실행이 만든 날의 잠정 봉이 묶음에 있을 때만 가져온다.
+    - `last_import`: 이 값들이 가져오기로 온 것임을 남긴다.
+    """
+    from cvd_obv.ingestion import load_state as L
+    from cvd_obv.universe import current_universe
+
+    now = now or datetime.now(tz=KST)
+    path = _ledger_path(store)
+    state = L.load_state(path)
+    before = L._as_day(state.get("confirmed_through"))
+    package_start = date.fromisoformat(manifest["start"])
+    package_end = date.fromisoformat(manifest["end"])
+    target = min(package_end, L.confirmed_horizon(now))
+    if codes is None:
+        codes = [f"KRX:{c}" for c in current_universe(("KOSPI200", "KOSDAQ150")).codes()]
+    if not codes:
+        raise ValueError("지수 구성종목 명단이 비어 있다")
+
+    tables = manifest["tables"]
+    package_days = set()
+    for table in ("daily_bars", "minute_bars"):
+        package_days |= set(tables.get(table, {}).get("rows_by_date", {}))
+
+    first = before + timedelta(days=1) if before else package_start
+    last, stopped_at, reason = None, None, None
+    if first <= target:
+        rows = _day_status(store, first, target, codes, {})
+        last, stopped_at, reason = _walk_confirmed(rows, package_start, package_days)
+    after = max(d for d in (before, last) if d) if (before or last) else None
+
+    source = manifest.get("source_ledger") or {}
+    update = {"last_import": {"package_id": manifest["package_id"],
+                              "source_host": manifest.get("source_host"),
+                              "imported_at": now.strftime("%Y-%m-%d %H:%M:%S")}}
+    if after:
+        update["confirmed_through"] = after.isoformat()
+    source_confirmed = L._as_day(source.get("confirmed_through"))
+    final_run = source.get("last_final_run")
+    if final_run and after and source_confirmed and after >= source_confirmed:
+        if final_run > state.get("last_final_run", ""):
+            update["last_final_run"] = final_run
+    prov_run = source.get("last_provisional_run")
+    kinds = tables.get("daily_bars", {}).get("daily_kinds", {})
+    if prov_run and kinds.get(prov_run[:10], {}).get("provisional", 0) > 0:
+        if prov_run > state.get("last_provisional_run", ""):
+            update["last_provisional_run"] = prov_run
+    L.save_state(update, path)
+    return {"before": before.isoformat() if before else None,
+            "confirmed_through": after.isoformat() if after else None,
+            "stopped_at": stopped_at.isoformat() if stopped_at else None,
+            "reason": reason,
+            "last_final_run": update.get("last_final_run", state.get("last_final_run")),
+            "last_provisional_run": update.get("last_provisional_run",
+                                               state.get("last_provisional_run"))}
+
+
 def import_package(path: str, store: ParquetStore = None, dry_run: bool = False,
-                   log=print) -> dict:
-    """묶음의 행 중 받는 PC에 없는 것만 새 파일로 쓴다. 요약을 돌려준다.
+                   log=print, codes=None) -> dict:
+    """묶음의 행 중 받는 PC에 없는 것만 새 파일로 쓰고 장부를 옮긴다. 요약을 돌려준다.
 
     잠금은 호출하는 쪽(`transfer.py`)이 잡는다 — 적재와 동시에 쓰지 않게.
+    새 행이 0이어도 장부는 계산한다 — 장부가 빠진 채 먼저 가져온 경우를 바로잡는다.
+    장부 계산이 실패해도 행은 이미 썼으므로 `summary["ledger"]["error"]`로만 알린다.
     """
     pa, pq = require_pyarrow()
     import pyarrow.compute as pc
@@ -515,6 +611,11 @@ def import_package(path: str, store: ParquetStore = None, dry_run: bool = False,
             if log:
                 log(f"  {table:18} 묶음 {res['package_rows']:>10,}행 → 새 행 "
                     f"{res['new_rows']:>10,} / 이미 있음 {res['skipped_rows']:>10,}")
+    if not dry_run:
+        try:
+            summary["ledger"] = update_ledger(store, manifest, codes=codes)
+        except Exception as exc:  # noqa: BLE001 — 행은 이미 썼다. 장부는 다음에 다시 계산한다
+            summary["ledger"] = {"error": f"{type(exc).__name__}: {exc}"}
     if not dry_run and written:
         record = {
             "dataset_name": "silver.transfer_import",
@@ -527,6 +628,7 @@ def import_package(path: str, store: ParquetStore = None, dry_run: bool = False,
             "start": manifest["start"],
             "end": manifest["end"],
             "source_ledger": manifest.get("source_ledger"),
+            "ledger": summary["ledger"],
             "tables": summary["tables"],
             "status": "SUCCESS",
         }

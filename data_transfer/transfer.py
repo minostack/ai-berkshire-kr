@@ -13,7 +13,8 @@
 
 내보내기·가져오기는 적재 잠금(`data/manifests/data_load.lock`)을 잡는다. 정기 적재가
 도는 중이면 끝날 때까지 기다린다(`--lock-wait`초, 기본 3600).
-가져오기가 행을 썼으면 끝에 `calendar build`로 거래일 달력을 다시 만든다.
+가져오기는 적재 장부(`data_load_state.json`)를 이 PC에 들어온 확정 봉까지 옮긴다.
+행을 썼으면 끝에 `calendar build`로 거래일 달력을 다시 만든다.
 """
 
 from __future__ import annotations
@@ -78,6 +79,10 @@ def print_status(status: dict):
     print(f"  장부: confirmed_through={led.get('confirmed_through', '(없음)')}  "
           f"마지막 확정 {led.get('last_final_run', '-')}  "
           f"마지막 잠정 {led.get('last_provisional_run', '-')}")
+    imported = led.get("last_import")
+    if imported:
+        print(f"  마지막 가져오기: {imported.get('imported_at')} — "
+              f"{imported.get('package_id')} (보낸 PC {imported.get('source_host')})")
     print(f"  [날짜별] 지수 구성종목 {status['members']}개 기준(1분봉·잠정·확정·상태) "
           "+ 저장된 전체 종목 수(KRX·NXT 1분봉, 체결량 UN, 지수)")
     print("    날짜        1분봉  잠정  확정  " + _ljust("상태", 18)
@@ -189,6 +194,21 @@ def _resolve_package(args):
     return path
 
 
+def print_ledger(led: dict):
+    if led.get("error"):
+        print(f"  ⚠ 장부를 갱신하지 못했다 — {led['error']}. 행은 이미 썼다. "
+              "같은 묶음을 다시 가져오면 장부만 다시 계산한다")
+        return
+    was, now = led.get("before") or "(없음)", led.get("confirmed_through") or "(없음)"
+    moved = "그대로" if was == now else f"{was} →"
+    print(f"  장부: confirmed_through {moved} {now}  "
+          f"마지막 확정 {led.get('last_final_run') or '-'}  "
+          f"마지막 잠정 {led.get('last_provisional_run') or '-'}")
+    if led.get("stopped_at"):
+        print(f"  ⚠ 장부를 {led['stopped_at']} 앞에서 멈췄다 — {led['reason']}. "
+              "그날부터 들어 있는 묶음을 가져오면 이어서 옮긴다")
+
+
 def cmd_import(args) -> int:
     from cvd_obv.ingestion.run_lock import LockTimeout
     path = _resolve_package(args)
@@ -217,8 +237,9 @@ def cmd_import(args) -> int:
     if summary["already_imported"]:
         print("  · 이 묶음은 전에 가져온 기록이 있다 — 없는 행만 확인했다")
     if args.dry_run:
-        print(f"  확인만 했다 — 쓰면 새 행 {new:,}개")
+        print(f"  확인만 했다 — 쓰면 새 행 {new:,}개. 장부는 실제로 가져올 때 옮긴다")
         return EXIT_OK
+    print_ledger(summary["ledger"])
     if new == 0:
         print("  새 행 0 — 이미 모두 있다(쓴 파일 없음)")
         return EXIT_OK

@@ -18,7 +18,10 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(
 import data_transfer  # noqa: E402,F401 — src 경로를 올린다
 from data_transfer.package import (  # noqa: E402
     PackageError, _overlaps, _parts, export_package, import_package, read_package,
+    update_ledger,
 )
+from cvd_obv.domain.ids import KST  # noqa: E402
+from cvd_obv.ingestion import load_state as L  # noqa: E402
 from cvd_obv.bar_standard import PROVISIONAL_SOURCE  # noqa: E402
 from cvd_obv.contracts.market_schema import (  # noqa: E402
     DAILY_BAR_COLUMNS, DAILY_BAR_LOGICAL_KEY, DAILY_BAR_PK,
@@ -165,3 +168,122 @@ def test_손상된_묶음은_거부한다(pc1, tmp_path):
 def test_종료일이_시작일보다_앞이면_오류(pc1, tmp_path):
     with pytest.raises(ValueError):
         _export(pc1, tmp_path, start=D2, end=D1)
+
+
+# ── 적재 장부 ─────────────────────────────────────────────────
+
+CODES = ["KRX:005930"]
+NOW = datetime(2026, 11, 6, 9, 0, tzinfo=KST)       # 11/5까지 애프터마켓 확정이 지났다
+D3, D4 = date(2026, 11, 4), date(2026, 11, 5)
+
+
+def _ledger_of(store):
+    return L.load_state(os.path.join(store.manifest_dir, "data_load_state.json"))
+
+
+def _manifest(start, end, days=None, **extra):
+    days = {d.isoformat(): 1 for d in (days or [])}
+    return {"package_id": "bars_시험", "source_host": "PC1", "start": start.isoformat(),
+            "end": end.isoformat(),
+            "tables": {"daily_bars": {"rows_by_date": days, "daily_kinds": {}}}, **extra}
+
+
+@pytest.fixture
+def pc2(tmp_path):
+    return ParquetStore(root=str(tmp_path / "pc2" / "data"))
+
+
+def _final(store, *days):
+    _write(store, [_daily("KRX:005930", d, 100, "KIS", "f_run", 1) for d in days], "f_run")
+
+
+def _provisional(store, day):
+    _write(store, [_daily("KRX:005930", day, 100, PROVISIONAL_SOURCE, "p_run", 0)], "p_run")
+
+
+def test_가져오면_장부가_확정된_마지막_날로_옮겨진다(pc1, pc2, tmp_path):
+    path, _ = _export(pc1, tmp_path)
+    summary = import_package(path, store=pc2, log=None, codes=CODES)
+    # 11/2는 확정, 11/3은 잠정뿐이다 — 잠정은 confirmed_through를 옮기지 않는다
+    assert summary["ledger"]["confirmed_through"] == "2026-11-02"
+    assert summary["ledger"]["stopped_at"] == "2026-11-03"
+    ledger = _ledger_of(pc2)
+    assert ledger["confirmed_through"] == "2026-11-02"
+    assert ledger["last_import"]["source_host"] == manifest_host(path)
+
+
+def manifest_host(path):
+    return read_package(path, verify=False)["source_host"]
+
+
+def test_확인만_하면_장부를_쓰지_않는다(pc1, pc2, tmp_path):
+    path, _ = _export(pc1, tmp_path)
+    summary = import_package(path, store=pc2, dry_run=True, log=None, codes=CODES)
+    assert "ledger" not in summary
+    assert _ledger_of(pc2) == {}
+
+
+def test_새_행이_0이어도_장부를_계산한다(pc1, pc2, tmp_path):
+    path, _ = _export(pc1, tmp_path)
+    import_package(path, store=pc2, log=None, codes=CODES)
+    os.remove(os.path.join(pc2.manifest_dir, "data_load_state.json"))
+    summary = import_package(path, store=pc2, log=None, codes=CODES)
+    assert summary["tables"]["daily_bars"]["new_rows"] == 0
+    assert _ledger_of(pc2)["confirmed_through"] == "2026-11-02"
+
+
+def test_장부는_뒤로_가지_않는다(pc2):
+    L.save_state({"confirmed_through": "2026-11-05"},
+                 os.path.join(pc2.manifest_dir, "data_load_state.json"))
+    _final(pc2, D1)
+    got = update_ledger(pc2, _manifest(D1, D1, [D1]), codes=CODES, now=NOW)
+    assert got["confirmed_through"] == "2026-11-05"
+    assert _ledger_of(pc2)["confirmed_through"] == "2026-11-05"
+
+
+def test_묶음_앞쪽에_빈_평일이_있으면_멈춘다(pc2):
+    L.save_state({"confirmed_through": "2026-11-02"},
+                 os.path.join(pc2.manifest_dir, "data_load_state.json"))
+    _final(pc2, D3, D4)                                  # 11/3을 받지 않았다
+    got = update_ledger(pc2, _manifest(D3, D4, [D3, D4]), codes=CODES, now=NOW)
+    assert got["confirmed_through"] == "2026-11-02"
+    assert got["stopped_at"] == "2026-11-03"
+
+
+def test_묶음_안의_빈_평일은_휴장으로_보고_넘어간다(pc2):
+    _final(pc2, D1, D3)                                  # 11/3은 묶음에도 행이 없다
+    got = update_ledger(pc2, _manifest(D1, D3, [D1, D3]), codes=CODES, now=NOW)
+    assert got["confirmed_through"] == "2026-11-04"
+    assert got["stopped_at"] is None
+
+
+def test_일부_구간이면_보낸_PC_장부값을_쓰지_않는다(pc2):
+    _final(pc2, D1)
+    source = {"confirmed_through": "2026-11-05", "last_final_run": "2026-11-06 08:55:00"}
+    got = update_ledger(pc2, _manifest(D1, D1, [D1], source_ledger=source),
+                        codes=CODES, now=NOW)
+    assert got["confirmed_through"] == "2026-11-02"
+    assert "last_final_run" not in _ledger_of(pc2)
+
+
+def test_보낸_PC까지_따라잡으면_실행_시각도_가져온다(pc2):
+    _final(pc2, D1, D2)
+    _provisional(pc2, D3)
+    source = {"confirmed_through": "2026-11-03", "last_final_run": "2026-11-04 08:55:59",
+              "last_provisional_run": "2026-11-04 16:48:04"}
+    manifest = _manifest(D1, D3, [D1, D2, D3], source_ledger=source)
+    manifest["tables"]["daily_bars"]["daily_kinds"] = {
+        "2026-11-04": {"provisional": 1, "final": 0}}
+    update_ledger(pc2, manifest, codes=CODES, now=NOW)
+    ledger = _ledger_of(pc2)
+    assert ledger["confirmed_through"] == "2026-11-03"
+    assert ledger["last_final_run"] == "2026-11-04 08:55:59"
+    assert ledger["last_provisional_run"] == "2026-11-04 16:48:04"
+
+
+def test_장중에_가져오면_오늘은_확정으로_치지_않는다(pc2):
+    _final(pc2, D1)
+    during = datetime(2026, 11, 2, 15, 0, tzinfo=KST)    # 그날 애프터마켓 확정 전
+    got = update_ledger(pc2, _manifest(D1, D1, [D1]), codes=CODES, now=during)
+    assert got["confirmed_through"] is None
+    assert "confirmed_through" not in _ledger_of(pc2)

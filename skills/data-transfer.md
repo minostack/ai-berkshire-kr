@@ -58,11 +58,12 @@ python -m data_transfer.transfer import bars_20261103_작업실_20261104090000.z
 |---|---|
 | `status` | `status` 실행 → 아래 "출력 읽기"대로 요약 |
 | `export` | ① 같은 구간 `status`로 그 날짜가 **확정 완료**인지 본다 ② `export` ③ 묶음 경로·크기·테이블별 행 수·날짜별 잠정/확정 수를 보고 |
-| `import` | ① `import --dry-run`으로 새 행 수를 보여 준다 ② 이어서 `import` ③ 끝난 뒤 `status`로 가져온 날짜의 상태를 보고 |
+| `import` | ① `import --dry-run`으로 새 행 수를 보여 준다 ② 이어서 `import` ③ 끝난 뒤 `status`로 가져온 날짜의 상태와 장부 `confirmed_through` 변화를 보고 |
 | `check` | `import --latest --dry-run`만 — 쓰지 않는다 |
 
 - export 전 상태가 **잠정만**이면 그대로 내보내되 "잠정 봉(거래량 근사)이 들어간다 — 다음 날 08:30 확정 뒤 다시 내보내면 확정 봉으로 바뀐다"고 알린다
 - import가 `❌`(해시 불일치·형식 다름)로 끝나면 아무것도 쓰지 않은 것이다 — 묶음을 다시 복사하라고 안내한다
+- import가 `⚠ 장부를 … 앞에서 멈췄다`로 끝나면 그 경고의 날짜를 그대로 전하고, 그날부터 들어 있는 묶음이 필요하다고 안내한다(휴장일이었다면 그 날을 구간에 넣어 다시 내보낸다)
 - 이 스킬은 git 커밋·푸시를 하지 않는다. DOWNLOAD 폴더는 git 비추적이다
 
 ---
@@ -102,7 +103,8 @@ python -m data_transfer.transfer import bars_20261103_작업실_20261104090000.z
 | `silver.benchmark_bars` | ○ | 지수 일봉 |
 | `silver.market_calendar` | × | 가져온 뒤 `calendar build`로 자동 재생성 |
 | 구성종목 이력·`index_stocks.json` | × | 쓰기 경로가 정해져 있다(`/update-index`). 이력보다 뒤 날짜는 `universe_on()`이 `index_stocks.json`으로 대신하고 경고 |
-| 적재 장부·bronze | × | PC마다 다른 운영 상태 |
+| 적재 장부 `data_load_state.json` | 계산 | 값을 복사하지 않고 받는 PC에 들어온 확정 봉으로 `confirmed_through`를 계산한다. 뒤로 가지 않고, 잠정 봉은 옮기지 않는다 |
+| bronze | × | |
 
 ---
 

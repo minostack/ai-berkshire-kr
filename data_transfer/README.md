@@ -56,7 +56,7 @@ python -m data_transfer.transfer status
 | `status` | 장부(`confirmed_through`, 마지막 확정·잠정 실행 시각), 날짜별 표, 테이블별 파일 수·용량 | `--date` / `--start --end` / `--days N`(기본 14일) / `--json` |
 | `export` | 지정일 또는 구간의 행을 zip 하나로 쓴다 | `--date` 또는 `--start [--end]`, `--tables`, `--out` |
 | `list` | DOWNLOAD의 묶음 목록(구간·보낸 PC·행 수) | `--dir` |
-| `import` | 묶음의 해시를 확인한 뒤, 받는 PC에 **없는 행만** 새 파일로 쓴다. 끝에 `calendar build` 실행 | `--latest`, `--dry-run`, `--no-calendar` |
+| `import` | 묶음의 해시를 확인한 뒤, 받는 PC에 **없는 행만** 새 파일로 쓰고 적재 장부를 옮긴다. 끝에 `calendar build` 실행 | `--latest`, `--dry-run`, `--no-calendar` |
 
 **status의 날짜별 표**
 - 왼쪽 4열(1분봉·잠정·확정·상태)은 적재 로그의 `[선행 점검]` 표와 **같은 판정**이다. 지수 구성종목 기준, 최신 리비전, 90% 규칙을 쓴다.
@@ -75,7 +75,25 @@ export와 import는 적재 잠금(`data/manifests/data_load.lock`)을 잡는다.
 | `silver.benchmark_bars` | ○ | 지수 일봉 |
 | `silver.market_calendar` | × | 일봉에서 파생된다. 가져온 뒤 `calendar build`로 다시 만든다(자동) |
 | 구성종목 이력·`index_stocks.json` | × | 쓰기 경로가 정해져 있다(`universe refresh`, `tools/update_index.py`). 이력 뒤 날짜는 `universe_on()`이 `index_stocks.json`으로 대신하고 경고를 낸다 |
-| 적재 장부·bronze 원천 응답 | × | 장부는 PC마다 다른 운영 상태다 |
+| 적재 장부 `data_load_state.json` | 계산 | 값을 복사하지 않고, 받는 PC에 들어온 확정 봉으로 다시 계산한다(아래 절) |
+| bronze 원천 응답 | × | |
+
+## 적재 장부 갱신
+
+`import`는 끝날 때 받는 PC의 `data/manifests/data_load_state.json`을 옮긴다. 새 행이 0이어도 계산한다. `--dry-run`은 쓰지 않는다.
+
+| 키 | 값 |
+|---|---|
+| `confirmed_through` | 지금 장부 다음 날(장부가 없으면 묶음 시작일)부터 확정 봉이 구성종목의 90% 이상인 날이 이어지는 마지막 날. 적재와 같은 판정이다 |
+| `last_final_run` | 보낸 PC의 실행 시각. 보낸 PC의 `confirmed_through`까지 이 PC에 들어왔을 때만 가져온다 |
+| `last_provisional_run` | 보낸 PC의 실행 시각. 그 실행이 만든 날의 잠정 봉이 묶음에 있을 때만 가져온다 |
+| `last_import` | 마지막으로 가져온 묶음·보낸 PC·가져온 시각 |
+
+- **뒤로 가지 않는다.** 옛 묶음을 다시 가져와도 장부는 그대로다.
+- **잠정 봉은 `confirmed_through`를 옮기지 않는다.** 애프터마켓 확정 전인 날도 옮기지 않는다.
+- **묶음 안의 빈 평일은 넘어간다.** 보낸 PC에도 행이 없으므로 휴장으로 본다.
+- **묶음 앞쪽의 빈 평일에서는 멈추고 경고한다.** 휴장인지 받지 않은 날인지 알 수 없기 때문이다. 그날부터 들어 있는 묶음을 가져오면 이어서 옮긴다. 휴장일이었다면 그 휴장일을 구간에 넣어 내보내면 된다.
+- 장부 계산이 실패해도 행은 이미 쓴 상태다. 경고만 내고, 같은 묶음을 다시 가져오면 장부만 다시 계산한다.
 
 ## 규칙
 
