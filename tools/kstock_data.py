@@ -22,7 +22,14 @@ import sys
 import zipfile
 import io
 from decimal import Decimal, ROUND_HALF_EVEN
-from urllib.parse import urlencode
+from urllib.parse import urlencode, quote
+
+# Windows 콘솔(cp949)에서 이모지·특수문자 출력 시 UnicodeEncodeError 방지
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, ValueError):
+        pass
 
 # ── .env 로더: 프로젝트 루트의 .env를 os.environ에 주입 ──
 try:
@@ -430,11 +437,15 @@ def _fetch_naver_financials_summary(code: str):
 
 
 def cmd_search(keyword: str):
-    url = f"https://ac.finance.naver.com/ac?q={keyword}&q_enc=UTF-8&target=stock"
+    # 2026-11: 구 주소 ac.finance.naver.com 응답 중단 → ac.stock.naver.com 으로 교체
+    url = f"https://ac.stock.naver.com/ac?q={quote(keyword)}&target=stock"
     try:
         raw  = _curl(url)
         data = json.loads(raw)
-        items = data.get("items", [[]])[0]
+        items = [
+            it for it in data.get("items", [])
+            if isinstance(it, dict) and it.get("nationCode", "KOR") == "KOR"
+        ]
 
         if not items:
             print(f"❌ '{keyword}'에 해당하는 종목을 찾을 수 없습니다")
@@ -445,8 +456,8 @@ def cmd_search(keyword: str):
         print(f"종목 검색 결과: '{keyword}'")
         print("=" * 60)
         for item in items[:10]:
-            if len(item) >= 2:
-                print(f"  {item[1]}  {item[0]}")
+            market = item.get("typeName") or item.get("typeCode") or ""
+            print(f"  {item.get('code', '-')}  {item.get('name', '-')}  {market}")
     except Exception as e:
         print(f"⚠️  검색 실패: {e}")
         print(f"   KRX 종목 검색: http://www.krx.co.kr/")

@@ -350,3 +350,15 @@ def test_DART_네트워크_오류는_재시도하고_HTTP_오류는_재시도하
     with pytest.raises(urllib.error.HTTPError):
         ab._dart_get("list.json", {}, "KEY")
     assert calls["n"] == 1
+
+
+def test_진입마감은_다음_거래일_09시_달력없으면_다음_평일(monkeypatch):
+    import cvd_obv.ingestion.calendar_store as cs
+
+    class _Cal:
+        days = [date(2026, 11, 6), date(2026, 11, 10)]   # 11/9(월) 휴장 가정
+
+    monkeypatch.setattr(cs.MarketCalendarRepository, "load_calendar", lambda self: _Cal())
+    assert ab.entry_deadline(date(2026, 11, 6)).isoformat() == "2026-11-10T09:00:00"
+    # 달력이 기준일에서 끝나면 다음 평일(금 → 월)
+    assert ab.entry_deadline(date(2026, 11, 13)).isoformat() == "2026-11-16T09:00:00"

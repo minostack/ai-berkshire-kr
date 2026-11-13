@@ -888,6 +888,27 @@ def print_a(rows: list, top: int):
               f"{r['elapsed_td']:>4} {r['report_lag_td']:>4} {prox:>7}")
 
 
+def entry_deadline(as_of: date) -> datetime:
+    """기준일 신호로 진입할 수 있는 마지막 시각 — 다음 거래일 09:00(KST, 시가 진입).
+
+    이 시각 뒤에 만든 스냅샷은 그날 행동할 수 없었던 기록이라 **소급**이다.
+    다음 거래일은 시장 달력에서 찾고, 달력이 기준일에서 끝나면 다음 평일로 본다
+    (휴장일이 끼면 마감이 실제보다 하루 이르다 — 소급으로 더 엄하게 센다).
+    """
+    nxt = None
+    try:
+        from cvd_obv.ingestion.calendar_store import MarketCalendarRepository
+        later = [d for d in MarketCalendarRepository().load_calendar().days if d > as_of]
+        nxt = min(later) if later else None
+    except Exception:                                     # noqa: BLE001
+        pass
+    if nxt is None:
+        nxt = as_of + timedelta(days=1)
+        while nxt.weekday() >= 5:
+            nxt += timedelta(days=1)
+    return datetime(nxt.year, nxt.month, nxt.day, 9, 0)
+
+
 def save_snapshot(payload: dict, as_of: date, run_id: str) -> str:
     os.makedirs(SNAPSHOT_DIR, exist_ok=True)
     path = os.path.join(SNAPSHOT_DIR, f"ab-candidates-{as_of:%Y%m%d}-{run_id}.json")
@@ -962,8 +983,17 @@ def main() -> int:
 
     run_id = uuid.uuid4().hex[:8]
     from cvd_obv.bar_standard import BAR_STANDARD_VERSION
+    generated_at = datetime.now()
+    deadline = entry_deadline(as_of)
+    backfilled = generated_at > deadline
+    if backfilled:
+        warns.append(f"소급 스냅샷 — 진입 시각({deadline:%Y-%m-%d %H:%M}) 뒤에 만들었다. "
+                     f"전향 기록은 실시간분과 나눠 집계할 것")
     payload = {"design_version": DESIGN_VERSION, "as_of": as_of, "run_id": run_id,
-               "generated_at": datetime.now().isoformat(timespec="seconds"),
+               "generated_at": generated_at.isoformat(timespec="seconds"),
+               # 다음 거래일 시가(09:00) 뒤에 만들었으면 True — 그날 행동할 수 없었던 기록
+               "backfilled": backfilled,
+               "entry_deadline": deadline.isoformat(timespec="minutes"),
                "bar_standard": BAR_STANDARD_VERSION,
                # 기준일 봉이 잠정이면 True — 확정 결과와 섞지 않는다
                "provisional": bool(n_prov), "provisional_securities": n_prov,

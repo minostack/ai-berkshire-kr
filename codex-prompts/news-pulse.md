@@ -1,5 +1,5 @@
 ---
-description: "AI Berkshire slash entry for 公司新闻脉搏：股价异动快速归因团队."
+description: "AI Berkshire slash entry for 기업 뉴스 펄스: 주가 급변 원인 규명 팀."
 argument-hint: $ARGUMENTS
 ---
 

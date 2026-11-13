@@ -1,20 +1,20 @@
 {
   "design_version": "ab-draft-0.3",
-  "as_of": "2026-10-29",
-  "run_id": "148eb706",
-  "generated_at": "2026-10-30T06:27:07",
+  "as_of": "2026-10-14",
+  "run_id": "d2445ec4",
+  "generated_at": "2026-11-13T11:52:42",
+  "backfilled": true,
+  "entry_deadline": "2026-10-15T09:00",
   "bar_standard": "bars-1.0",
-  "provisional": true,
-  "provisional_securities": 351,
+  "provisional": false,
+  "provisional_securities": 0,
   "universe": [
     "KOSPI200",
     "KOSDAQ150"
   ],
   "warnings": [
-    "KOSPI200: 2026-10-29는 구성종목 이력(2026-10-28) 밖 — index_stocks.json(as_of 2026-10-28) 명단 사용(1일 차이)",
-    "KOSDAQ150: 2026-10-29는 구성종목 이력(2026-10-28) 밖 — index_stocks.json(as_of 2026-10-28) 명단 사용(1일 차이)",
-    "기준일 2026-10-29 일봉이 잠정이다(351종목, 16:10 1분봉 합 — 거래량 근사). RVOL이 확정과 다를 수 있다. 확정은 다음 거래일 08:30 `data-load daily` — 전향 기록은 확정 뒤 다시 돌린 결과로 남길 것",
-    "B: 8종목의 RVOL 창(5+50일)에 NXT 메인마켓 포함 봉과 KRX만인 봉이 섞여 있다 — 거래량 정의 경계(NXT 포함은 2026-08-03부터)를 걸쳐 RVOL이 부풀거나 줄 수 있다: 000880(5/5·38/50), 031980(5/5·39/50), 420770(5/5·40/50), 131290(5/5·40/50), 319660(5/5·40/50), 095610(5/5·40/50), 183300(5/5·41/50), 437730(5/5·43/50)"
+    "소급 스냅샷 — 진입 시각(2026-10-15 09:00) 뒤에 만들었다. 전향 기록은 실시간분과 나눠 집계할 것",
+    "B: 299종목의 RVOL 창(5+50일)에 NXT 메인마켓 포함 봉과 KRX만인 봉이 섞여 있다 — 거래량 정의 경계(NXT 포함은 2026-08-03부터)를 걸쳐 RVOL이 부풀거나 줄 수 있다: 000880(5/5·27/50), 183300(5/5·30/50), 031980(5/5·32/50), 131290(5/5·33/50), 095610(5/5·33/50), 437730(5/5·33/50), 053800(5/5·43/50), 011200(5/5·43/50), 373220(5/5·43/50), 251970(5/5·43/50) …"
   ],
   "design": {
     "B": {
@@ -51,48 +51,1503 @@
     "daily_volume": "KRX 정규장 + 시간외 종가 + NXT 메인마켓(09:00~15:20, 표시된 봉만)",
     "nxt_flag": "NXT_MAIN_VOLUME_INCLUDED",
     "nxt_included_from": "2026-08-03",
-    "securities_all_nxt": 291,
+    "securities_all_nxt": 0,
     "securities_no_nxt": 51,
     "securities_mixed": [
       {
         "code": "000880",
         "recent": 5,
-        "base": 38
-      },
-      {
-        "code": "031980",
-        "recent": 5,
-        "base": 39
-      },
-      {
-        "code": "420770",
-        "recent": 5,
-        "base": 40
-      },
-      {
-        "code": "131290",
-        "recent": 5,
-        "base": 40
-      },
-      {
-        "code": "319660",
-        "recent": 5,
-        "base": 40
-      },
-      {
-        "code": "095610",
-        "recent": 5,
-        "base": 40
+        "base": 27
       },
       {
         "code": "183300",
         "recent": 5,
-        "base": 41
+        "base": 30
+      },
+      {
+        "code": "031980",
+        "recent": 5,
+        "base": 32
+      },
+      {
+        "code": "131290",
+        "recent": 5,
+        "base": 33
+      },
+      {
+        "code": "095610",
+        "recent": 5,
+        "base": 33
       },
       {
         "code": "437730",
         "recent": 5,
+        "base": 33
+      },
+      {
+        "code": "053800",
+        "recent": 5,
         "base": 43
+      },
+      {
+        "code": "011200",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "373220",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "251970",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "006400",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "457190",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "096530",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "300720",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "268280",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "005830",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "012750",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "140860",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "139130",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "111770",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "131970",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "007660",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "056190",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "021240",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "078600",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "030000",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "192080",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "084370",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "121600",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "278470",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "215200",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "069080",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "030200",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "030520",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "086790",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "003670",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "007340",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "137310",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "051910",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "175330",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "000240",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "060370",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "055550",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "036570",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "166090",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "058470",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "036830",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "008930",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "192820",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "033780",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "101730",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "000810",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "081660",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "161390",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "039030",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "064760",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "259960",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "171090",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "096770",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "009540",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "074600",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "009970",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "222800",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "357780",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "011790",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "128940",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "383220",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "225570",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "007310",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "323280",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "000080",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "138040",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "290650",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "002790",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "207940",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "002840",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "443060",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "005420",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "014680",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "005940",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "069260",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "105560",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "035250",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "161890",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "062040",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "086280",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "005290",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "010950",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "267250",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "010140",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "323410",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "079550",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "195940",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "034730",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "138930",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "005850",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "328130",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "005490",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "271560",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "097950",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "298040",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "139480",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "006280",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "012450",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "095340",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "282330",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "026960",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "137400",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "329180",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "032640",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "071320",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "036460",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "302440",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "272210",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "241560",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "185750",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "014820",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "000270",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "089970",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "042000",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "316140",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "010120",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "161580",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "247540",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "009240",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "001800",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "267270",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "005930",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "071050",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "005300",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "003090",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "068270",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "024110",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "101490",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "017800",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "047810",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "145020",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "090430",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "007070",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "095660",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "078930",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "004370",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "272290",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "033500",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "034020",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "214430",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "082740",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "006260",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "029780",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "042700",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "002380",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "241710",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "087010",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "000990",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "066970",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "001450",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "267260",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "004000",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "028260",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "028300",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "003240",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "078340",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "103140",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "039490",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "051900",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "099320",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "066570",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "001430",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "069620",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "086520",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "009150",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "352820",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "003230",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "189300",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "042660",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "000150",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "000250",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "280360",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "483650",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "180640",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "011780",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "000720",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "071970",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "000120",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "001680",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "402340",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "006040",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "018290",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "035760",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "051600",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "226950",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "039200",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "032190",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "011070",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "295310",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "067160",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "004020",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "073240",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "005380",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "008730",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "064350",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "041510",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "007390",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "035900",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "018260",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "033100",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "399720",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "120110",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "108490",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "036810",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "298050",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "348210",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "253450",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "012330",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "034230",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "376300",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "035420",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "004990",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "011210",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "000100",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "003550",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "257720",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "009420",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "016360",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "000660",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "068760",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "052400",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "285130",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "023530",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "298020",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "047050",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "014620",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "326030",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "278280",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "000210",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "017670",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "001040",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "361610",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "032500",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "015750",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "141080",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "218410",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "009520",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "211050",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "008770",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "000670",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "445680",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "052690",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "006800",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "003030",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "196170",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "213420",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "002030",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "011170",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "010060",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "0009K0",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "298380",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "025900",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "388720",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "352480",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "032830",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "083650",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "475830",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "251270",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "082270",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "006650",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "214450",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "348370",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "214370",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "017960",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "237690",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "015760",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "010130",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "004170",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "112040",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "058610",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "310210",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "377300",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "025320",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "036620",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "214150",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "0126Z0",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "085660",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "082920",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "069960",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "022100",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "358570",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "277810",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "122870",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "456040",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "263750",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "065350",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "307950",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "090360",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "466100",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "124500",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "194480",
+        "recent": 5,
+        "base": 43
+      },
+      {
+        "code": "420770",
+        "recent": 2,
+        "base": 36
+      },
+      {
+        "code": "319660",
+        "recent": 1,
+        "base": 37
       }
     ]
   },
@@ -102,50 +1557,136 @@
       1.8
     ],
     "fragile": [],
-    "possible": [
-      {
-        "code": "012750",
-        "name": "에스원",
-        "rvol": 1.37046747167613,
-        "prox_52w": 0.9349514563106797
-      }
-    ]
+    "possible": []
   },
   "B": [
     {
-      "as_of": "2026-10-29",
-      "close": 62800.0,
-      "rvol": 3.40569741679625,
-      "vol_ratio_1d": 1.8045363402095806,
-      "high_52w": 67300.0,
-      "prox_52w": 0.9331352154531947,
+      "as_of": "2026-10-14",
+      "close": 89600.0,
+      "rvol": 4.468761073619091,
+      "vol_ratio_1d": 5.063752642219965,
+      "high_52w": 93100.0,
+      "prox_52w": 0.9624060150375939,
       "history_days": 252,
-      "avg_value_20d": 167034558382.72156,
-      "ret_20d": 0.33191940615058324,
+      "avg_value_20d": 21765458193.677296,
+      "ret_20d": 0.5691768826619965,
+      "ext_days_recent": 0,
+      "ext_days_base": 0,
+      "nxt_days_recent": 5,
+      "nxt_days_base": 43,
+      "code": "053800",
+      "security_id": "KRX:053800",
+      "name": "안랩",
+      "index": "KOSDAQ150",
+      "provisional": false,
+      "score": 99.28,
+      "fails": [],
+      "passed": true,
+      "a_cond": {
+        "a_flag": false,
+        "status": "NEUTRAL",
+        "sue": 0.8589078593545132,
+        "age_td": 39,
+        "period": "2026Q2",
+        "rcept_date": "2026-08-13"
+      }
+    },
+    {
+      "as_of": "2026-10-14",
+      "close": 7240.0,
+      "rvol": 2.307852707419409,
+      "vol_ratio_1d": 4.7130712155103005,
+      "high_52w": 7370.0,
+      "prox_52w": 0.9823609226594301,
+      "history_days": 252,
+      "avg_value_20d": 24700512241.629387,
+      "ret_20d": 0.21273031825795652,
       "ext_days_recent": 0,
       "ext_days_base": 0,
       "nxt_days_recent": 0,
       "nxt_days_base": 0,
-      "code": "028050",
-      "security_id": "KRX:028050",
-      "name": "삼성E&A",
+      "code": "028670",
+      "security_id": "KRX:028670",
+      "name": "팬오션",
       "index": "KOSPI200",
-      "provisional": true,
-      "score": 99.28,
+      "provisional": false,
+      "score": 98.57,
       "fails": [],
       "passed": true,
       "a_cond": {
         "a_flag": true,
         "status": "A_POS",
-        "sue": 1.7996484216191118,
-        "age_td": 49,
+        "sue": 3.4244302296522062,
+        "age_td": 40,
+        "period": "2026Q2",
+        "rcept_date": "2026-08-12"
+      }
+    },
+    {
+      "as_of": "2026-10-14",
+      "close": 23350.0,
+      "rvol": 2.159636904851416,
+      "vol_ratio_1d": 4.905684700204575,
+      "high_52w": 24950.0,
+      "prox_52w": 0.935871743486974,
+      "history_days": 252,
+      "avg_value_20d": 35320688261.98517,
+      "ret_20d": 0.11990407673860903,
+      "ext_days_recent": 0,
+      "ext_days_base": 0,
+      "nxt_days_recent": 5,
+      "nxt_days_base": 43,
+      "code": "011200",
+      "security_id": "KRX:011200",
+      "name": "HMM",
+      "index": "KOSPI200",
+      "provisional": false,
+      "score": 97.28,
+      "fails": [],
+      "passed": true,
+      "a_cond": {
+        "a_flag": false,
+        "status": "NEUTRAL",
+        "sue": 0.1403048756530725,
+        "age_td": 39,
+        "period": "2026Q2",
+        "rcept_date": "2026-08-13"
+      }
+    },
+    {
+      "as_of": "2026-10-14",
+      "close": 209000.0,
+      "rvol": 1.5506398106462478,
+      "vol_ratio_1d": 2.139607332027354,
+      "high_52w": 219000.0,
+      "prox_52w": 0.954337899543379,
+      "history_days": 252,
+      "avg_value_20d": 40318493798.625824,
+      "ret_20d": 0.34838709677419355,
+      "ext_days_recent": 0,
+      "ext_days_base": 0,
+      "nxt_days_recent": 5,
+      "nxt_days_base": 32,
+      "code": "031980",
+      "security_id": "KRX:031980",
+      "name": "피에스케이홀딩스",
+      "index": "KOSDAQ150",
+      "provisional": false,
+      "score": 93.27,
+      "fails": [],
+      "passed": true,
+      "a_cond": {
+        "a_flag": false,
+        "status": "NEUTRAL",
+        "sue": 0.2778594023483183,
+        "age_td": 38,
         "period": "2026Q2",
         "rcept_date": "2026-08-14"
       }
     }
   ],
   "A_and_B": [
-    "028050"
+    "028670"
   ],
   "B_evaluated": 350,
   "A": [
@@ -163,12 +1704,12 @@
       "security_id": "KRX:298020",
       "name": "효성티앤씨",
       "index": "KOSPI200",
-      "avg_value_20d": 4899508469.877597,
-      "prox_52w": 0.4730700179533214,
-      "close": 263500.0,
+      "avg_value_20d": 5737157002.633619,
+      "prox_52w": 0.5062836624775583,
+      "close": 282000.0,
       "event_date": "2026-07-31",
       "event_source": "PRELIM",
-      "elapsed_td": 59,
+      "elapsed_td": 48,
       "report_lag_td": 9,
       "fails": [],
       "passed": true
@@ -187,12 +1728,12 @@
       "security_id": "KRX:402340",
       "name": "SK스퀘어",
       "index": "KOSPI200",
-      "avg_value_20d": 763940923264.1663,
-      "prox_52w": 0.43535861123800823,
-      "close": 953000.0,
+      "avg_value_20d": 747659480158.3279,
+      "prox_52w": 0.3892188213796254,
+      "close": 852000.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -211,12 +1752,12 @@
       "security_id": "KRX:011780",
       "name": "금호석유화학",
       "index": "KOSPI200",
-      "avg_value_20d": 8008263911.294176,
-      "prox_52w": 0.6549599507085644,
-      "close": 106300.0,
+      "avg_value_20d": 7845129351.285299,
+      "prox_52w": 0.7190388170055453,
+      "close": 116700.0,
       "event_date": "2026-08-07",
       "event_source": "PRELIM",
-      "elapsed_td": 54,
+      "elapsed_td": 43,
       "report_lag_td": 5,
       "fails": [],
       "passed": true
@@ -235,13 +1776,37 @@
       "security_id": "KRX:003230",
       "name": "삼양식품",
       "index": "KOSPI200",
-      "avg_value_20d": 54650939225.57095,
-      "prox_52w": 0.7334617854849069,
-      "close": 1142000.0,
+      "avg_value_20d": 59795440252.577194,
+      "prox_52w": 0.720226843100189,
+      "close": 1143000.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 60542608000000.0,
+      "prior_value": 9212851000000.0,
+      "diff": 51329757000000.0,
+      "rcept_no": "20260814003509",
+      "rcept_date": "2026-08-14",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 5.9685297197636045,
+      "code": "000660",
+      "security_id": "KRX:000660",
+      "name": "SK하이닉스",
+      "index": "KOSPI200",
+      "avg_value_20d": 6676542146572.481,
+      "prox_52w": 0.4750585872112487,
+      "close": 1419000.0,
+      "event_date": "2026-07-29",
+      "event_source": "PRELIM",
+      "elapsed_td": 50,
+      "report_lag_td": 12,
       "fails": [],
       "passed": true
     },
@@ -259,12 +1824,12 @@
       "security_id": "KRX:081660",
       "name": "미스토홀딩스",
       "index": "KOSPI200",
-      "avg_value_20d": 4394700037.049965,
-      "prox_52w": 0.660394265232975,
-      "close": 36850.0,
+      "avg_value_20d": 5474334347.36737,
+      "prox_52w": 0.6756272401433692,
+      "close": 37700.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -283,12 +1848,12 @@
       "security_id": "KRX:062040",
       "name": "산일전기",
       "index": "KOSPI200",
-      "avg_value_20d": 78153807167.04977,
-      "prox_52w": 0.45982404692082113,
-      "close": 156800.0,
+      "avg_value_20d": 86010842192.54825,
+      "prox_52w": 0.6217008797653959,
+      "close": 212000.0,
       "event_date": "2026-08-07",
       "event_source": "PRELIM",
-      "elapsed_td": 54,
+      "elapsed_td": 43,
       "report_lag_td": 5,
       "fails": [],
       "passed": true
@@ -307,12 +1872,12 @@
       "security_id": "KRX:006800",
       "name": "미래에셋증권",
       "index": "KOSPI200",
-      "avg_value_20d": 37421341344.9565,
-      "prox_52w": 0.30125284738041,
-      "close": 26450.0,
+      "avg_value_20d": 40882137013.903275,
+      "prox_52w": 0.3080865603644647,
+      "close": 27050.0,
       "event_date": "2026-08-12",
       "event_source": "PRELIM",
-      "elapsed_td": 51,
+      "elapsed_td": 40,
       "report_lag_td": 2,
       "fails": [],
       "passed": true
@@ -331,12 +1896,12 @@
       "security_id": "KRX:080220",
       "name": "제주반도체",
       "index": "KOSDAQ150",
-      "avg_value_20d": 101635965279.58647,
-      "prox_52w": 0.5094202898550725,
-      "close": 70300.0,
+      "avg_value_20d": 100863129202.25327,
+      "prox_52w": 0.5231884057971015,
+      "close": 72200.0,
       "event_date": "2026-08-13",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 50,
+      "elapsed_td": 39,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -355,12 +1920,12 @@
       "security_id": "KRX:009150",
       "name": "삼성전기",
       "index": "KOSPI200",
-      "avg_value_20d": 1350203393856.5107,
-      "prox_52w": 0.5349606950765412,
-      "close": 1293000.0,
+      "avg_value_20d": 1219049937988.5063,
+      "prox_52w": 0.5684733140256516,
+      "close": 1374000.0,
       "event_date": "2026-07-30",
       "event_source": "PRELIM",
-      "elapsed_td": 60,
+      "elapsed_td": 49,
       "report_lag_td": 11,
       "fails": [],
       "passed": true
@@ -379,12 +1944,12 @@
       "security_id": "KRX:267250",
       "name": "HD현대",
       "index": "KOSPI200",
-      "avg_value_20d": 38087290357.31163,
-      "prox_52w": 0.42162162162162165,
-      "close": 140400.0,
+      "avg_value_20d": 41856046967.35858,
+      "prox_52w": 0.496996996996997,
+      "close": 165500.0,
       "event_date": "2026-07-31",
       "event_source": "PRELIM",
-      "elapsed_td": 59,
+      "elapsed_td": 48,
       "report_lag_td": 10,
       "fails": [],
       "passed": true
@@ -403,12 +1968,12 @@
       "security_id": "KRX:257720",
       "name": "실리콘투",
       "index": "KOSDAQ150",
-      "avg_value_20d": 30265738522.378777,
-      "prox_52w": 0.5106951871657754,
-      "close": 28650.0,
+      "avg_value_20d": 40639113066.771,
+      "prox_52w": 0.56951871657754,
+      "close": 31950.0,
       "event_date": "2026-08-12",
       "event_source": "PRELIM",
-      "elapsed_td": 51,
+      "elapsed_td": 40,
       "report_lag_td": 2,
       "fails": [],
       "passed": true
@@ -427,12 +1992,12 @@
       "security_id": "KRX:007340",
       "name": "DN오토모티브",
       "index": "KOSPI200",
-      "avg_value_20d": 10440139003.436605,
+      "avg_value_20d": 10478779307.050049,
       "prox_52w": 0.6111111111111112,
       "close": 41250.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -451,12 +2016,12 @@
       "security_id": "KRX:033500",
       "name": "동성화인텍",
       "index": "KOSDAQ150",
-      "avg_value_20d": 2078842619.866619,
-      "prox_52w": 0.3871362940275651,
-      "close": 12640.0,
+      "avg_value_20d": 1773430746.4359117,
+      "prox_52w": 0.4514548238897397,
+      "close": 14740.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -475,12 +2040,12 @@
       "security_id": "KRX:329180",
       "name": "HD현대중공업",
       "index": "KOSPI200",
-      "avg_value_20d": 134789615879.07504,
-      "prox_52w": 0.35555555555555557,
-      "close": 272000.0,
+      "avg_value_20d": 135186348984.5806,
+      "prox_52w": 0.4823529411764706,
+      "close": 369000.0,
       "event_date": "2026-08-14",
       "event_source": "MONTHLY_FILER",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -499,12 +2064,12 @@
       "security_id": "KRX:009540",
       "name": "HD한국조선해양",
       "index": "KOSPI200",
-      "avg_value_20d": 64977919107.82489,
-      "prox_52w": 0.4711830131445905,
-      "close": 233000.0,
+      "avg_value_20d": 66118061749.73482,
+      "prox_52w": 0.5581395348837209,
+      "close": 276000.0,
       "event_date": "2026-08-14",
       "event_source": "MONTHLY_FILER",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -523,12 +2088,12 @@
       "security_id": "KRX:067310",
       "name": "하나마이크론",
       "index": "KOSDAQ150",
-      "avg_value_20d": 64838470051.126,
-      "prox_52w": 0.6341880341880342,
-      "close": 37100.0,
+      "avg_value_20d": 84329295695.95627,
+      "prox_52w": 0.764102564102564,
+      "close": 44700.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -547,12 +2112,12 @@
       "security_id": "KRX:071050",
       "name": "한국금융지주",
       "index": "KOSPI200",
-      "avg_value_20d": 34091693230.035088,
-      "prox_52w": 0.5324459234608985,
-      "close": 160000.0,
+      "avg_value_20d": 34829637401.228714,
+      "prox_52w": 0.5241264559068219,
+      "close": 157500.0,
       "event_date": "2026-08-06",
       "event_source": "PRELIM",
-      "elapsed_td": 55,
+      "elapsed_td": 44,
       "report_lag_td": 6,
       "fails": [],
       "passed": true
@@ -571,12 +2136,12 @@
       "security_id": "KRX:007660",
       "name": "이수페타시스",
       "index": "KOSPI200",
-      "avg_value_20d": 116603548168.65128,
-      "prox_52w": 0.5632603406326034,
-      "close": 92600.0,
+      "avg_value_20d": 149976842216.99176,
+      "prox_52w": 0.6763990267639902,
+      "close": 111200.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -595,12 +2160,12 @@
       "security_id": "KRX:483650",
       "name": "달바글로벌",
       "index": "KOSPI200",
-      "avg_value_20d": 21665750409.852898,
-      "prox_52w": 0.5106007067137809,
-      "close": 144500.0,
+      "avg_value_20d": 32695284969.474407,
+      "prox_52w": 0.5812720848056537,
+      "close": 164500.0,
       "event_date": "2026-08-13",
       "event_source": "PRELIM",
-      "elapsed_td": 50,
+      "elapsed_td": 39,
       "report_lag_td": 1,
       "fails": [],
       "passed": true
@@ -619,12 +2184,12 @@
       "security_id": "KRX:016360",
       "name": "삼성증권",
       "index": "KOSPI200",
-      "avg_value_20d": 28192074117.865284,
-      "prox_52w": 0.5122699386503068,
-      "close": 83500.0,
+      "avg_value_20d": 31308170636.7943,
+      "prox_52w": 0.4883435582822086,
+      "close": 79600.0,
       "event_date": "2026-08-04",
       "event_source": "PRELIM",
-      "elapsed_td": 57,
+      "elapsed_td": 46,
       "report_lag_td": 8,
       "fails": [],
       "passed": true
@@ -643,13 +2208,37 @@
       "security_id": "KRX:078930",
       "name": "GS",
       "index": "KOSPI200",
-      "avg_value_20d": 40657822115.332794,
-      "prox_52w": 0.6201201201201201,
-      "close": 82600.0,
+      "avg_value_20d": 41867299016.68736,
+      "prox_52w": 0.7545045045045045,
+      "close": 100500.0,
       "event_date": "2026-08-11",
       "event_source": "PRELIM",
-      "elapsed_td": 52,
+      "elapsed_td": 41,
       "report_lag_td": 3,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 248883827000.0,
+      "prior_value": 40043555000.0,
+      "diff": 208840272000.0,
+      "rcept_no": "20260814004300",
+      "rcept_date": "2026-08-14",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 3.6036072139913826,
+      "code": "267270",
+      "security_id": "KRX:267270",
+      "name": "HD건설기계",
+      "index": "KOSPI200",
+      "avg_value_20d": 41926027934.1075,
+      "prox_52w": 0.4606896551724138,
+      "close": 100200.0,
+      "event_date": "2026-07-29",
+      "event_source": "PRELIM",
+      "elapsed_td": 50,
+      "report_lag_td": 12,
       "fails": [],
       "passed": true
     },
@@ -667,12 +2256,12 @@
       "security_id": "KRX:009520",
       "name": "포스코엠텍",
       "index": "KOSDAQ150",
-      "avg_value_20d": 2013279259.3867862,
-      "prox_52w": 0.4675324675324675,
-      "close": 10800.0,
+      "avg_value_20d": 2183486764.2917566,
+      "prox_52w": 0.5363636363636364,
+      "close": 12390.0,
       "event_date": "2026-07-30",
       "event_source": "PRELIM",
-      "elapsed_td": 60,
+      "elapsed_td": 49,
       "report_lag_td": 11,
       "fails": [],
       "passed": true
@@ -691,12 +2280,12 @@
       "security_id": "KRX:161890",
       "name": "한국콜마",
       "index": "KOSPI200",
-      "avg_value_20d": 42889311039.97075,
-      "prox_52w": 0.6949969861362266,
-      "close": 115300.0,
+      "avg_value_20d": 55977932393.13389,
+      "prox_52w": 0.7438215792646172,
+      "close": 123400.0,
       "event_date": "2026-08-12",
       "event_source": "PRELIM",
-      "elapsed_td": 51,
+      "elapsed_td": 40,
       "report_lag_td": 2,
       "fails": [],
       "passed": true
@@ -715,12 +2304,12 @@
       "security_id": "KRX:028670",
       "name": "팬오션",
       "index": "KOSPI200",
-      "avg_value_20d": 34332347073.932182,
-      "prox_52w": 0.7305236270753512,
-      "close": 5720.0,
+      "avg_value_20d": 24700512241.629387,
+      "prox_52w": 0.9823609226594301,
+      "close": 7240.0,
       "event_date": "2026-07-31",
       "event_source": "PRELIM",
-      "elapsed_td": 59,
+      "elapsed_td": 48,
       "report_lag_td": 8,
       "fails": [],
       "passed": true
@@ -739,12 +2328,12 @@
       "security_id": "KRX:036830",
       "name": "솔브레인홀딩스",
       "index": "KOSDAQ150",
-      "avg_value_20d": 5275738348.499253,
-      "prox_52w": 0.4752475247524752,
-      "close": 38400.0,
+      "avg_value_20d": 4852839766.796987,
+      "prox_52w": 0.5891089108910891,
+      "close": 47600.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -763,12 +2352,12 @@
       "security_id": "KRX:006260",
       "name": "LS",
       "index": "KOSPI200",
-      "avg_value_20d": 49021799788.195694,
-      "prox_52w": 0.3518211920529801,
-      "close": 212500.0,
+      "avg_value_20d": 50026330352.41155,
+      "prox_52w": 0.4105960264900662,
+      "close": 248000.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -787,12 +2376,12 @@
       "security_id": "KRX:096770",
       "name": "SK이노베이션",
       "index": "KOSPI200",
-      "avg_value_20d": 164808198887.28522,
-      "prox_52w": 0.7847642079806529,
-      "close": 129800.0,
+      "avg_value_20d": 169667762647.28436,
+      "prox_52w": 0.9866989117291415,
+      "close": 163200.0,
       "event_date": "2026-07-30",
       "event_source": "PRELIM",
-      "elapsed_td": 60,
+      "elapsed_td": 49,
       "report_lag_td": 11,
       "fails": [],
       "passed": true
@@ -811,13 +2400,37 @@
       "security_id": "KRX:166090",
       "name": "하나머티리얼즈",
       "index": "KOSDAQ150",
-      "avg_value_20d": 11801906218.96259,
-      "prox_52w": 0.5881683731513083,
-      "close": 51700.0,
+      "avg_value_20d": 11286241427.171114,
+      "prox_52w": 0.6791808873720137,
+      "close": 59700.0,
       "event_date": "2026-08-13",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 50,
+      "elapsed_td": 39,
       "report_lag_td": 0,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 325023819520.0,
+      "prior_value": 204816240484.0,
+      "diff": 120207579036.0,
+      "rcept_no": "20260814003496",
+      "rcept_date": "2026-08-14",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 3.15541512834765,
+      "code": "010140",
+      "security_id": "KRX:010140",
+      "name": "삼성중공업",
+      "index": "KOSPI200",
+      "avg_value_20d": 94103944290.1848,
+      "prox_52w": 0.536067892503536,
+      "close": 18950.0,
+      "event_date": "2026-07-24",
+      "event_source": "PRELIM",
+      "elapsed_td": 53,
+      "report_lag_td": 15,
       "fails": [],
       "passed": true
     },
@@ -835,12 +2448,12 @@
       "security_id": "KRX:222800",
       "name": "심텍",
       "index": "KOSDAQ150",
-      "avg_value_20d": 168363611884.733,
-      "prox_52w": 0.6757940854326396,
-      "close": 123400.0,
+      "avg_value_20d": 157909446575.21307,
+      "prox_52w": 0.7721796276013143,
+      "close": 141000.0,
       "event_date": "2026-08-05",
       "event_source": "PRELIM",
-      "elapsed_td": 56,
+      "elapsed_td": 45,
       "report_lag_td": 6,
       "fails": [],
       "passed": true
@@ -859,13 +2472,37 @@
       "security_id": "KRX:088350",
       "name": "한화생명",
       "index": "KOSPI200",
-      "avg_value_20d": 12137702314.827328,
-      "prox_52w": 0.5482804232804233,
-      "close": 4145.0,
+      "avg_value_20d": 15845894848.941517,
+      "prox_52w": 0.6283068783068783,
+      "close": 4750.0,
       "event_date": "2026-08-12",
       "event_source": "PRELIM",
-      "elapsed_td": 51,
+      "elapsed_td": 40,
       "report_lag_td": 12,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 178520071669.0,
+      "prior_value": 108597651385.0,
+      "diff": 69922420284.0,
+      "rcept_no": "20260814003088",
+      "rcept_date": "2026-08-14",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 3.1248683782236912,
+      "code": "010120",
+      "security_id": "KRX:010120",
+      "name": "LS ELECTRIC",
+      "index": "KOSPI200",
+      "avg_value_20d": 131150971676.7382,
+      "prox_52w": 0.528955223880597,
+      "close": 177200.0,
+      "event_date": "2026-07-23",
+      "event_source": "PRELIM",
+      "elapsed_td": 54,
+      "report_lag_td": 16,
       "fails": [],
       "passed": true
     },
@@ -883,12 +2520,12 @@
       "security_id": "KRX:083650",
       "name": "비에이치아이",
       "index": "KOSDAQ150",
-      "avg_value_20d": 18572977155.137558,
-      "prox_52w": 0.37565674255691767,
-      "close": 42900.0,
+      "avg_value_20d": 31224932617.4151,
+      "prox_52w": 0.436077057793345,
+      "close": 49800.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -907,13 +2544,61 @@
       "security_id": "KRX:034730",
       "name": "SK",
       "index": "KOSPI200",
-      "avg_value_20d": 98853135639.46133,
-      "prox_52w": 0.6058890147225368,
-      "close": 535000.0,
+      "avg_value_20d": 88669653746.99844,
+      "prox_52w": 0.5560588901472253,
+      "close": 491000.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 681245000000.0,
+      "prior_value": 321926000000.0,
+      "diff": 359319000000.0,
+      "rcept_no": "20260814002484",
+      "rcept_date": "2026-08-14",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 2.90555159653324,
+      "code": "005940",
+      "security_id": "KRX:005940",
+      "name": "NH투자증권",
+      "index": "KOSPI200",
+      "avg_value_20d": 13199581813.878162,
+      "prox_52w": 0.5704225352112676,
+      "close": 24300.0,
+      "event_date": "2026-07-23",
+      "event_source": "PRELIM",
+      "elapsed_td": 54,
+      "report_lag_td": 16,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 736113640397.0,
+      "prior_value": 371703649349.0,
+      "diff": 364409991048.0,
+      "rcept_no": "20260812000829",
+      "rcept_date": "2026-08-12",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 2.865638316650102,
+      "code": "042660",
+      "security_id": "KRX:042660",
+      "name": "한화오션",
+      "index": "KOSPI200",
+      "avg_value_20d": 82820185828.1878,
+      "prox_52w": 0.4354005167958656,
+      "close": 67400.0,
+      "event_date": "2026-07-27",
+      "event_source": "PRELIM",
+      "elapsed_td": 52,
+      "report_lag_td": 12,
       "fails": [],
       "passed": true
     },
@@ -931,12 +2616,12 @@
       "security_id": "KRX:120110",
       "name": "코오롱인더",
       "index": "KOSPI200",
-      "avg_value_20d": 12521141826.110783,
-      "prox_52w": 0.3765490943755958,
-      "close": 39500.0,
+      "avg_value_20d": 10954176270.208239,
+      "prox_52w": 0.49952335557673977,
+      "close": 52400.0,
       "event_date": "2026-08-07",
       "event_source": "PRELIM",
-      "elapsed_td": 54,
+      "elapsed_td": 43,
       "report_lag_td": 5,
       "fails": [],
       "passed": true
@@ -955,12 +2640,12 @@
       "security_id": "KRX:131290",
       "name": "티에스이",
       "index": "KOSDAQ150",
-      "avg_value_20d": 42741806966.94279,
-      "prox_52w": 0.755072463768116,
-      "close": 260500.0,
+      "avg_value_20d": 38606826293.05192,
+      "prox_52w": 0.9231884057971015,
+      "close": 318500.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -979,12 +2664,12 @@
       "security_id": "KRX:278470",
       "name": "에이피알",
       "index": "KOSPI200",
-      "avg_value_20d": 133055263914.46603,
-      "prox_52w": 0.5947368421052631,
-      "close": 282500.0,
+      "avg_value_20d": 135487491505.47632,
+      "prox_52w": 0.62,
+      "close": 294500.0,
       "event_date": "2026-08-05",
       "event_source": "PRELIM",
-      "elapsed_td": 56,
+      "elapsed_td": 45,
       "report_lag_td": 7,
       "fails": [],
       "passed": true
@@ -1003,12 +2688,12 @@
       "security_id": "KRX:005420",
       "name": "코스모화학",
       "index": "KOSPI200",
-      "avg_value_20d": 1937623354.8323612,
-      "prox_52w": 0.4415704387990762,
-      "close": 9560.0,
+      "avg_value_20d": 1645301472.9063287,
+      "prox_52w": 0.5344110854503464,
+      "close": 11570.0,
       "event_date": "2026-07-30",
       "event_source": "PRELIM",
-      "elapsed_td": 60,
+      "elapsed_td": 49,
       "report_lag_td": 11,
       "fails": [],
       "passed": true
@@ -1027,13 +2712,37 @@
       "security_id": "KRX:290650",
       "name": "엘앤씨바이오",
       "index": "KOSDAQ150",
-      "avg_value_20d": 34556443935.52074,
-      "prox_52w": 0.41259143585107255,
-      "close": 25100.0,
+      "avg_value_20d": 20516947532.76654,
+      "prox_52w": 0.49806785567518697,
+      "close": 30299.958,
       "event_date": "2026-08-11",
       "event_source": "PRELIM",
-      "elapsed_td": 52,
+      "elapsed_td": 41,
       "report_lag_td": 3,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 131093421067.0,
+      "prior_value": 60438495646.0,
+      "diff": 70654925421.0,
+      "rcept_no": "20260814004181",
+      "rcept_date": "2026-08-14",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 2.553274591446119,
+      "code": "128940",
+      "security_id": "KRX:128940",
+      "name": "한미약품",
+      "index": "KOSPI200",
+      "avg_value_20d": 78841123487.8394,
+      "prox_52w": 0.625193199381762,
+      "close": 404500.0,
+      "event_date": "2026-07-28",
+      "event_source": "PRELIM",
+      "elapsed_td": 51,
+      "report_lag_td": 13,
       "fails": [],
       "passed": true
     },
@@ -1051,12 +2760,12 @@
       "security_id": "KRX:319660",
       "name": "피에스케이",
       "index": "KOSDAQ150",
-      "avg_value_20d": 50986330459.897446,
-      "prox_52w": 0.5480637813211845,
-      "close": 120300.0,
+      "avg_value_20d": 56218243957.80349,
+      "prox_52w": 0.6323462414578588,
+      "close": 138800.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -1075,13 +2784,37 @@
       "security_id": "KRX:032190",
       "name": "다우데이타",
       "index": "KOSDAQ150",
-      "avg_value_20d": 1146971003.413022,
-      "prox_52w": 0.5418124006359301,
-      "close": 17040.0,
+      "avg_value_20d": 1233994643.0476542,
+      "prox_52w": 0.5707472178060413,
+      "close": 17950.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": -14424072141.0,
+      "prior_value": -68519892967.0,
+      "diff": 54095820826.0,
+      "rcept_no": "20260814003336",
+      "rcept_date": "2026-08-14",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 2.5118913308732993,
+      "code": "011790",
+      "security_id": "KRX:011790",
+      "name": "SKC",
+      "index": "KOSPI200",
+      "avg_value_20d": 34375535549.02046,
+      "prox_52w": 0.5558568329718004,
+      "close": 102500.0,
+      "event_date": "2026-07-27",
+      "event_source": "PRELIM",
+      "elapsed_td": 52,
+      "report_lag_td": 14,
       "fails": [],
       "passed": true
     },
@@ -1099,12 +2832,12 @@
       "security_id": "KRX:377300",
       "name": "카카오페이",
       "index": "KOSPI200",
-      "avg_value_20d": 6597263443.414634,
-      "prox_52w": 0.4292929292929293,
-      "close": 34000.0,
+      "avg_value_20d": 12780276344.931768,
+      "prox_52w": 0.4577020202020202,
+      "close": 36250.0,
       "event_date": "2026-08-04",
       "event_source": "PRELIM",
-      "elapsed_td": 57,
+      "elapsed_td": 46,
       "report_lag_td": 8,
       "fails": [],
       "passed": true
@@ -1123,12 +2856,12 @@
       "security_id": "KRX:033780",
       "name": "KT&G",
       "index": "KOSPI200",
-      "avg_value_20d": 51736082658.62227,
-      "prox_52w": 0.9831975560081466,
-      "close": 193100.0,
+      "avg_value_20d": 42354478148.946304,
+      "prox_52w": 0.9449064449064449,
+      "close": 181800.0,
       "event_date": "2026-08-06",
       "event_source": "PRELIM",
-      "elapsed_td": 55,
+      "elapsed_td": 44,
       "report_lag_td": 6,
       "fails": [],
       "passed": true
@@ -1147,12 +2880,12 @@
       "security_id": "KRX:213420",
       "name": "덕산네오룩스",
       "index": "KOSDAQ150",
-      "avg_value_20d": 3786791809.994245,
-      "prox_52w": 0.4223385689354276,
-      "close": 24200.0,
+      "avg_value_20d": 4166862666.133882,
+      "prox_52w": 0.4825479930191972,
+      "close": 27650.0,
       "event_date": "2026-08-06",
       "event_source": "PRELIM",
-      "elapsed_td": 55,
+      "elapsed_td": 44,
       "report_lag_td": 5,
       "fails": [],
       "passed": true
@@ -1171,12 +2904,12 @@
       "security_id": "KRX:093370",
       "name": "후성",
       "index": "KOSPI200",
-      "avg_value_20d": 38533336072.247025,
-      "prox_52w": 0.43736730360934184,
-      "close": 10300.0,
+      "avg_value_20d": 61962784010.6793,
+      "prox_52w": 0.5970276008492569,
+      "close": 14060.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -1195,12 +2928,12 @@
       "security_id": "KRX:039490",
       "name": "키움증권",
       "index": "KOSPI200",
-      "avg_value_20d": 22209368788.203026,
-      "prox_52w": 0.4574468085106383,
-      "close": 236500.0,
+      "avg_value_20d": 22466825285.653866,
+      "prox_52w": 0.437137330754352,
+      "close": 226000.0,
       "event_date": "2026-07-30",
       "event_source": "PRELIM",
-      "elapsed_td": 60,
+      "elapsed_td": 49,
       "report_lag_td": 10,
       "fails": [],
       "passed": true
@@ -1219,12 +2952,12 @@
       "security_id": "KRX:058470",
       "name": "리노공업",
       "index": "KOSDAQ150",
-      "avg_value_20d": 103161554786.55522,
-      "prox_52w": 0.4782945736434108,
-      "close": 61700.0,
+      "avg_value_20d": 109496331662.20062,
+      "prox_52w": 0.5891472868217055,
+      "close": 76000.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -1243,12 +2976,12 @@
       "security_id": "KRX:065350",
       "name": "신성델타테크",
       "index": "KOSDAQ150",
-      "avg_value_20d": 3729881111.0009356,
-      "prox_52w": 0.34879518072289156,
-      "close": 28950.0,
+      "avg_value_20d": 3956563555.0038695,
+      "prox_52w": 0.37710843373493974,
+      "close": 31300.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -1267,12 +3000,12 @@
       "security_id": "KRX:001440",
       "name": "대한전선",
       "index": "KOSPI200",
-      "avg_value_20d": 47340803204.58817,
-      "prox_52w": 0.27009222661396576,
-      "close": 20500.0,
+      "avg_value_20d": 80203480519.5439,
+      "prox_52w": 0.32872200263504614,
+      "close": 24950.0,
       "event_date": "2026-07-30",
       "event_source": "PRELIM",
-      "elapsed_td": 60,
+      "elapsed_td": 49,
       "report_lag_td": 11,
       "fails": [],
       "passed": true
@@ -1291,13 +3024,37 @@
       "security_id": "KRX:017960",
       "name": "한국카본",
       "index": "KOSPI200",
-      "avg_value_20d": 4867617156.590284,
-      "prox_52w": 0.28632162661737526,
-      "close": 15490.0,
+      "avg_value_20d": 4353631415.677811,
+      "prox_52w": 0.34731977818853976,
+      "close": 18790.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 305602000000.0,
+      "prior_value": 266896000000.0,
+      "diff": 38706000000.0,
+      "rcept_no": "20260814002218",
+      "rcept_date": "2026-08-14",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 2.284928427727071,
+      "code": "175330",
+      "security_id": "KRX:175330",
+      "name": "JB금융지주",
+      "index": "KOSPI200",
+      "avg_value_20d": 15313252498.931936,
+      "prox_52w": 0.687012987012987,
+      "close": 26450.0,
+      "event_date": "2026-07-23",
+      "event_source": "PRELIM",
+      "elapsed_td": 54,
+      "report_lag_td": 16,
       "fails": [],
       "passed": true
     },
@@ -1315,12 +3072,12 @@
       "security_id": "KRX:004000",
       "name": "롯데정밀화학",
       "index": "KOSPI200",
-      "avg_value_20d": 2318351021.778865,
-      "prox_52w": 0.48676880222841223,
-      "close": 34950.0,
+      "avg_value_20d": 2316650060.376953,
+      "prox_52w": 0.5786908077994429,
+      "close": 41550.0,
       "event_date": "2026-07-30",
       "event_source": "PRELIM",
-      "elapsed_td": 60,
+      "elapsed_td": 49,
       "report_lag_td": 11,
       "fails": [],
       "passed": true
@@ -1339,12 +3096,12 @@
       "security_id": "KRX:161390",
       "name": "한국타이어앤테크놀로지",
       "index": "KOSPI200",
-      "avg_value_20d": 18746796366.6668,
-      "prox_52w": 0.7244897959183674,
-      "close": 56800.0,
+      "avg_value_20d": 16768604655.572296,
+      "prox_52w": 0.7997448979591837,
+      "close": 62700.0,
       "event_date": "2026-08-11",
       "event_source": "PRELIM",
-      "elapsed_td": 52,
+      "elapsed_td": 41,
       "report_lag_td": 3,
       "fails": [],
       "passed": true
@@ -1363,13 +3120,109 @@
       "security_id": "KRX:006730",
       "name": "서부T&D",
       "index": "KOSDAQ150",
-      "avg_value_20d": 6097780700.807544,
-      "prox_52w": 0.5559902200488998,
-      "close": 11370.0,
+      "avg_value_20d": 4344032374.359297,
+      "prox_52w": 0.5843520782396088,
+      "close": 11950.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 2476281000000.0,
+      "prior_value": 2014257000000.0,
+      "diff": 462024000000.0,
+      "rcept_no": "20260814003306",
+      "rcept_date": "2026-08-14",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 2.226977395728455,
+      "code": "055550",
+      "security_id": "KRX:055550",
+      "name": "신한지주",
+      "index": "KOSPI200",
+      "avg_value_20d": 115697299067.55417,
+      "prox_52w": 0.8154506437768241,
+      "close": 95000.0,
+      "event_date": "2026-07-23",
+      "event_source": "PRELIM",
+      "elapsed_td": 54,
+      "report_lag_td": 16,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 103651886040.0,
+      "prior_value": 32516282837.0,
+      "diff": 71135603203.0,
+      "rcept_no": "20260820000123",
+      "rcept_date": "2026-08-20",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 2.1834379416436627,
+      "code": "272210",
+      "security_id": "KRX:272210",
+      "name": "한화시스템",
+      "index": "KOSPI200",
+      "avg_value_20d": 90744700263.96657,
+      "prox_52w": 0.4391304347826087,
+      "close": 80800.0,
+      "event_date": "2026-07-28",
+      "event_source": "PRELIM",
+      "elapsed_td": 51,
+      "report_lag_td": 16,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 14552561107.0,
+      "prior_value": 2513135606.0,
+      "diff": 12039425501.0,
+      "rcept_no": "20260814003639",
+      "rcept_date": "2026-08-14",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 2.18146256004934,
+      "code": "098460",
+      "security_id": "KRX:098460",
+      "name": "고영",
+      "index": "KOSDAQ150",
+      "avg_value_20d": 46217225039.21935,
+      "prox_52w": 0.8033333333333333,
+      "close": 36150.0,
+      "event_date": "2026-07-28",
+      "event_source": "PRELIM",
+      "elapsed_td": 51,
+      "report_lag_td": 13,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 43260886000.0,
+      "prior_value": -2272091000.0,
+      "diff": 45532977000.0,
+      "rcept_no": "20260813000822",
+      "rcept_date": "2026-08-13",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 2.1655640637630853,
+      "code": "456040",
+      "security_id": "KRX:456040",
+      "name": "OCI",
+      "index": "KOSPI200",
+      "avg_value_20d": 2712696514.372421,
+      "prox_52w": 0.42401960784313725,
+      "close": 69200.0,
+      "event_date": "2026-07-22",
+      "event_source": "PRELIM",
+      "elapsed_td": 55,
+      "report_lag_td": 16,
       "fails": [],
       "passed": true
     },
@@ -1387,12 +3240,12 @@
       "security_id": "KRX:005830",
       "name": "DB손해보험",
       "index": "KOSPI200",
-      "avg_value_20d": 40483433810.27594,
-      "prox_52w": 0.8504672897196262,
-      "close": 182000.0,
+      "avg_value_20d": 44136026900.01417,
+      "prox_52w": 0.8658878504672897,
+      "close": 185300.0,
       "event_date": "2026-08-13",
       "event_source": "PRELIM",
-      "elapsed_td": 50,
+      "elapsed_td": 39,
       "report_lag_td": 1,
       "fails": [],
       "passed": true
@@ -1411,12 +3264,12 @@
       "security_id": "KRX:012450",
       "name": "한화에어로스페이스",
       "index": "KOSPI200",
-      "avg_value_20d": 171272261766.26547,
-      "prox_52w": 0.459214501510574,
-      "close": 760000.0,
+      "avg_value_20d": 179768739243.74957,
+      "prox_52w": 0.508761329305136,
+      "close": 842000.0,
       "event_date": "2026-07-31",
       "event_source": "PRELIM",
-      "elapsed_td": 59,
+      "elapsed_td": 48,
       "report_lag_td": 10,
       "fails": [],
       "passed": true
@@ -1435,12 +3288,12 @@
       "security_id": "KRX:000210",
       "name": "DL",
       "index": "KOSPI200",
-      "avg_value_20d": 2180540193.382668,
-      "prox_52w": 0.5315315315315315,
-      "close": 41300.0,
+      "avg_value_20d": 2644626256.436778,
+      "prox_52w": 0.5945945945945946,
+      "close": 46200.0,
       "event_date": "2026-08-03",
       "event_source": "PRELIM",
-      "elapsed_td": 58,
+      "elapsed_td": 47,
       "report_lag_td": 9,
       "fails": [],
       "passed": true
@@ -1459,13 +3312,37 @@
       "security_id": "KRX:008770",
       "name": "호텔신라",
       "index": "KOSPI200",
-      "avg_value_20d": 7435569171.969755,
-      "prox_52w": 0.4957325746799431,
-      "close": 34850.0,
+      "avg_value_20d": 7889698665.833173,
+      "prox_52w": 0.5362731152204836,
+      "close": 37700.0,
       "event_date": "2026-07-31",
       "event_source": "PRELIM",
-      "elapsed_td": 59,
+      "elapsed_td": 48,
       "report_lag_td": 10,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 1031736010472.0,
+      "prior_value": 752614345055.0,
+      "diff": 279121665417.0,
+      "rcept_no": "20260814002969",
+      "rcept_date": "2026-08-14",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 2.0194087274068058,
+      "code": "028260",
+      "security_id": "KRX:028260",
+      "name": "삼성물산",
+      "index": "KOSPI200",
+      "avg_value_20d": 125941454585.48418,
+      "prox_52w": 0.515929203539823,
+      "close": 291500.0,
+      "event_date": "2026-07-29",
+      "event_source": "PRELIM",
+      "elapsed_td": 50,
+      "report_lag_td": 12,
       "fails": [],
       "passed": true
     },
@@ -1483,13 +3360,37 @@
       "security_id": "KRX:298040",
       "name": "효성중공업",
       "index": "KOSPI200",
-      "avg_value_20d": 160088655715.13287,
-      "prox_52w": 0.40299451708140027,
-      "close": 1911000.0,
+      "avg_value_20d": 151899760794.28613,
+      "prox_52w": 0.4502319696330662,
+      "close": 2135000.0,
       "event_date": "2026-07-31",
       "event_source": "PRELIM",
-      "elapsed_td": 59,
+      "elapsed_td": 48,
       "report_lag_td": 9,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 108085956000.0,
+      "prior_value": -80341806000.0,
+      "diff": 188427762000.0,
+      "rcept_no": "20260813000901",
+      "rcept_date": "2026-08-13",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 1.936249693140956,
+      "code": "010060",
+      "security_id": "KRX:010060",
+      "name": "OCI홀딩스",
+      "index": "KOSPI200",
+      "avg_value_20d": 78391660268.5833,
+      "prox_52w": 0.5301932367149759,
+      "close": 219500.0,
+      "event_date": "2026-07-23",
+      "event_source": "PRELIM",
+      "elapsed_td": 54,
+      "report_lag_td": 15,
       "fails": [],
       "passed": true
     },
@@ -1507,12 +3408,12 @@
       "security_id": "KRX:064760",
       "name": "티씨케이",
       "index": "KOSDAQ150",
-      "avg_value_20d": 19970495860.59992,
-      "prox_52w": 0.6111908177905309,
-      "close": 213000.0,
+      "avg_value_20d": 19452685505.34061,
+      "prox_52w": 0.7431850789096126,
+      "close": 259000.0,
       "event_date": "2026-08-07",
       "event_source": "PRELIM",
-      "elapsed_td": 54,
+      "elapsed_td": 43,
       "report_lag_td": 5,
       "fails": [],
       "passed": true
@@ -1531,12 +3432,12 @@
       "security_id": "KRX:036570",
       "name": "NC",
       "index": "KOSPI200",
-      "avg_value_20d": 32860583978.21717,
-      "prox_52w": 0.5807860262008734,
-      "close": 199500.0,
+      "avg_value_20d": 32951489214.995705,
+      "prox_52w": 0.6011644832605532,
+      "close": 206500.0,
       "event_date": "2026-08-11",
       "event_source": "PRELIM",
-      "elapsed_td": 52,
+      "elapsed_td": 41,
       "report_lag_td": 3,
       "fails": [],
       "passed": true
@@ -1555,12 +3456,12 @@
       "security_id": "KRX:192820",
       "name": "코스맥스",
       "index": "KOSPI200",
-      "avg_value_20d": 36025109243.69371,
-      "prox_52w": 0.775,
-      "close": 248000.0,
+      "avg_value_20d": 34927797871.88707,
+      "prox_52w": 0.884375,
+      "close": 283000.0,
       "event_date": "2026-08-11",
       "event_source": "PRELIM",
-      "elapsed_td": 52,
+      "elapsed_td": 41,
       "report_lag_td": 2,
       "fails": [],
       "passed": true
@@ -1579,12 +3480,12 @@
       "security_id": "KRX:000880",
       "name": "한화",
       "index": "KOSPI200",
-      "avg_value_20d": 11800940850.397703,
-      "prox_52w": 0.4600543655104401,
-      "close": 91900.0,
+      "avg_value_20d": 15600890749.155884,
+      "prox_52w": 0.5216285624177134,
+      "close": 104200.0,
       "event_date": "2026-08-04",
       "event_source": "PRELIM",
-      "elapsed_td": 57,
+      "elapsed_td": 46,
       "report_lag_td": 18,
       "fails": [],
       "passed": true
@@ -1603,12 +3504,12 @@
       "security_id": "KRX:357780",
       "name": "솔브레인",
       "index": "KOSDAQ150",
-      "avg_value_20d": 16370438239.456844,
-      "prox_52w": 0.5915094339622642,
-      "close": 313500.0,
+      "avg_value_20d": 16079004983.664907,
+      "prox_52w": 0.7132075471698113,
+      "close": 378000.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -1627,12 +3528,12 @@
       "security_id": "KRX:326030",
       "name": "SK바이오팜",
       "index": "KOSPI200",
-      "avg_value_20d": 11072912035.670635,
-      "prox_52w": 0.5399028452463567,
-      "close": 77800.0,
+      "avg_value_20d": 10079975887.506058,
+      "prox_52w": 0.4878556557945871,
+      "close": 70300.0,
       "event_date": "2026-08-05",
       "event_source": "PRELIM",
-      "elapsed_td": 56,
+      "elapsed_td": 45,
       "report_lag_td": 7,
       "fails": [],
       "passed": true
@@ -1651,13 +3552,37 @@
       "security_id": "KRX:009240",
       "name": "한샘",
       "index": "KOSPI200",
-      "avg_value_20d": 1700142112.713818,
-      "prox_52w": 0.708029197080292,
-      "close": 38800.0,
+      "avg_value_20d": 1184214219.2049756,
+      "prox_52w": 0.739963503649635,
+      "close": 40550.0,
       "event_date": "2026-08-10",
       "event_source": "PRELIM",
-      "elapsed_td": 53,
+      "elapsed_td": 42,
       "report_lag_td": 3,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 273087546436.0,
+      "prior_value": 180856635847.0,
+      "diff": 92230910589.0,
+      "rcept_no": "20260814003428",
+      "rcept_date": "2026-08-14",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 1.7996484216191118,
+      "code": "028050",
+      "security_id": "KRX:028050",
+      "name": "삼성E&A",
+      "index": "KOSPI200",
+      "avg_value_20d": 82665919087.40265,
+      "prox_52w": 0.674591381872214,
+      "close": 45400.0,
+      "event_date": "2026-07-23",
+      "event_source": "PRELIM",
+      "elapsed_td": 54,
+      "report_lag_td": 16,
       "fails": [],
       "passed": true
     },
@@ -1675,12 +3600,12 @@
       "security_id": "KRX:232140",
       "name": "와이씨",
       "index": "KOSDAQ150",
-      "avg_value_20d": 28959342581.852386,
-      "prox_52w": 0.5498964803312629,
-      "close": 13280.0,
+      "avg_value_20d": 39901596168.2077,
+      "prox_52w": 0.6666666666666666,
+      "close": 16100.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -1699,12 +3624,12 @@
       "security_id": "KRX:010130",
       "name": "고려아연",
       "index": "KOSPI200",
-      "avg_value_20d": 17564761114.466515,
-      "prox_52w": 0.4012797074954296,
-      "close": 878000.0,
+      "avg_value_20d": 19604454493.521614,
+      "prox_52w": 0.4529250457038391,
+      "close": 991000.0,
       "event_date": "2026-08-05",
       "event_source": "PRELIM",
-      "elapsed_td": 56,
+      "elapsed_td": 45,
       "report_lag_td": 7,
       "fails": [],
       "passed": true
@@ -1723,12 +3648,12 @@
       "security_id": "KRX:241710",
       "name": "코스메카코리아",
       "index": "KOSDAQ150",
-      "avg_value_20d": 13625205644.23003,
-      "prox_52w": 0.6366559485530546,
-      "close": 99000.0,
+      "avg_value_20d": 18072721257.491688,
+      "prox_52w": 0.6771704180064309,
+      "close": 105300.0,
       "event_date": "2026-08-10",
       "event_source": "PRELIM",
-      "elapsed_td": 53,
+      "elapsed_td": 42,
       "report_lag_td": 4,
       "fails": [],
       "passed": true
@@ -1747,13 +3672,37 @@
       "security_id": "KRX:089970",
       "name": "브이엠",
       "index": "KOSDAQ150",
-      "avg_value_20d": 54208893352.28657,
-      "prox_52w": 0.3628173628173628,
-      "close": 44300.0,
+      "avg_value_20d": 60568706792.82792,
+      "prox_52w": 0.4594594594594595,
+      "close": 56100.0,
       "event_date": "2026-08-13",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 50,
+      "elapsed_td": 39,
       "report_lag_td": 0,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 31285526005.0,
+      "prior_value": 17462405744.0,
+      "diff": 13823120261.0,
+      "rcept_no": "20260814002726",
+      "rcept_date": "2026-08-14",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 1.780853797641736,
+      "code": "071970",
+      "security_id": "KRX:071970",
+      "name": "HD현대마린엔진",
+      "index": "KOSPI200",
+      "avg_value_20d": 13142562653.996662,
+      "prox_52w": 0.3629441624365482,
+      "close": 42900.0,
+      "event_date": "2026-07-28",
+      "event_source": "PRELIM",
+      "elapsed_td": 51,
+      "report_lag_td": 13,
       "fails": [],
       "passed": true
     },
@@ -1771,12 +3720,12 @@
       "security_id": "KRX:323280",
       "name": "태성",
       "index": "KOSDAQ150",
-      "avg_value_20d": 37250428508.701546,
-      "prox_52w": 0.5585106382978723,
-      "close": 52500.0,
+      "avg_value_20d": 33944315171.449066,
+      "prox_52w": 0.6202127659574468,
+      "close": 58300.0,
       "event_date": "2026-08-12",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 51,
+      "elapsed_td": 40,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -1795,12 +3744,12 @@
       "security_id": "KRX:253590",
       "name": "네오셈",
       "index": "KOSDAQ150",
-      "avg_value_20d": 25419140254.068016,
-      "prox_52w": 0.8462616822429907,
-      "close": 18110.0,
+      "avg_value_20d": 13597322254.967632,
+      "prox_52w": 0.7074766355140187,
+      "close": 15140.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -1819,12 +3768,12 @@
       "security_id": "KRX:282330",
       "name": "BGF리테일",
       "index": "KOSPI200",
-      "avg_value_20d": 6036419621.942597,
-      "prox_52w": 0.8160919540229885,
-      "close": 127800.0,
+      "avg_value_20d": 6149403465.725494,
+      "prox_52w": 0.8154533844189017,
+      "close": 127700.0,
       "event_date": "2026-08-06",
       "event_source": "PRELIM",
-      "elapsed_td": 55,
+      "elapsed_td": 44,
       "report_lag_td": 6,
       "fails": [],
       "passed": true
@@ -1843,12 +3792,12 @@
       "security_id": "KRX:039030",
       "name": "이오테크닉스",
       "index": "KOSDAQ150",
-      "avg_value_20d": 56744504801.37103,
-      "prox_52w": 0.666131621187801,
-      "close": 415000.0,
+      "avg_value_20d": 58198354222.64647,
+      "prox_52w": 0.7520064205457464,
+      "close": 468500.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -1867,12 +3816,12 @@
       "security_id": "KRX:010950",
       "name": "S-Oil",
       "index": "KOSPI200",
-      "avg_value_20d": 69208060890.352,
-      "prox_52w": 0.6905702992659515,
-      "close": 122300.0,
+      "avg_value_20d": 64791249565.0573,
+      "prox_52w": 0.9175607001693958,
+      "close": 162500.0,
       "event_date": "2026-08-03",
       "event_source": "PRELIM",
-      "elapsed_td": 58,
+      "elapsed_td": 47,
       "report_lag_td": 9,
       "fails": [],
       "passed": true
@@ -1891,13 +3840,37 @@
       "security_id": "KRX:006400",
       "name": "삼성SDI",
       "index": "KOSPI200",
-      "avg_value_20d": 513189498942.6175,
-      "prox_52w": 0.7441217150760719,
-      "close": 538000.0,
+      "avg_value_20d": 332765130345.88245,
+      "prox_52w": 0.8174273858921162,
+      "close": 591000.0,
       "event_date": "2026-07-30",
       "event_source": "PRELIM",
-      "elapsed_td": 60,
+      "elapsed_td": 49,
       "report_lag_td": 11,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 245754000000.0,
+      "prior_value": 11392000000.0,
+      "diff": 234362000000.0,
+      "rcept_no": "20260814001879",
+      "rcept_date": "2026-08-14",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 1.6653798619244153,
+      "code": "011070",
+      "security_id": "KRX:011070",
+      "name": "LG이노텍",
+      "index": "KOSPI200",
+      "avg_value_20d": 181748884420.7667,
+      "prox_52w": 0.24692393736017898,
+      "close": 441500.0,
+      "event_date": "2026-07-27",
+      "event_source": "PRELIM",
+      "elapsed_td": 52,
+      "report_lag_td": 14,
       "fails": [],
       "passed": true
     },
@@ -1915,13 +3888,85 @@
       "security_id": "KRX:096530",
       "name": "씨젠",
       "index": "KOSDAQ150",
-      "avg_value_20d": 15991529170.505894,
-      "prox_52w": 0.830655129789864,
-      "close": 33600.0,
+      "avg_value_20d": 15051409359.633432,
+      "prox_52w": 0.9023485784919654,
+      "close": 36500.0,
       "event_date": "2026-08-07",
       "event_source": "PRELIM",
-      "elapsed_td": 54,
+      "elapsed_td": 43,
       "report_lag_td": 5,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 30008717279.0,
+      "prior_value": 19532648310.0,
+      "diff": 10476068969.0,
+      "rcept_no": "20260814002168",
+      "rcept_date": "2026-08-14",
+      "fs_div": "OFS",
+      "hist_n": 8,
+      "sue": 1.6458678273923477,
+      "code": "195940",
+      "security_id": "KRX:195940",
+      "name": "HK이노엔",
+      "index": "KOSDAQ150",
+      "avg_value_20d": 4669233794.64153,
+      "prox_52w": 0.6143344709897611,
+      "close": 36000.0,
+      "event_date": "2026-07-29",
+      "event_source": "PRELIM",
+      "elapsed_td": 50,
+      "report_lag_td": 12,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 59138229385.0,
+      "prior_value": 34612153908.0,
+      "diff": 24526075477.0,
+      "rcept_no": "20260814004187",
+      "rcept_date": "2026-08-14",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 1.6159369258808811,
+      "code": "008930",
+      "security_id": "KRX:008930",
+      "name": "한미사이언스",
+      "index": "KOSPI200",
+      "avg_value_20d": 18263104157.40612,
+      "prox_52w": 0.6920062695924765,
+      "close": 44150.0,
+      "event_date": "2026-07-28",
+      "event_source": "PRELIM",
+      "elapsed_td": 51,
+      "report_lag_td": 13,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 2712548000000.0,
+      "prior_value": 2132971000000.0,
+      "diff": 579577000000.0,
+      "rcept_no": "20260814004200",
+      "rcept_date": "2026-08-14",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 1.614409106734786,
+      "code": "105560",
+      "security_id": "KRX:105560",
+      "name": "KB금융",
+      "index": "KOSPI200",
+      "avg_value_20d": 165348270215.79657,
+      "prox_52w": 0.8185089974293059,
+      "close": 159200.0,
+      "event_date": "2026-07-23",
+      "event_source": "PRELIM",
+      "elapsed_td": 54,
+      "report_lag_td": 16,
       "fails": [],
       "passed": true
     },
@@ -1939,12 +3984,12 @@
       "security_id": "KRX:047050",
       "name": "포스코인터내셔널",
       "index": "KOSPI200",
-      "avg_value_20d": 29564465245.6952,
-      "prox_52w": 0.5400219298245614,
-      "close": 49250.0,
+      "avg_value_20d": 38621552528.49364,
+      "prox_52w": 0.6304824561403509,
+      "close": 57500.0,
       "event_date": "2026-07-30",
       "event_source": "PRELIM",
-      "elapsed_td": 60,
+      "elapsed_td": 49,
       "report_lag_td": 11,
       "fails": [],
       "passed": true
@@ -1963,12 +4008,12 @@
       "security_id": "KRX:004170",
       "name": "신세계",
       "index": "KOSPI200",
-      "avg_value_20d": 21819150173.26786,
-      "prox_52w": 0.31313131313131315,
-      "close": 248000.0,
+      "avg_value_20d": 26339138247.893074,
+      "prox_52w": 0.36363636363636365,
+      "close": 288000.0,
       "event_date": "2026-08-14",
       "event_source": "MONTHLY_FILER",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -1987,12 +4032,12 @@
       "security_id": "KRX:192080",
       "name": "더블유게임즈",
       "index": "KOSPI200",
-      "avg_value_20d": 2687641977.831782,
-      "prox_52w": 0.7071895424836602,
-      "close": 54100.0,
+      "avg_value_20d": 2800699258.3333807,
+      "prox_52w": 0.734640522875817,
+      "close": 56200.0,
       "event_date": "2026-08-12",
       "event_source": "PRELIM",
-      "elapsed_td": 51,
+      "elapsed_td": 40,
       "report_lag_td": 2,
       "fails": [],
       "passed": true
@@ -2011,13 +4056,37 @@
       "security_id": "KRX:000990",
       "name": "DB하이텍",
       "index": "KOSPI200",
-      "avg_value_20d": 70968372793.4513,
-      "prox_52w": 0.42950108459869846,
-      "close": 99000.0,
+      "avg_value_20d": 115352019212.66623,
+      "prox_52w": 0.5101952277657267,
+      "close": 117600.0,
       "event_date": "2026-08-05",
       "event_source": "PRELIM",
-      "elapsed_td": 56,
+      "elapsed_td": 45,
       "report_lag_td": 7,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 97625286579.0,
+      "prior_value": 83009935293.0,
+      "diff": 14615351286.0,
+      "rcept_no": "20260814001752",
+      "rcept_date": "2026-08-14",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 1.558468539793194,
+      "code": "443060",
+      "security_id": "KRX:443060",
+      "name": "HD현대마린솔루션",
+      "index": "KOSPI200",
+      "avg_value_20d": 26196925337.030827,
+      "prox_52w": 0.7682926829268293,
+      "close": 220500.0,
+      "event_date": "2026-07-27",
+      "event_source": "PRELIM",
+      "elapsed_td": 52,
+      "report_lag_td": 14,
       "fails": [],
       "passed": true
     },
@@ -2035,12 +4104,12 @@
       "security_id": "KRX:005290",
       "name": "동진쎄미켐",
       "index": "KOSDAQ150",
-      "avg_value_20d": 30363431221.245716,
-      "prox_52w": 0.5720221606648199,
-      "close": 41300.0,
+      "avg_value_20d": 32867954353.91092,
+      "prox_52w": 0.6343490304709142,
+      "close": 45800.0,
       "event_date": "2026-08-06",
       "event_source": "PRELIM",
-      "elapsed_td": 55,
+      "elapsed_td": 44,
       "report_lag_td": 6,
       "fails": [],
       "passed": true
@@ -2059,12 +4128,12 @@
       "security_id": "KRX:011170",
       "name": "롯데케미칼",
       "index": "KOSPI200",
-      "avg_value_20d": 7485130843.321869,
-      "prox_52w": 0.39330543933054396,
-      "close": 47000.0,
+      "avg_value_20d": 11132810030.301136,
+      "prox_52w": 0.4811715481171548,
+      "close": 57500.0,
       "event_date": "2026-08-07",
       "event_source": "PRELIM",
-      "elapsed_td": 54,
+      "elapsed_td": 43,
       "report_lag_td": 5,
       "fails": [],
       "passed": true
@@ -2083,12 +4152,12 @@
       "security_id": "KRX:003550",
       "name": "LG",
       "index": "KOSPI200",
-      "avg_value_20d": 24183266824.61435,
-      "prox_52w": 0.5352339967724583,
-      "close": 99500.0,
+      "avg_value_20d": 24295044843.65524,
+      "prox_52w": 0.5718128025820334,
+      "close": 106300.0,
       "event_date": "2026-08-13",
       "event_source": "PRELIM",
-      "elapsed_td": 50,
+      "elapsed_td": 39,
       "report_lag_td": 1,
       "fails": [],
       "passed": true
@@ -2107,12 +4176,12 @@
       "security_id": "KRX:000670",
       "name": "영풍",
       "index": "KOSPI200",
-      "avg_value_20d": 1922889034.5202858,
-      "prox_52w": 0.4387369945819463,
-      "close": 31500.0,
+      "avg_value_20d": 8295163619.562625,
+      "prox_52w": 0.5007173001657451,
+      "close": 35950.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -2131,12 +4200,12 @@
       "security_id": "KRX:214430",
       "name": "아이쓰리시스템",
       "index": "KOSDAQ150",
-      "avg_value_20d": 3138740134.622676,
-      "prox_52w": 0.4503263234227701,
-      "close": 62100.0,
+      "avg_value_20d": 2579015736.0105186,
+      "prox_52w": 0.5308194343727338,
+      "close": 73200.0,
       "event_date": "2026-08-04",
       "event_source": "PRELIM",
-      "elapsed_td": 57,
+      "elapsed_td": 46,
       "report_lag_td": 7,
       "fails": [],
       "passed": true
@@ -2155,13 +4224,37 @@
       "security_id": "KRX:039200",
       "name": "오스코텍",
       "index": "KOSDAQ150",
-      "avg_value_20d": 6209540956.736878,
-      "prox_52w": 0.553030303030303,
-      "close": 36500.0,
+      "avg_value_20d": 5206572006.667467,
+      "prox_52w": 0.5424242424242425,
+      "close": 35800.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 287034500364.0,
+      "prior_value": 209142369028.0,
+      "diff": 77892131336.0,
+      "rcept_no": "20260814003228",
+      "rcept_date": "2026-08-14",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 1.4448137451547356,
+      "code": "267260",
+      "security_id": "KRX:267260",
+      "name": "HD현대일렉트릭",
+      "index": "KOSPI200",
+      "avg_value_20d": 107159666398.84254,
+      "prox_52w": 0.3797202797202797,
+      "close": 543000.0,
+      "event_date": "2026-07-28",
+      "event_source": "PRELIM",
+      "elapsed_td": 51,
+      "report_lag_td": 13,
       "fails": [],
       "passed": true
     },
@@ -2179,12 +4272,12 @@
       "security_id": "KRX:060280",
       "name": "큐렉소",
       "index": "KOSDAQ150",
-      "avg_value_20d": 1567017438.3717427,
-      "prox_52w": 0.317960088691796,
-      "close": 7170.0,
+      "avg_value_20d": 1671107340.4889596,
+      "prox_52w": 0.3436807095343681,
+      "close": 7750.0,
       "event_date": "2026-08-13",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 50,
+      "elapsed_td": 39,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -2203,12 +4296,12 @@
       "security_id": "KRX:214450",
       "name": "파마리서치",
       "index": "KOSDAQ150",
-      "avg_value_20d": 37865271511.43761,
-      "prox_52w": 0.36716171617161714,
-      "close": 222500.0,
+      "avg_value_20d": 37945776801.681435,
+      "prox_52w": 0.4464579901153213,
+      "close": 271000.0,
       "event_date": "2026-08-07",
       "event_source": "PRELIM",
-      "elapsed_td": 54,
+      "elapsed_td": 43,
       "report_lag_td": 5,
       "fails": [],
       "passed": true
@@ -2227,13 +4320,37 @@
       "security_id": "KRX:002790",
       "name": "아모레퍼시픽홀딩스",
       "index": "KOSPI200",
-      "avg_value_20d": 2659007188.9784374,
-      "prox_52w": 0.6578581363004172,
-      "close": 23650.0,
+      "avg_value_20d": 3363585281.0859804,
+      "prox_52w": 0.694019471488178,
+      "close": 24950.0,
       "event_date": "2026-07-30",
       "event_source": "PRELIM",
-      "elapsed_td": 60,
+      "elapsed_td": 49,
       "report_lag_td": 11,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 170924507000.0,
+      "prior_value": 65918974000.0,
+      "diff": 105005533000.0,
+      "rcept_no": "20260814004127",
+      "rcept_date": "2026-08-14",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 1.3891982527769755,
+      "code": "352820",
+      "security_id": "KRX:352820",
+      "name": "하이브",
+      "index": "KOSPI200",
+      "avg_value_20d": 43739624926.16996,
+      "prox_52w": 0.40394574599260175,
+      "close": 163800.0,
+      "event_date": "2026-07-28",
+      "event_source": "PRELIM",
+      "elapsed_td": 51,
+      "report_lag_td": 13,
       "fails": [],
       "passed": true
     },
@@ -2251,12 +4368,12 @@
       "security_id": "KRX:004370",
       "name": "농심",
       "index": "KOSPI200",
-      "avg_value_20d": 10732831008.349773,
-      "prox_52w": 0.8074921956295525,
-      "close": 388000.0,
+      "avg_value_20d": 10590618037.779957,
+      "prox_52w": 0.8189386056191468,
+      "close": 393500.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -2275,12 +4392,12 @@
       "security_id": "KRX:030530",
       "name": "원익홀딩스",
       "index": "KOSDAQ150",
-      "avg_value_20d": 33236051875.34915,
-      "prox_52w": 0.5543478260869565,
-      "close": 28050.0,
+      "avg_value_20d": 49633546347.37857,
+      "prox_52w": 0.4841897233201581,
+      "close": 24500.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -2299,12 +4416,12 @@
       "security_id": "KRX:121600",
       "name": "나노신소재",
       "index": "KOSDAQ150",
-      "avg_value_20d": 8021957616.37884,
-      "prox_52w": 0.6222455403987408,
-      "close": 59300.0,
+      "avg_value_20d": 7128615269.457316,
+      "prox_52w": 0.6568730325288562,
+      "close": 62600.0,
       "event_date": "2026-08-07",
       "event_source": "PRELIM",
-      "elapsed_td": 54,
+      "elapsed_td": 43,
       "report_lag_td": 5,
       "fails": [],
       "passed": true
@@ -2323,12 +4440,12 @@
       "security_id": "KRX:090430",
       "name": "아모레퍼시픽",
       "index": "KOSPI200",
-      "avg_value_20d": 25198598474.406654,
-      "prox_52w": 0.736094674556213,
-      "close": 124400.0,
+      "avg_value_20d": 31174208851.479836,
+      "prox_52w": 0.7822485207100591,
+      "close": 132200.0,
       "event_date": "2026-07-30",
       "event_source": "PRELIM",
-      "elapsed_td": 60,
+      "elapsed_td": 49,
       "report_lag_td": 11,
       "fails": [],
       "passed": true
@@ -2347,12 +4464,12 @@
       "security_id": "KRX:196170",
       "name": "알테오젠",
       "index": "KOSDAQ150",
-      "avg_value_20d": 103930333429.40613,
-      "prox_52w": 0.5024597689598626,
-      "close": 220000.0,
+      "avg_value_20d": 115239746188.3193,
+      "prox_52w": 0.5127373551431326,
+      "close": 224500.0,
       "event_date": "2026-08-07",
       "event_source": "PRELIM",
-      "elapsed_td": 54,
+      "elapsed_td": 43,
       "report_lag_td": 5,
       "fails": [],
       "passed": true
@@ -2371,12 +4488,12 @@
       "security_id": "KRX:253450",
       "name": "스튜디오드래곤",
       "index": "KOSDAQ150",
-      "avg_value_20d": 1869069969.6872993,
-      "prox_52w": 0.4495049504950495,
-      "close": 22700.0,
+      "avg_value_20d": 1153639924.625356,
+      "prox_52w": 0.4316831683168317,
+      "close": 21800.0,
       "event_date": "2026-08-06",
       "event_source": "PRELIM",
-      "elapsed_td": 55,
+      "elapsed_td": 44,
       "report_lag_td": 6,
       "fails": [],
       "passed": true
@@ -2395,12 +4512,12 @@
       "security_id": "KRX:280360",
       "name": "롯데웰푸드",
       "index": "KOSPI200",
-      "avg_value_20d": 2454633134.6358433,
-      "prox_52w": 0.7587096774193548,
-      "close": 117600.0,
+      "avg_value_20d": 2326082142.4686065,
+      "prox_52w": 0.7535483870967742,
+      "close": 116800.0,
       "event_date": "2026-08-07",
       "event_source": "PRELIM",
-      "elapsed_td": 54,
+      "elapsed_td": 43,
       "report_lag_td": 4,
       "fails": [],
       "passed": true
@@ -2419,12 +4536,12 @@
       "security_id": "KRX:003380",
       "name": "하림지주",
       "index": "KOSDAQ150",
-      "avg_value_20d": 5132332942.188983,
-      "prox_52w": 0.5849056603773585,
-      "close": 11470.0,
+      "avg_value_20d": 4178540880.589358,
+      "prox_52w": 0.5956144824069353,
+      "close": 11680.0,
       "event_date": "2026-08-13",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 50,
+      "elapsed_td": 39,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -2443,12 +4560,12 @@
       "security_id": "KRX:001800",
       "name": "오리온홀딩스",
       "index": "KOSPI200",
-      "avg_value_20d": 1537995636.7547193,
-      "prox_52w": 0.7629382303839732,
-      "close": 22850.0,
+      "avg_value_20d": 1911952221.1212666,
+      "prox_52w": 0.7562604340567612,
+      "close": 22650.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -2467,12 +4584,12 @@
       "security_id": "KRX:399720",
       "name": "가온칩스",
       "index": "KOSDAQ150",
-      "avg_value_20d": 5569017989.744636,
-      "prox_52w": 0.41947115384615385,
-      "close": 34900.0,
+      "avg_value_20d": 9498189373.288664,
+      "prox_52w": 0.48497596153846156,
+      "close": 40350.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -2491,12 +4608,12 @@
       "security_id": "KRX:017670",
       "name": "SK텔레콤",
       "index": "KOSPI200",
-      "avg_value_20d": 71518924119.53064,
-      "prox_52w": 0.5491039426523298,
-      "close": 76600.0,
+      "avg_value_20d": 77259779843.53256,
+      "prox_52w": 0.5870967741935483,
+      "close": 81900.0,
       "event_date": "2026-08-05",
       "event_source": "PRELIM",
-      "elapsed_td": 56,
+      "elapsed_td": 45,
       "report_lag_td": 6,
       "fails": [],
       "passed": true
@@ -2515,13 +4632,37 @@
       "security_id": "KRX:225570",
       "name": "넥슨게임즈",
       "index": "KOSDAQ150",
-      "avg_value_20d": 1745227704.5305507,
-      "prox_52w": 0.6784452296819788,
-      "close": 9600.0,
+      "avg_value_20d": 1858343482.373919,
+      "prox_52w": 0.6381322957198443,
+      "close": 9840.0,
       "event_date": "2026-08-13",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 50,
+      "elapsed_td": 39,
       "report_lag_td": 0,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 410921666864.0,
+      "prior_value": 246063427020.0,
+      "diff": 164858239844.0,
+      "rcept_no": "20260814003894",
+      "rcept_date": "2026-08-14",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 1.2076507404710668,
+      "code": "259960",
+      "security_id": "KRX:259960",
+      "name": "크래프톤",
+      "index": "KOSPI200",
+      "avg_value_20d": 18029323518.379745,
+      "prox_52w": 0.6316309719934102,
+      "close": 191700.0,
+      "event_date": "2026-07-29",
+      "event_source": "PRELIM",
+      "elapsed_td": 50,
+      "report_lag_td": 12,
       "fails": [],
       "passed": true
     },
@@ -2539,12 +4680,12 @@
       "security_id": "KRX:060250",
       "name": "NHN KCP",
       "index": "KOSDAQ150",
-      "avg_value_20d": 1758419054.4205616,
-      "prox_52w": 0.4858823529411765,
-      "close": 12390.0,
+      "avg_value_20d": 2553373534.8753343,
+      "prox_52w": 0.49176470588235294,
+      "close": 12540.0,
       "event_date": "2026-08-11",
       "event_source": "PRELIM",
-      "elapsed_td": 52,
+      "elapsed_td": 41,
       "report_lag_td": 3,
       "fails": [],
       "passed": true
@@ -2563,12 +4704,12 @@
       "security_id": "KRX:000250",
       "name": "삼천당제약",
       "index": "KOSDAQ150",
-      "avg_value_20d": 56122625035.24275,
-      "prox_52w": 0.1529602595296026,
-      "close": 188600.0,
+      "avg_value_20d": 48432905922.79325,
+      "prox_52w": 0.16707218167072183,
+      "close": 206000.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -2587,12 +4728,12 @@
       "security_id": "KRX:007070",
       "name": "GS리테일",
       "index": "KOSPI200",
-      "avg_value_20d": 2900045328.234624,
-      "prox_52w": 0.7345575959933222,
-      "close": 22000.0,
+      "avg_value_20d": 4448952680.644896,
+      "prox_52w": 0.6911519198664441,
+      "close": 20700.0,
       "event_date": "2026-08-07",
       "event_source": "PRELIM",
-      "elapsed_td": 54,
+      "elapsed_td": 43,
       "report_lag_td": 5,
       "fails": [],
       "passed": true
@@ -2611,12 +4752,12 @@
       "security_id": "KRX:036810",
       "name": "에프에스티",
       "index": "KOSDAQ150",
-      "avg_value_20d": 6333687770.189177,
-      "prox_52w": 0.5264705882352941,
-      "close": 26850.0,
+      "avg_value_20d": 6491396732.551582,
+      "prox_52w": 0.5990196078431372,
+      "close": 30550.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -2635,12 +4776,12 @@
       "security_id": "KRX:035720",
       "name": "카카오",
       "index": "KOSPI200",
-      "avg_value_20d": 39920942655.491745,
-      "prox_52w": 0.42037302725968434,
-      "close": 29300.0,
+      "avg_value_20d": 40778792247.72133,
+      "prox_52w": 0.45480631276901007,
+      "close": 31700.0,
       "event_date": "2026-08-06",
       "event_source": "PRELIM",
-      "elapsed_td": 55,
+      "elapsed_td": 44,
       "report_lag_td": 8,
       "fails": [],
       "passed": true
@@ -2659,12 +4800,12 @@
       "security_id": "KRX:100790",
       "name": "미래에셋벤처투자",
       "index": "KOSDAQ150",
-      "avg_value_20d": 5162750267.605395,
-      "prox_52w": 0.19292786421499292,
-      "close": 13640.0,
+      "avg_value_20d": 8592285034.795128,
+      "prox_52w": 0.21329561527581328,
+      "close": 15080.0,
       "event_date": "2026-08-12",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 51,
+      "elapsed_td": 40,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -2683,12 +4824,12 @@
       "security_id": "KRX:328130",
       "name": "루닛",
       "index": "KOSDAQ150",
-      "avg_value_20d": 35767377388.04793,
-      "prox_52w": 0.6101832993890021,
-      "close": 14980.0,
+      "avg_value_20d": 18498928284.489563,
+      "prox_52w": 0.47739307535641545,
+      "close": 11720.0,
       "event_date": "2026-08-11",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 52,
+      "elapsed_td": 41,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -2707,13 +4848,37 @@
       "security_id": "KRX:008730",
       "name": "율촌화학",
       "index": "KOSPI200",
-      "avg_value_20d": 1088465650.1012304,
-      "prox_52w": 0.3220472440944882,
-      "close": 12270.0,
+      "avg_value_20d": 1075234921.61705,
+      "prox_52w": 0.37704081632653064,
+      "close": 14780.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
+      "fails": [],
+      "passed": true
+    },
+    {
+      "period": "2026Q2",
+      "value": 102782128736.0,
+      "prior_value": 54814037403.0,
+      "diff": 47968091333.0,
+      "rcept_no": "20260814002412",
+      "rcept_date": "2026-08-14",
+      "fs_div": "CFS",
+      "hist_n": 8,
+      "sue": 1.077129721585025,
+      "code": "051900",
+      "security_id": "KRX:051900",
+      "name": "LG생활건강",
+      "index": "KOSPI200",
+      "avg_value_20d": 20129330710.236023,
+      "prox_52w": 0.7868852459016393,
+      "close": 264000.0,
+      "event_date": "2026-07-29",
+      "event_source": "PRELIM",
+      "elapsed_td": 50,
+      "report_lag_td": 12,
       "fails": [],
       "passed": true
     },
@@ -2731,12 +4896,12 @@
       "security_id": "KRX:298050",
       "name": "HS효성첨단소재",
       "index": "KOSPI200",
-      "avg_value_20d": 1530791639.8807616,
-      "prox_52w": 0.4971631205673759,
-      "close": 140200.0,
+      "avg_value_20d": 1630644701.816362,
+      "prox_52w": 0.5648936170212766,
+      "close": 159300.0,
       "event_date": "2026-07-30",
       "event_source": "PRELIM",
-      "elapsed_td": 60,
+      "elapsed_td": 49,
       "report_lag_td": 11,
       "fails": [],
       "passed": true
@@ -2755,12 +4920,12 @@
       "security_id": "KRX:017800",
       "name": "현대엘리베이터",
       "index": "KOSPI200",
-      "avg_value_20d": 7788112863.370115,
-      "prox_52w": 0.58994708994709,
-      "close": 66900.0,
+      "avg_value_20d": 7367945450.275183,
+      "prox_52w": 0.6252204585537919,
+      "close": 70900.0,
       "event_date": "2026-08-14",
       "event_source": "NO_PRELIM",
-      "elapsed_td": 49,
+      "elapsed_td": 38,
       "report_lag_td": 0,
       "fails": [],
       "passed": true
@@ -2779,12 +4944,12 @@
       "security_id": "KRX:281740",
       "name": "레이크머티리얼즈",
       "index": "KOSDAQ150",
-      "avg_value_20d": 8491247814.093956,
-      "prox_52w": 0.3829268292682927,
-      "close": 10990.0,
+      "avg_value_20d": 5862934213.763301,
+      "prox_52w": 0.4529616724738676,
+      "close": 13000.0,
       "event_date": "2026-08-11",
       "event_source": "PRELIM",
-      "elapsed_td": 52,
+      "elapsed_td": 41,
       "report_lag_td": 3,
       "fails": [],
       "passed": true

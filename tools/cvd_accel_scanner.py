@@ -155,6 +155,26 @@ def accel_from_flows(flows: dict, recent: int, prior: int) -> Optional[dict]:
 # 종목 하나
 # ─────────────────────────────────────────────────────────────
 
+#: 적재분만 읽으므로 **키움 토큰이 필요 없다**(2026-11-04). V1.5 서명을 맞추려고
+#: 넘기는 자리표시자다 — 혹시 API 호출 경로가 남아 있으면 이 값이 그대로 전달돼
+#: **드러나게** 실패한다. `tools/cvd_obv_scan.py`와 같은 처리다.
+NO_TOKEN = "NO_TOKEN__STORED_BARS_ONLY"
+
+
+def _name_from_universe(code: str, as_of=None) -> str:
+    """기준일 명단에서 종목명을 찾는다(없으면 빈 문자열). 네트워크를 쓰지 않는다."""
+    try:
+        from cvd_obv.universe import universe_on
+        u = universe_on((as_of or datetime.now()).date())
+        for idx in u.describe()["counts"]:
+            for s in u.stocks(idx):
+                if str(s["code"]) == str(code):
+                    return s.get("name", "")
+    except Exception:
+        pass
+    return ""
+
+
 def analyze_accel(sc, code: str, token: str, name: str = "",
                   period: int = DEFAULT_PERIOD,
                   recent: int = RECENT_DAYS, prior: int = PRIOR_DAYS,
@@ -168,7 +188,9 @@ def analyze_accel(sc, code: str, token: str, name: str = "",
     """
     as_of = as_of or datetime.now()
     window = recent + prior
-    stock_name = name or sc.fetch_stock_name(code, token) or code
+    # 종목명은 **유니버스에서** 온다 — API를 부르지 않는다(2026-11-04).
+    # scan은 load_index가 준 이름을 넘기고, detail은 위 헬퍼가 찾는다.
+    stock_name = name or _name_from_universe(code, as_of) or code
 
     # 완료 거래일 window개를 확보하려면 진행 중인 당일을 버릴 여유가 필요하다
     fetch_days = window + 2
@@ -457,11 +479,7 @@ def save_snapshot(results: list, index_key: str, label: str, as_of: datetime,
 
 def cmd_scan(args) -> int:
     sc = load_scanner_v15()
-    token = sc._get_token()
-    if not token:
-        print("\n  ❌ 키움 API 미연결 — .env의 KIWOOM_APP_KEY/SECRET 확인")
-        return 2
-
+    token = NO_TOKEN
     # 기준 거래일은 적재 상태가 정한다(봉 기준 bars-1.0, 2026-10-26) —
     # 16:10 이전은 전 거래일 확정 봉, 이후는 오늘 잠정 봉. --as-of는 그대로 존중.
     as_of = args.as_of or resolve_scan_day().end_of_day
@@ -485,11 +503,9 @@ def cmd_scan(args) -> int:
         return 2
 
     window = args.recent + args.prior
-    est_min = len(pool) * (window + 2) * sc.expected_bars_per_day(
-        sc._SESSION_REGULAR, args.period) / 900 * 0.22 / 60
-    print(f"\n  스캔 {len(pool)}종목 · {args.period}분봉 {window + 2}거래일 수집 "
-          f"(분봉 호출만 약 {max(est_min, 0.1):.1f}분, 일봉·종목명 호출은 별도 — "
-          "초당 5회 제한)")
+    # 2026-11-04: 적재분만 읽는다 — API 호출이 없어 소요 추정도 하지 않는다
+    print(f"\n  스캔 {len(pool)}종목 · {args.period}분봉 {window + 2}거래일 "
+          f"· 적재분만 읽는다(API 호출 없음)")
 
     results = []
     # 봉 기준 bars-1.0: 일봉은 로컬 정규장 봉, 분봉은 1분봉 합성(`live_feed`)
@@ -530,10 +546,7 @@ def cmd_scan(args) -> int:
 
 def cmd_detail(args) -> int:
     sc = load_scanner_v15()
-    token = sc._get_token()
-    if not token:
-        print("\n  ❌ 키움 API 미연결 — .env의 KIWOOM_APP_KEY/SECRET 확인")
-        return 2
+    token = NO_TOKEN
     # 기준 거래일은 적재 상태가 정한다(봉 기준 bars-1.0, 2026-10-26) —
     # 16:10 이전은 전 거래일 확정 봉, 이후는 오늘 잠정 봉. --as-of는 그대로 존중.
     as_of = args.as_of or resolve_scan_day().end_of_day

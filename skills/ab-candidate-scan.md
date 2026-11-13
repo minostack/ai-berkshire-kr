@@ -69,6 +69,10 @@ python3 tools/ab_candidate_scanner.py --index KOSPI200     # 쉼표 구분 가�
 - A는 DART `fnlttMultiAcnt`(다중회사 주요계정)를 조회합니다. `.env`에
   `DART_API_KEY` 필요
 - 결과 JSON: `reports/daily-scan/ab-candidates-*.json` — **전향 기록**이다. 매 거래일 쌓는다
+- 스냅샷은 **스캐너를 실행할 때만** 생긴다(자동 실행 없음). 기본은 최신 확정일 하나뿐이라
+  실행하지 않은 날은 빈다 — 빠진 날은 `--date`로 소급한다. 다음 거래일 09:00(시가 진입)
+  뒤에 만든 스냅샷은 `backfilled: true`·`entry_deadline`이 붙는다. **전향 집계는 실시간분과
+  소급분을 나눠 본다**(소급분은 "결과 전에 적었다"는 시각 증거가 없다)
 
 ### 스캔 전 데이터 갱신 (순서가 중요)
 

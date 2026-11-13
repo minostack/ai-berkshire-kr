@@ -1,9 +1,9 @@
 {
   "kospi200": {
-    "updated": "2026-11-04 16:45",
+    "updated": "2026-11-13 11:24",
     "count": 201,
-    "as_of": "2026-11-03",
-    "source": "silver.universe_membership uv_c993b8109aa91f84 (KRX 지수 공시 기반 구성 이력)",
+    "as_of": "2026-11-12",
+    "source": "silver.universe_membership uv_09c5e7abef767e6f (KRX 지수 공시 기반 구성 이력)",
     "stocks": [
       {
         "code": "000080",
@@ -812,10 +812,10 @@
     ]
   },
   "kosdaq150": {
-    "updated": "2026-11-04 16:45",
+    "updated": "2026-11-13 11:24",
     "count": 150,
-    "as_of": "2026-11-03",
-    "source": "silver.universe_membership uv_f0380799becee77d (KRX 지수 공시 기반 구성 이력)",
+    "as_of": "2026-11-12",
+    "source": "silver.universe_membership uv_2b77ae79235ddc92 (KRX 지수 공시 기반 구성 이력)",
     "stocks": [
       {
         "code": "000250",
