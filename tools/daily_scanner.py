@@ -1320,9 +1320,11 @@ def standard_daily_bars(ticker: str, days: int = 460,
              "traded_value": b.get("traded_value")} for b in local]
     today = as_of.date()
     scope = classify_fetched_daily(today, as_of)
+    # 장중 누적 봉은 09:00 정규장이 열린 뒤에만 — 그 전 API 행은 자리표시(kis_daily_bars)
     want_today = (scope == FETCH_REGULAR
                   or (include_incomplete and scope == FETCH_INCOMPLETE
-                      and as_of.time() < datetime.strptime("15:35", "%H:%M").time()))
+                      and datetime.strptime("09:00", "%H:%M").time() <= as_of.time()
+                      < datetime.strptime("15:35", "%H:%M").time()))
     if want_today and rows[-1]["date"] != today.isoformat() and today.weekday() < 5:
         for r in kis_daily_bars(ticker, days=10, as_of=as_of, include_incomplete=True):
             if r["date"] == today.isoformat():
@@ -1728,9 +1730,26 @@ def kis_daily_bars(ticker: str, days: int = 460,
         "volume": int(r["volume"]),
         "traded_value": float(r["traded_value"]) if r["traded_value"] is not None else None,
     } for r in res.rows]
+    # 장 시작 전(실측 2026-11-16 월 05:49)에도 KIS는 오늘 날짜 행을 준다 — 거래량 0,
+    # 시가·고가·저가·종가 = 전일 종가인 자리표시 행이다. 봉이 아니므로 버린다
+    if rows and rows[-1]["date"] == as_of.date().isoformat() and rows[-1]["volume"] == 0:
+        rows = rows[:-1]
     if not include_incomplete and rows and not _is_bar_date_complete(rows[-1]["date"], as_of):
         rows = rows[:-1]
     return rows
+
+
+def kis_pre_open(probe: str = "005930") -> bool:
+    """KIS가 오늘로 넘어갔는데 아직 장이 열리지 않았는가 — 현재가의 시가·거래량이 0.
+
+    실측(2026-11-16 월 05:49): 현재가 응답 `stck_oprc=0`·`acml_vol=0`, 거래량순위는
+    전 종목 거래량 0(코드 순). 이때는 오늘 갭·거래량 순위를 계산할 수 없다. 주말에는
+    직전 거래일 값이 남아 있어 거짓이다(2026-11-01 일 실측).
+    """
+    res = _kis_get(f"{_KIS_QUOTATIONS}/inquire-price",
+                   {"FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": probe}, "FHKST01010100")
+    out = (res or {}).get("output") or {}
+    return bool(out) and not _kis_float(out.get("stck_oprc")) and not _kis_float(out.get("acml_vol"))
 
 
 #: --market → KIS 거래량순위 시장 코드(0001 거래소, 1001 코스닥). 전체(0000)는 한 번에
@@ -2134,6 +2153,10 @@ def cmd_volume_surge(ratio: float = 3.0, min_cap: float = 500, market: str = "al
         print(f'  검색어: "전일 특이 거래량 코스피 코스닥 {_today_str()}"')
         return
 
+    if kis_pre_open():
+        _volume_surge_last_day(ratio, min_cap, market)
+        return
+
     pool = kis_volume_surge_pool(market=market)
     print(f"\n  ✅ KIS 거래량순위 후보 풀 {len(pool)}개(전일 대비 거래증가율 상위, coverage=rank_subset)")
     print(f"     → 종목별 일봉 재조회로 20일평균 대비 배수를 정확히 계산합니다...")
@@ -2196,6 +2219,62 @@ def cmd_volume_surge(ratio: float = 3.0, min_cap: float = 500, market: str = "al
         print(f"  {it['name'][:15]:<15} {it['code']:<8} {it['price']:>8,.0f}원 {chg_str:>7} "
               f"{it['ratio']:>9.1f}배{flag} {cap_str:>9} {it['bar_date']:>10}")
     print(f"\n  🕐 = 장중 당일 누적 거래량 기준(완료 봉 아님, 최종치와 다를 수 있음)")
+
+
+def _last_day_bars(market: str, as_of: datetime, days: int = 60):
+    """유니버스 종목별 로컬 기준 일봉(완료 봉만) — 장 시작 전 대체 경로용.
+    반환: (universe, {코드: 봉 목록}) — 저장소를 못 읽으면 ({}, {})."""
+    universe = _load_universe(market)
+    if not universe or prime_standard_cache([s["code"] for s in universe], as_of) is None:
+        return universe, {}
+    return universe, {s["code"]: standard_daily_bars(s["code"], days=days, as_of=as_of)[0]
+                      for s in universe}
+
+
+def _volume_surge_last_day(ratio: float, min_cap: float, market: str):
+    """장 시작 전 — KIS 순위가 비어 있으니 마지막 완료 거래일을 로컬 기준 일봉으로 본다.
+
+    coverage=index_kospi200_kosdaq150(전체 시장 아님). 시총 필터는 KIS 현재가 시가총액.
+    """
+    as_of = datetime.now()
+    print("\n  ⏰ 장 시작 전 — KIS 거래량순위가 비어 있음(전 종목 거래량 0)")
+    print("     → 마지막 완료 거래일을 로컬 기준 일봉으로 판정, coverage=index_kospi200_kosdaq150(전체 시장 아님)")
+    universe, bars_by = _last_day_bars(market, as_of)
+    if not bars_by:
+        print("\n  ❌ 로컬 일봉을 읽지 못했습니다")
+        return
+    names = {s["code"]: s["name"] for s in universe}
+    candidates, insufficient, last_dates = [], 0, {}
+    for code, bars in bars_by.items():
+        r = calc_volume_surge_ratio([b["volume"] for b in bars])
+        if r is None:
+            insufficient += 1
+            continue
+        last_dates[bars[-1]["date"]] = last_dates.get(bars[-1]["date"], 0) + 1
+        if r >= ratio:
+            candidates.append({"code": code, "name": names[code], "ratio": r,
+                               "price": bars[-1]["close"], "bar_date": bars[-1]["date"],
+                               "change_pct": (bars[-1]["close"] / bars[-2]["close"] - 1) * 100})
+    basis = ", ".join(f"{d} {n}종목" for d, n in sorted(last_dates.items(), reverse=True)[:3])
+    print(f"  판정 기준일: {basis or '-'} / 판정 불가(봉 부족) {insufficient}종목")
+    if min_cap and min_cap > 0:
+        kept = []
+        for it in candidates:
+            q = kis_quote(it["code"], name=it["name"])
+            cap = q.get("market_cap_eok") if q else None
+            if cap is not None and cap >= min_cap:
+                kept.append(dict(it, market_cap_eok=cap))
+        candidates = kept
+    candidates.sort(key=lambda x: -x["ratio"])
+    if not candidates:
+        print("\n  조건을 충족하는 종목이 없습니다.")
+        return
+    print(f"\n  {'종목명':<15} {'코드':<8} {'종가':>9} {'등락률':>7} {'20일평균배수':>10} {'시총(억)':>9} {'기준일':>10}")
+    print(f"  {'─'*15} {'─'*8} {'─'*9} {'─'*7} {'─'*10} {'─'*9} {'─'*10}")
+    for it in candidates[:20]:
+        cap_str = f"{it['market_cap_eok']:,.0f}" if it.get("market_cap_eok") is not None else "-"
+        print(f"  {it['name'][:15]:<15} {it['code']:<8} {it['price']:>8,.0f}원 {it['change_pct']:>+6.1f}% "
+              f"{it['ratio']:>9.1f}배 {cap_str:>9} {it['bar_date']:>10}")
 
 
 _NEW_HIGH_PERIOD_MAP = {  # --period → 직전 거래일 수
@@ -2316,6 +2395,32 @@ def cmd_gap_up(min_gap: float = 3.0, market: str = "all"):
         print("  .env에 KIS_APP_KEY / KIS_APP_SECRET 설정 (.env.example 참고)")
         print()
         print(f'  대안 — WebSearch: "오늘 갭상승 종목 {_today_str()} 코스피 코스닥"')
+        return
+
+    if kis_pre_open():
+        # 오늘 시가가 아직 없다 — 마지막 완료 거래일의 갭(그날 시가 / 전날 종가)을 로컬로 본다
+        print("\n  ⏰ 장 시작 전 — KIS 현재가 시가가 0. 마지막 완료 거래일의 갭을 로컬 기준 일봉으로 계산")
+        print(f"  ✅ coverage=index_kospi200_kosdaq150 ({len(universe)}종목) — 전체 시장 아님")
+        _, bars_by = _last_day_bars(market, datetime.now(), days=20)
+        matched = []
+        for stock in universe:
+            bars = bars_by.get(stock["code"]) or []
+            if len(bars) < 2:
+                continue
+            gap = calc_gap_pct(bars[-1]["open"], bars[-2]["close"])
+            if gap is not None and gap >= min_gap:
+                matched.append({"code": stock["code"], "name": stock["name"],
+                                "price": bars[-1]["close"], "open": bars[-1]["open"],
+                                "prev_close": bars[-2]["close"], "gap_pct": gap,
+                                "date": bars[-1]["date"]})
+        matched.sort(key=lambda x: -x["gap_pct"])
+        print(f"\n  조건충족 {len(matched)}종목")
+        if matched:
+            print(f"\n  {'종목명':<15} {'코드':<8} {'종가':>9} {'갭':>7} {'시가':>8} {'전일종가':>8} {'기준일':>10}")
+            print(f"  {'─'*15} {'─'*8} {'─'*9} {'─'*7} {'─'*8} {'─'*8} {'─'*10}")
+            for it in matched[:20]:
+                print(f"  {it['name'][:15]:<15} {it['code']:<8} {it['price']:>8,.0f}원 "
+                      f"{it['gap_pct']:>+6.1f}% {it['open']:>8,.0f} {it['prev_close']:>8,.0f} {it['date']:>10}")
         return
 
     print(f"\n  ✅ coverage=index_kospi200_kosdaq150 ({len(universe)}종목) — 전체 시장 아님")
@@ -2455,20 +2560,30 @@ def score_stock(ticker: str) -> dict:
         prefilter_reasons.append("시가총액 미확인")
     elif quote["market_cap_krw"] < 100_000_000_000:
         prefilter_reasons.append(f"시가총액 {quote['market_cap_krw']/1e8:,.0f}억원 < 1,000억원")
-    # KIS 현재가의 누적 거래대금(acml_tr_pbmn)이 있으면 그 값, 없으면 가격×거래량 추정
-    turnover = quote.get("traded_value")
-    turnover_is_estimate = turnover is None
-    if turnover_is_estimate:
-        turnover = quote["price"] * quote["volume"]
+    # 장 시작 전(KIS가 오늘로 넘어가 시가·거래량 0 — `kis_pre_open`)이면 "오늘"이 아직 없다.
+    # 주말처럼 마지막 완료 거래일을 기준으로 본다
+    pre_open = not quote.get("open") and not quote.get("volume")
+    if pre_open:
+        last = d["rows"][-1]
+        turnover = last.get("traded_value")
+        turnover_is_estimate = turnover is None
+        if turnover_is_estimate:
+            turnover = last["close"] * last["volume"]
+    else:
+        # KIS 현재가의 누적 거래대금(acml_tr_pbmn)이 있으면 그 값, 없으면 가격×거래량 추정
+        turnover = quote.get("traded_value")
+        turnover_is_estimate = turnover is None
+        if turnover_is_estimate:
+            turnover = quote["price"] * quote["volume"]
     if turnover < 5_000_000_000:
         label = "추정 거래대금" if turnover_is_estimate else "거래대금"
         prefilter_reasons.append(f"{label} {turnover/1e8:,.0f}억원 < 50억원")
 
     # 외국인/기관 5일 합 + 당일 — 최근 4완료거래일 + 오늘(장중이면 당일 집계치).
-    # 주말에는 "오늘"이 거래일이 아니므로 최근 5완료거래일을 쓴다.
+    # 주말·장 시작 전에는 "오늘" 수급이 없으므로 최근 5완료거래일을 쓴다.
     now = datetime.now()
     today_str = now.strftime("%Y-%m-%d")
-    if now.weekday() >= 5:
+    if now.weekday() >= 5 or pre_open:
         dates_for_sum = [r["date"] for r in d["rows"][-5:]]
     else:
         trading_dates = [r["date"] for r in d["rows"][-4:]]
