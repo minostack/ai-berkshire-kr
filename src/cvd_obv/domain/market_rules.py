@@ -99,12 +99,18 @@ class MarketRule:
         return True
 
     def session_bounds(self, trading_date: date, session: str):
-        """세션의 `[시작, 종료)` KST datetime. 없는 세션이면 None."""
+        """세션의 `[시작, 종료)` KST datetime. 없는 세션이면 None.
+
+        장 시간이 통째로 늦춰진 날(수능 등, `configs/session_shifts.json`)은
+        그만큼 민다 — 애프터마켓 확정 시각도 따라 늦춰진다.
+        """
         if not self.session_exists(trading_date, session):
             return None
+        from .session_shift import shift_of
         cfg = self.sessions[session]
-        start = datetime.combine(trading_date, cfg["start"], tzinfo=KST)
-        end = datetime.combine(trading_date, cfg["end"], tzinfo=KST)
+        delta = shift_of(trading_date)
+        start = datetime.combine(trading_date, cfg["start"], tzinfo=KST) + delta
+        end = datetime.combine(trading_date, cfg["end"], tzinfo=KST) + delta
         return (start, end)
 
     def session_complete_at(self, trading_date: date, session: str):

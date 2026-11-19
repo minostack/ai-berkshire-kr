@@ -56,6 +56,9 @@ from .nxt_volume import (
 )
 from ..domain.ids import KST as _KST, UTC, run_started_at, to_utc
 from ..domain.market_rules import default_registry
+from ..domain.session_shift import (
+    clock_time, dedupe_shifted_bars, relabel_session,
+)
 from ..domain.status import QualityStatus
 from ..storage.parquet_store import ParquetStore
 
@@ -125,12 +128,16 @@ def read_minutes(store, start, end, securities):
     table = table.filter(pc.is_in(table.column("security_id"),
                                   value_set=pa.array(sorted(securities))))
     out = {}
-    for r in table.to_pylist():
+    for r in dedupe_shifted_bars(table.to_pylist()):
         if r["quality_status"] == QualityStatus.FAILED:
             continue
-        kst = r["bar_start_at_utc"].astimezone(_KST).time()
+        # 장 시간이 늦춰진 날(수능 등)은 평일 시계로 당겨 본다 — 종가 단일가(15:30)
+        # 판정과 세션 라벨이 고정 시각이라서다. 저장된 라벨도 다시 판정한다.
+        at = r["bar_start_at_utc"].astimezone(_KST)
+        kst = clock_time(at, r["trading_date"])
+        session = relabel_session(r["session"], at, r["trading_date"])
         out.setdefault((r["security_id"], r["trading_date"]), []).append(
-            {"kst": kst, "session": r["session"], "open": r["open"],
+            {"kst": kst, "session": session, "open": r["open"],
              "high": r["high"], "low": r["low"], "close": r["close"],
              "volume": r["volume"],
              "fetched_at": fetched_at_of(r["run_id"])})

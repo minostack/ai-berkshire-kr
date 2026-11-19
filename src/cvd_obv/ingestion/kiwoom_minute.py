@@ -27,6 +27,7 @@ from decimal import Decimal, InvalidOperation
 from .kiwoom_auth import token_with_retry
 from ..baseline.scanner_v15 import load_scanner_v15
 from ..domain.errors import ExternalApiError
+from ..domain.session_shift import clock_dt_str
 from ..domain.status import DetailCode, QualityStatus
 
 __all__ = ["KIWOOM_MINUTE_SOURCE", "MinuteFetchResult", "KiwoomMinuteSource"]
@@ -274,7 +275,8 @@ class KiwoomMinuteSource:
             "bar_start": bar_start,
             "bar_end": bar_end,
             "trading_date": bar_start.date(),
-            "session": sc.session_of(dt),
+            # 장 시간이 늦춰진 날(수능 등)은 평일 시계로 당겨 판정한다
+            "session": sc.session_of(clock_dt_str(dt)),
             "open": open_, "high": high, "low": low, "close": close,
             "volume": volume,
             "traded_value": (Decimal(traded_value)

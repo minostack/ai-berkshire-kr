@@ -54,6 +54,7 @@ from __future__ import annotations
 from datetime import date, time, timedelta
 
 from ..domain.ids import KST
+from ..domain.session_shift import clock_time, dedupe_shifted_bars
 from ..storage.parquet_store import ParquetStore
 
 __all__ = ["NXT_MAIN_START", "NXT_MAIN_END", "FLAG_NXT_INCLUDED",
@@ -155,15 +156,14 @@ def nxt_main_volume(store: ParquetStore, start: date, end: date, securities) -> 
             latest_by=MINUTE_BAR_LOGICAL_KEY)
     except NoInputDataError:
         return out
-    for sid, d, at, vol, status in zip(
-            t.column("security_id").to_pylist(), t.column("trading_date").to_pylist(),
-            t.column("bar_start_at_utc").to_pylist(), t.column("volume").to_pylist(),
-            t.column("quality_status").to_pylist()):
-        if status == "FAILED" or (sid, d) not in fetched:
+    # 장 시간이 늦춰진 날(수능 등)은 같은 봉 시각에 세션 라벨만 다른 행이 남을 수 있다
+    for r in dedupe_shifted_bars(t.to_pylist()):
+        sid, d = r["security_id"], r["trading_date"]
+        if r["quality_status"] == "FAILED" or (sid, d) not in fetched:
             continue
-        hm = at.astimezone(KST).time()
+        hm = clock_time(r["bar_start_at_utc"].astimezone(KST), d)   # 평일 시계로
         if NXT_MAIN_START <= hm < NXT_MAIN_END:
-            out[(krx_id(sid), d)] += int(vol or 0)
+            out[(krx_id(sid), d)] += int(r["volume"] or 0)
     return out
 
 

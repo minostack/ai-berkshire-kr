@@ -37,6 +37,7 @@ from .kiwoom_minute import MinuteFetchResult
 from ..baseline.scanner_v15 import load_scanner_v15
 from ..domain.errors import ConfigError
 from ..domain.ids import KST
+from ..domain.session_shift import clock_dt_str
 from ..domain.status import DetailCode, QualityStatus
 
 __all__ = ["KIS_MINUTE_SOURCE", "KisMinuteSource", "kis_market_code"]
@@ -189,7 +190,8 @@ class KisMinuteSource:
             return None
         return {
             "dt": dt, "bar_start": bar_start, "bar_end": bar_end,
-            "trading_date": bar_start.date(), "session": sc.session_of(dt),
+            # 장 시간이 늦춰진 날(수능 등)은 평일 시계로 당겨 판정한다
+            "trading_date": bar_start.date(), "session": sc.session_of(clock_dt_str(dt)),
             "open": open_, "high": high, "low": low, "close": close,
             "volume": int(volume),
             "cum_traded_value": _dec(item.get("acml_tr_pbmn")),
