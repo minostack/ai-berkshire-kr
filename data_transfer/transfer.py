@@ -14,6 +14,7 @@
 내보내기·가져오기는 적재 잠금(`data/manifests/data_load.lock`)을 잡는다. 정기 적재가
 도는 중이면 끝날 때까지 기다린다(`--lock-wait`초, 기본 3600).
 가져오기는 적재 장부(`data_load_state.json`)를 이 PC에 들어온 확정 봉까지 옮긴다.
+묶음에는 구성종목 이력의 지수별 최신 버전도 들어간다(`--no-universe`로 뺀다).
 행을 썼으면 끝에 `calendar build`로 거래일 달력을 다시 만든다.
 """
 
@@ -83,6 +84,7 @@ def print_status(status: dict):
     if imported:
         print(f"  마지막 가져오기: {imported.get('imported_at')} — "
               f"{imported.get('package_id')} (보낸 PC {imported.get('source_host')})")
+    print_universe(status.get("universe") or {}, status.get("index_file") or {})
     print(f"  [날짜별] 지수 구성종목 {status['members']}개 기준(1분봉·잠정·확정·상태) "
           "+ 저장된 전체 종목 수(KRX·NXT 1분봉, 체결량 UN, 지수)")
     print("    날짜        1분봉  잠정  확정  " + _ljust("상태", 18)
@@ -94,6 +96,22 @@ def print_status(status: dict):
     print("  [테이블] 파일 수 · 용량")
     for name, t in status["tables"].items():
         print(f"    {name:18} {t['files']:>7,}개  {_mb(t['bytes']):>10}")
+
+
+def print_universe(heads: dict, index_file: dict = None):
+    """구성종목 이력(스캐너 `universe_on()`이 먼저 쓰는 것)과 `index_stocks.json` 기준일."""
+    parts = []
+    for idx, h in heads.items():
+        if not h:
+            parts.append(f"{idx} 없음")
+            continue
+        text = f"{idx} {h['observed_to']}까지({h['universe_version']})"
+        file_as_of = (index_file or {}).get(idx)
+        if file_as_of:
+            text += f" · index_stocks {file_as_of}"
+        parts.append(text)
+    if parts:
+        print("  구성종목 이력: " + "  /  ".join(parts))
 
 
 def cmd_status(args) -> int:
@@ -117,11 +135,13 @@ def cmd_export(args) -> int:
     from cvd_obv.ingestion.run_lock import LockTimeout
     start, end = _range(args, need=True)
     tables = _tables(args.tables)
-    print(f"내보내기 {start} ~ {end} — 테이블 {', '.join(tables)}")
+    print(f"내보내기 {start} ~ {end} — 테이블 {', '.join(tables)}"
+          + ("" if args.no_universe else " + 구성종목 이력(최신 버전 전체)"))
     try:
         with _lock("data-transfer export", args.lock_wait):
             path, manifest = export_package(start, end, tables=tables,
-                                            out_dir=args.out)
+                                            out_dir=args.out,
+                                            include_universe=not args.no_universe)
     except LockTimeout as exc:
         print(f"  ❌ {exc}")
         return EXIT_ERROR
@@ -234,16 +254,27 @@ def cmd_import(args) -> int:
         print(f"  ❌ {exc}")
         return EXIT_ERROR
     new = sum(t["new_rows"] for t in summary["tables"].values())
+    uni = summary.get("universe")
+    new_uni = sum(u["new_rows"] for u in (uni or {}).values())
+    if uni is None:
+        print("  · 묶음에 구성종목 이력이 없다(옛 형식) — 이 PC 이력은 "
+              "`python cvdobv.py universe refresh --as-of <마지막 거래일>`로 늘린다")
     if summary["already_imported"]:
         print("  · 이 묶음은 전에 가져온 기록이 있다 — 없는 행만 확인했다")
     if args.dry_run:
-        print(f"  확인만 했다 — 쓰면 새 행 {new:,}개. 장부는 실제로 가져올 때 옮긴다")
+        print(f"  확인만 했다 — 쓰면 새 행 {new:,}개 + 구성종목 이력 {new_uni:,}행. "
+              "장부는 실제로 가져올 때 옮긴다")
         return EXIT_OK
     print_ledger(summary["ledger"])
-    if new == 0:
+    if uni:
+        from data_transfer.package import _index_file_as_of, universe_heads
+        print_universe(universe_heads(), _index_file_as_of())
+    if new == 0 and new_uni == 0:
         print("  새 행 0 — 이미 모두 있다(쓴 파일 없음)")
         return EXIT_OK
-    print(f"  ✅ 새 행 {new:,}개를 썼다 — 기록 {summary['record']}")
+    print(f"  ✅ 새 행 {new:,}개 + 구성종목 이력 {new_uni:,}행을 썼다 — 기록 {summary['record']}")
+    if new == 0:
+        return EXIT_OK
     if args.no_calendar:
         print("  달력 갱신을 건너뛰었다 — 필요하면 `python cvdobv.py calendar build`")
         return EXIT_OK
@@ -277,6 +308,8 @@ def build_parser():
     add_range(ex)
     ex.add_argument("--tables", help=f"쉼표 구분(기본 전부: {','.join(TABLES)})")
     ex.add_argument("--out", help=f"저장 폴더(기본 {DOWNLOAD_DIR})")
+    ex.add_argument("--no-universe", action="store_true",
+                    help="구성종목 이력(지수별 최신 버전)을 넣지 않는다")
     ex.add_argument("--lock-wait", type=float, default=3600,
                     help="적재가 돌고 있으면 기다릴 초(기본 3600)")
     ex.set_defaults(func=cmd_export)

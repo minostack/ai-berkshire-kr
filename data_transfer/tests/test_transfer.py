@@ -287,3 +287,79 @@ def test_장중에_가져오면_오늘은_확정으로_치지_않는다(pc2):
     got = update_ledger(pc2, _manifest(D1, D1, [D1]), codes=CODES, now=during)
     assert got["confirmed_through"] is None
     assert "confirmed_through" not in _ledger_of(pc2)
+
+
+# ── 구성종목 이력 ─────────────────────────────────────────────
+
+from data_transfer.package import universe_heads  # noqa: E402
+from cvd_obv.ingestion.universe_history import (  # noqa: E402
+    UniverseRepository, UniverseSnapshot,
+)
+
+
+def _universe(store, as_of, codes, run_id):
+    snaps = [UniverseSnapshot("KOSPI200", date(2026, 11, 2), codes[:2], "a.json"),
+             UniverseSnapshot("KOSPI200", as_of, codes, "b.json")]
+    return UniverseRepository(store).import_snapshots(snaps, run_id)["universe_version"]
+
+
+def _export_with_universe(store, tmp_path):
+    return export_package(D1, D2, tables=["daily_bars"], out_dir=str(tmp_path / "DOWNLOAD"),
+                          store=store, with_status=False, log=None)
+
+
+def test_내보내기는_구성종목_이력의_최신_버전만_담는다(pc1, tmp_path):
+    _universe(pc1, date(2026, 11, 3), ["005930", "000660"], "uni_old")
+    newest = _universe(pc1, date(2026, 11, 4), ["005930", "000660", "035420"], "uni_new")
+    _path, manifest = _export_with_universe(pc1, tmp_path)
+    info = manifest["universe"]["indexes"]["KOSPI200"]
+    assert info["universe_version"] == newest
+    assert info["observed_to"] == "2026-11-04"
+    assert info["rows"] == universe_heads(pc1)["KOSPI200"]["rows"]
+    assert {f["index_id"] for f in manifest["universe"]["files"]} == {"KOSPI200"}
+
+
+def test_가져오면_받는_PC가_같은_이력_버전을_읽는다(pc1, tmp_path):
+    version = _universe(pc1, date(2026, 11, 4), ["005930", "000660", "035420"], "uni_new")
+    path, _ = _export_with_universe(pc1, tmp_path)
+    pc2 = ParquetStore(root=str(tmp_path / "pc2" / "data"))
+    summary = import_package(path, store=pc2, log=None, codes=["KRX:005930"])
+    assert summary["universe"]["KOSPI200"]["action"] == "write"
+    assert universe_heads(pc2)["KOSPI200"]["universe_version"] == version
+    repo1, repo2 = UniverseRepository(pc1), UniverseRepository(pc2)
+    day = date(2026, 11, 4)
+    assert repo2.get_members("KOSPI200", day)["members"] == \
+        repo1.get_members("KOSPI200", day)["members"]
+    again = import_package(path, store=pc2, log=None, codes=["KRX:005930"])
+    assert again["universe"]["KOSPI200"]["action"] == "same"
+    assert again["universe"]["KOSPI200"]["new_rows"] == 0
+
+
+def test_받는_PC_이력이_더_최근이면_쓰지_않는다(pc1, tmp_path):
+    _universe(pc1, date(2026, 11, 3), ["005930", "000660"], "uni_pc1")
+    path, _ = _export_with_universe(pc1, tmp_path)
+    pc2 = ParquetStore(root=str(tmp_path / "pc2" / "data"))
+    mine = _universe(pc2, date(2026, 11, 4), ["005930", "000660", "035420"], "uni_pc2")
+    summary = import_package(path, store=pc2, log=None, codes=["KRX:005930"])
+    assert summary["universe"]["KOSPI200"]["action"] == "local_newer"
+    assert summary["universe"]["KOSPI200"]["new_rows"] == 0
+    assert universe_heads(pc2)["KOSPI200"]["universe_version"] == mine
+
+
+def test_확인만_하면_이력도_쓰지_않는다(pc1, tmp_path):
+    _universe(pc1, date(2026, 11, 4), ["005930", "000660"], "uni_new")
+    path, _ = _export_with_universe(pc1, tmp_path)
+    pc2 = ParquetStore(root=str(tmp_path / "pc2" / "data"))
+    summary = import_package(path, store=pc2, dry_run=True, log=None)
+    assert summary["universe"]["KOSPI200"]["new_rows"] > 0
+    assert universe_heads(pc2)["KOSPI200"] is None
+
+
+def test_이력이_없는_옛_묶음도_가져온다(pc1, tmp_path):
+    path, manifest = export_package(D1, D2, tables=["daily_bars"],
+                                    out_dir=str(tmp_path / "DOWNLOAD"), store=pc1,
+                                    with_status=False, log=None, include_universe=False)
+    assert "universe" not in manifest
+    pc2 = ParquetStore(root=str(tmp_path / "pc2" / "data"))
+    summary = import_package(path, store=pc2, log=None, codes=["KRX:005930"])
+    assert summary["universe"] is None

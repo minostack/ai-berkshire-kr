@@ -11,8 +11,14 @@
 | `bar_coverage` | 분봉 수집 기록 — 받는 PC가 다시 받으려 들지 않게 한다 |
 | `benchmark_bars` | 지수 일봉 |
 
+구성종목 이력(`universe_membership`)은 날짜 구간과 상관없이 **지수별 최신 버전 전체**를
+넣는다(`manifest["universe"]`). 이력은 날짜별 행이 아니라 `[effective_from, effective_to)`
+구간이고, reader(`UniverseRepository.load`)는 가장 최근에 적재된 버전 하나만 읽기
+때문이다. 받는 PC에 같은 버전이 있거나 더 최근 버전이 있으면 쓰지 않는다.
+
 옮기지 않는 것: `market_calendar`(일봉에서 파생 — 가져온 뒤 `calendar build`로 다시
-만든다), 구성종목 이력·`index_stocks.json`(쓰기 경로가 따로 정해져 있다), bronze 원천
+만든다), `index_stocks.json`·`universe_snapshots/`(git이 추적한다 — 받는 PC가 쓰면
+다음 `git pull`이 충돌한다. 스캐너의 `universe_on()`은 이력을 먼저 쓴다), bronze 원천
 응답.
 
 적재 장부(`data_load_state.json`)는 값을 복사하지 않는다. 가져온 뒤 **받는 PC에 실제로
@@ -54,11 +60,15 @@ from cvd_obv.contracts.market_schema import (
     DAILY_TRADE_SIDE_COLUMNS, DAILY_TRADE_SIDE_PK,
     MINUTE_BAR_COLUMNS, MINUTE_BAR_PK,
 )
+from cvd_obv.contracts.universe_schema import (
+    UNIVERSE_MEMBERSHIP_COLUMNS, UNIVERSE_MEMBERSHIP_PK,
+)
 from cvd_obv.domain.ids import KST
 from cvd_obv.storage.parquet_store import ParquetStore, arrow_schema, require_pyarrow
 
 __all__ = ["TABLES", "PackageError", "collect_status", "export_package",
-           "read_package", "import_package", "find_packages", "update_ledger"]
+           "read_package", "import_package", "find_packages", "update_ledger",
+           "UNIVERSE_INDEXES", "universe_heads"]
 
 #: 테이블 → (열 계약, 저장 PK). PK에는 data_revision이 들어 있다.
 TABLES = {
@@ -70,6 +80,8 @@ TABLES = {
 }
 LAYER = "silver"
 DATE_COLUMN = "trading_date"
+UNIVERSE_TABLE = "universe_membership"
+UNIVERSE_INDEXES = ("KOSPI200", "KOSDAQ150")
 
 
 class PackageError(RuntimeError):
@@ -283,9 +295,181 @@ def collect_status(start: date, end: date, store: ParquetStore = None,
         "store_root": store.root,
         "members": len(codes),
         "ledger": load_state(ledger_path),
+        "universe": universe_heads(store),
+        "index_file": _index_file_as_of(),
         "days": days,
         "tables": {t: _table_summary(store, t) for t in TABLES},
     }
+
+
+# ── 구성종목 이력 ─────────────────────────────────────────────
+
+def _universe_files(store: ParquetStore, index_id: str) -> dict:
+    """{파티션 상대 경로: [파일]} — 그 지수의 이력 파일(`index_id=…/effective_year=…`)."""
+    base = store.table_dir(LAYER, UNIVERSE_TABLE)
+    out = {}
+    for path in store.files_of(LAYER, UNIVERSE_TABLE):
+        rel = os.path.relpath(os.path.dirname(path), base).replace("\\", "/")
+        if _parts(rel).get("index_id") == index_id:
+            out.setdefault(rel, []).append(path)
+    return out
+
+
+def _read_universe(paths, columns=None, version: str = None):
+    """이력 파일을 읽는다(버전을 주면 그 버전만). 날짜 구간 필터는 걸지 않는다."""
+    pa, _ = require_pyarrow()
+    import pyarrow.dataset as ds
+    flt = (ds.field("universe_version") == version) if version else None
+    tables = []
+    for path in paths:
+        dataset = ds.dataset(path, format="parquet", partitioning=None)
+        have = set(dataset.schema.names)
+        cols = None if columns is None else [c for c in columns if c in have]
+        tbl = dataset.to_table(columns=cols, filter=flt)
+        if tbl.num_rows:
+            tables.append(tbl)
+    if not tables:
+        return None
+    return pa.concat_tables(tables, promote_options="permissive")
+
+
+def universe_heads(store: ParquetStore = None, indexes=UNIVERSE_INDEXES) -> dict:
+    """{지수: {"universe_version", "rows", "observed_to", "known_at_utc"} 또는 None}.
+
+    `UniverseRepository.load()`가 고르는 것과 같은 버전 — 가장 늦게 알려진
+    (`known_at_utc` 최대) 버전 하나다.
+    """
+    store = store or ParquetStore()
+    cols = list(UNIVERSE_MEMBERSHIP_PK) + ["known_at_utc", "observed_to"]
+    out = {}
+    for idx in indexes:
+        paths = [p for ps in _universe_files(store, idx).values() for p in ps]
+        tbl = _read_universe(paths, columns=cols) if paths else None
+        if tbl is None:
+            out[idx] = None
+            continue
+        known, observed, keys = {}, {}, {}
+        for v, k, o, sid, ef in zip(*(tbl.column(c).to_pylist() for c in (
+                "universe_version", "known_at_utc", "observed_to",
+                "security_id", "effective_from"))):
+            known[v] = max(known.get(v, k), k)
+            if o is not None:
+                observed[v] = max(observed.get(v, o), o)
+            keys.setdefault(v, set()).add((sid, ef))
+        latest = max(known, key=known.get)
+        out[idx] = {"universe_version": latest, "rows": len(keys[latest]),
+                    "observed_to": observed.get(latest), "known_at_utc": known[latest]}
+    return out
+
+
+def _index_file_as_of() -> dict:
+    """{지수: as_of} — `index_stocks.json`(git 추적)의 기준일. 읽기는 `read_index_file`로만."""
+    from cvd_obv.universe import read_index_file
+    return {idx: block.get("as_of") for idx, block in read_index_file().items()}
+
+
+def _export_universe(zf, store: ParquetStore, log=print) -> dict:
+    """지수별 최신 버전 전체를 묶음에 넣는다. 날짜 구간과 상관없다."""
+    _, pq = require_pyarrow()
+    heads = universe_heads(store)
+    out = {"indexes": {}, "files": []}
+    seq = 0
+    for idx, head in heads.items():
+        if not head:
+            continue
+        rows = 0
+        for rel, paths in sorted(_universe_files(store, idx).items()):
+            tbl = _read_universe(paths, version=head["universe_version"])
+            if tbl is None:
+                continue
+            tbl = _conform(tbl, UNIVERSE_MEMBERSHIP_COLUMNS)
+            # 같은 버전을 여러 run이 썼으면 reader 규칙대로 하나만 남긴다
+            tbl = ParquetStore._dedupe_arrow(tbl, UNIVERSE_MEMBERSHIP_PK)
+            seq += 1
+            buf = io.BytesIO()
+            pq.write_table(tbl, buf, compression="zstd")
+            data = buf.getvalue()
+            member = f"{LAYER}/{UNIVERSE_TABLE}/{rel}/part-{seq:04d}.parquet"
+            zf.writestr(member, data)
+            out["files"].append({"member": member, "partition": rel, "index_id": idx,
+                                 "rows": tbl.num_rows, "sha256": _sha256(data)})
+            rows += tbl.num_rows
+        out["indexes"][idx] = {
+            "universe_version": head["universe_version"], "rows": rows,
+            "observed_to": head["observed_to"].isoformat() if head["observed_to"] else None,
+            "known_at_utc": head["known_at_utc"].isoformat()}
+        if log:
+            log(f"  {'universe ' + idx:18} {rows:>10,}행  {head['universe_version']} "
+                f"(관측 {out['indexes'][idx]['observed_to']}까지)")
+    return out
+
+
+def _import_universe(zf, store: ParquetStore, manifest: dict, dry_run: bool,
+                     written: list, log=print):
+    """묶음의 이력 버전을 받는 PC에 쓴다 — 같은 버전이 있거나 더 최근 버전이 있으면 건너뛴다."""
+    pa, pq = require_pyarrow()
+    uni = manifest.get("universe")
+    if not uni:
+        return None
+    local = universe_heads(store)
+    keys = list(UNIVERSE_MEMBERSHIP_PK)
+    out = {}
+    for idx, info in uni["indexes"].items():
+        mine = local.get(idx)
+        theirs_known = datetime.fromisoformat(info["known_at_utc"])
+        if mine and mine["universe_version"] == info["universe_version"]:
+            action = "same"
+        elif mine and mine["known_at_utc"] >= theirs_known:
+            action = "local_newer"
+        else:
+            action = "write"
+        res = {"universe_version": info["universe_version"],
+               "observed_to": info["observed_to"],
+               "local_version": mine["universe_version"] if mine else None,
+               "local_observed_to": (mine["observed_to"].isoformat()
+                                     if mine and mine["observed_to"] else None),
+               "action": action, "package_rows": info["rows"], "new_rows": 0,
+               "skipped_rows": 0, "files": []}
+        for f in (f for f in uni["files"] if f["index_id"] == idx):
+            incoming = _conform(pq.read_table(pa.BufferReader(zf.read(f["member"]))),
+                                UNIVERSE_MEMBERSHIP_COLUMNS)
+            if action != "write":
+                res["skipped_rows"] += incoming.num_rows
+                continue
+            parts = f["partition"].split("/")
+            directory = os.path.join(store.table_dir(LAYER, UNIVERSE_TABLE), *parts)
+            existing = None
+            if os.path.isdir(directory):
+                paths = sorted(os.path.join(directory, n) for n in os.listdir(directory)
+                               if n.endswith(".parquet"))
+                existing = _read_universe(paths, columns=keys) if paths else None
+            # 같은 PK(버전 포함)면 run_id가 달라도 같은 행이다 — 버전 단위로 옮기기 때문
+            fresh = _new_rows(incoming, existing, keys)
+            res["new_rows"] += fresh.num_rows
+            res["skipped_rows"] += incoming.num_rows - fresh.num_rows
+            if dry_run or fresh.num_rows == 0:
+                continue
+            os.makedirs(directory, exist_ok=True)
+            seq = f["member"].rsplit("-", 1)[-1].split(".")[0]
+            target = os.path.join(
+                directory, f"part-import_{manifest['package_id']}-u{seq}.parquet")
+            if os.path.exists(target):
+                raise PackageError(f"같은 이름 파일이 이미 있다: {target}")
+            pq.write_table(fresh, target, compression="zstd")
+            with open(target, "rb") as fh:
+                digest = _sha256(fh.read())
+            rel_path = os.path.relpath(target, store.root).replace("\\", "/")
+            res["files"].append({"path": rel_path, "rows": fresh.num_rows, "sha256": digest})
+            written.append(rel_path)
+        out[idx] = res
+        if log:
+            note = {"same": "이 PC에 같은 버전이 있다",
+                    "local_newer": f"이 PC 버전({res['local_version']})이 더 최근이다",
+                    "write": "가져온다"}[action]
+            log(f"  {'universe ' + idx:18} 묶음 {res['package_rows']:>10,}행 → 새 행 "
+                f"{res['new_rows']:>10,} / 건너뜀 {res['skipped_rows']:>8,}  "
+                f"{info['universe_version']} 관측 {info['observed_to']}까지 — {note}")
+    return out
 
 
 # ── 내보내기 ─────────────────────────────────────────────────
@@ -326,8 +510,11 @@ def _daily_kinds(tbl) -> dict:
 
 def export_package(start: date, end: date, tables=None, out_dir: str = None,
                    store: ParquetStore = None, with_status: bool = True,
-                   log=print) -> tuple:
-    """`[start, end]`의 행을 zip 하나로 쓴다. (경로, manifest)를 돌려준다."""
+                   log=print, include_universe: bool = True) -> tuple:
+    """`[start, end]`의 행을 zip 하나로 쓴다. (경로, manifest)를 돌려준다.
+
+    `include_universe`면 구성종목 이력의 지수별 최신 버전도 넣는다(구간과 무관).
+    """
     _, pq = require_pyarrow()
     if end < start:
         raise ValueError(f"종료일({end})이 시작일({start})보다 앞이다")
@@ -392,6 +579,8 @@ def export_package(start: date, end: date, tables=None, out_dir: str = None,
             manifest["tables"][table] = entry
             if log:
                 log(f"  {table:18} {entry['rows']:>10,}행  파일 {len(entry['files'])}개")
+        if include_universe:
+            manifest["universe"] = _export_universe(zf, store, log=log)
         zf.writestr("manifest.json",
                     json.dumps(manifest, ensure_ascii=False, indent=2, default=str))
     os.replace(temp_path, final_path)
@@ -428,7 +617,10 @@ def read_package(path: str, verify: bool = True) -> dict:
         if unknown:
             raise PackageError(f"모르는 테이블: {sorted(unknown)}")
         if verify:
-            for table, entry in manifest["tables"].items():
+            entries = list(manifest["tables"].values())
+            if manifest.get("universe"):
+                entries.append(manifest["universe"])
+            for entry in entries:
                 for f in entry["files"]:
                     try:
                         data = zf.read(f["member"])
@@ -611,6 +803,7 @@ def import_package(path: str, store: ParquetStore = None, dry_run: bool = False,
             if log:
                 log(f"  {table:18} 묶음 {res['package_rows']:>10,}행 → 새 행 "
                     f"{res['new_rows']:>10,} / 이미 있음 {res['skipped_rows']:>10,}")
+        summary["universe"] = _import_universe(zf, store, manifest, dry_run, written, log=log)
     if not dry_run:
         try:
             summary["ledger"] = update_ledger(store, manifest, codes=codes)
@@ -630,6 +823,7 @@ def import_package(path: str, store: ParquetStore = None, dry_run: bool = False,
             "source_ledger": manifest.get("source_ledger"),
             "ledger": summary["ledger"],
             "tables": summary["tables"],
+            "universe": summary["universe"],
             "status": "SUCCESS",
         }
         os.makedirs(store.manifest_dir, exist_ok=True)

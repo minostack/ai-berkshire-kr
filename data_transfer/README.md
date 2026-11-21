@@ -74,7 +74,8 @@ export와 import는 적재 잠금(`data/manifests/data_load.lock`)을 잡는다.
 | `silver.bar_coverage` | ○ | 분봉 수집 기록 |
 | `silver.benchmark_bars` | ○ | 지수 일봉 |
 | `silver.market_calendar` | × | 일봉에서 파생된다. 가져온 뒤 `calendar build`로 다시 만든다(자동) |
-| 구성종목 이력·`index_stocks.json` | × | 쓰기 경로가 정해져 있다(`universe refresh`, `tools/update_index.py`). 이력 뒤 날짜는 `universe_on()`이 `index_stocks.json`으로 대신하고 경고를 낸다 |
+| `silver.universe_membership` | ○ | 구성종목 이력. 날짜 구간과 상관없이 **지수별 최신 버전 전체**를 넣는다(약 900행). 받는 PC에 같은 버전이 있거나 더 최근에 만든 버전이 있으면 쓰지 않는다. `--no-universe`로 뺀다 |
+| `index_stocks.json`·`universe_snapshots/` | × | git이 추적한다. 받는 PC가 쓰면 다음 `git pull`이 충돌한다. 스캐너의 `universe_on()`은 이력을 먼저 쓰고, 이력 뒤 날짜만 `index_stocks.json`으로 대신한다 |
 | 적재 장부 `data_load_state.json` | 계산 | 값을 복사하지 않고, 받는 PC에 들어온 확정 봉으로 다시 계산한다(아래 절) |
 | bronze 원천 응답 | × | |
 
